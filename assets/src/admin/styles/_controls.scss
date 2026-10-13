@@ -1,0 +1,433 @@
+// Buttons, inputs, switches, selectable cards, dialog.
+
+@use "../../styles/mixins" as *;
+
+.prstsearch-button {
+	display: inline-flex;
+	gap: var(--prstsearch-space-2);
+	align-items: center;
+	justify-content: center;
+	min-height: 38px;
+	padding: 0 var(--prstsearch-space-4);
+	font: inherit;
+	font-size: var(--prstsearch-font-size-m);
+	font-weight: 500;
+	line-height: 1.2;
+	text-decoration: none;
+	white-space: nowrap;
+	cursor: pointer;
+	border: 1px solid transparent;
+	border-radius: var(--prstsearch-radius-s);
+	transition: background-color 0.15s ease, border-color 0.15s ease, color 0.15s ease;
+
+	@include reduced-motion {
+		transition: none;
+	}
+
+	&--primary {
+		color: var(--prstsearch-text-on-accent);
+		background: var(--prstsearch-accent);
+
+		&:hover {
+			color: var(--prstsearch-text-on-accent);
+			background: var(--prstsearch-accent-strong);
+		}
+	}
+
+	&--secondary {
+		color: var(--prstsearch-accent);
+		background: var(--prstsearch-surface);
+		border-color: var(--prstsearch-accent);
+
+		&:hover {
+			color: var(--prstsearch-accent-strong);
+			background: var(--prstsearch-accent-surface);
+		}
+	}
+
+	&--neutral {
+		color: var(--prstsearch-text);
+		background: var(--prstsearch-surface);
+		border-color: var(--prstsearch-border-control);
+
+		&:hover {
+			color: var(--prstsearch-text);
+			background: var(--prstsearch-surface-muted);
+		}
+	}
+
+	&--danger {
+		color: var(--prstsearch-text-on-accent);
+		background: var(--prstsearch-error);
+
+		&:hover {
+			color: var(--prstsearch-text-on-accent);
+			background: var(--prstsearch-error-strong);
+		}
+	}
+
+	&--danger-outline {
+		color: var(--prstsearch-error);
+		background: var(--prstsearch-surface);
+		border-color: var(--prstsearch-error);
+
+		&:hover {
+			color: var(--prstsearch-error);
+			background: var(--prstsearch-error-surface);
+		}
+	}
+
+	&--danger-text {
+		color: var(--prstsearch-error);
+		background: transparent;
+
+		&:hover {
+			color: var(--prstsearch-error);
+			text-decoration: underline;
+		}
+	}
+
+	&--wide {
+		width: 100%;
+	}
+
+	&[aria-disabled="true"],
+	&:disabled {
+		cursor: not-allowed;
+		opacity: 0.6;
+	}
+}
+
+// Specific enough to win over the WordPress admin form styles.
+.prstsearch-admin .prstsearch-input {
+	width: 100%;
+	max-width: none;
+	min-height: 38px;
+	margin: 0;
+	padding: 0 var(--prstsearch-space-3);
+	color: var(--prstsearch-text);
+	font-size: var(--prstsearch-font-size-l);
+	line-height: 1.4;
+	background-color: var(--prstsearch-surface);
+	border: 1px solid var(--prstsearch-border-control);
+	border-radius: var(--prstsearch-radius-s);
+	box-shadow: none;
+
+	&:focus {
+		border-color: var(--prstsearch-accent);
+
+		@include focus-ring;
+	}
+
+	&:disabled {
+		color: var(--prstsearch-text-muted);
+		background-color: var(--prstsearch-surface-muted);
+	}
+
+	&--textarea {
+		padding: var(--prstsearch-space-2) var(--prstsearch-space-3);
+	}
+
+	&--large {
+		min-height: 46px;
+		font-size: 15px;
+	}
+}
+
+// A checkbox with role="switch". The native element stays in place, so
+// keyboard and screen reader behaviour come for free.
+.prstsearch-admin .prstsearch-switch {
+	position: relative;
+	flex: none;
+	width: 40px;
+	min-width: 40px;
+	height: 22px;
+	margin: 0;
+	appearance: none;
+	cursor: pointer;
+	background: var(--prstsearch-border-control);
+	border: 0;
+	border-radius: var(--prstsearch-radius-full);
+	box-shadow: none;
+	transition: background-color 0.15s ease;
+
+	// The knob. WordPress draws its check mark into ::before of every checked
+	// checkbox, with a size, margin and float of its own. Naming the checked
+	// state here as well makes these rules win in both states.
+	&::before,
+	&:checked::before {
+		position: absolute;
+		top: 3px;
+		left: 3px;
+		float: none;
+		width: 16px;
+		height: 16px;
+		margin: 0;
+		content: "";
+		background: var(--prstsearch-surface);
+		border-radius: 50%;
+		transition: transform 0.15s ease;
+	}
+
+	&:checked {
+		background: var(--prstsearch-accent);
+
+		&::before {
+			transform: translateX(18px);
+		}
+	}
+
+	&:focus-visible {
+
+		@include focus-ring;
+	}
+
+	@include reduced-motion {
+
+		&,
+		&::before {
+			transition: none;
+		}
+	}
+
+	// Forced colours remove backgrounds, so the state is drawn with borders.
+	@media (forced-colors: active) {
+		border: 1px solid ButtonText;
+
+		&::before {
+			background: ButtonText;
+		}
+
+		&:checked {
+			background: Highlight;
+		}
+	}
+}
+
+.prstsearch-cards {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(190px, 1fr));
+	gap: var(--prstsearch-space-4);
+	margin: 0;
+	padding: 0;
+	border: 0;
+}
+
+.prstsearch-card {
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	gap: var(--prstsearch-space-2);
+	padding: var(--prstsearch-space-5);
+	cursor: pointer;
+	background: var(--prstsearch-surface);
+	border: 1px solid var(--prstsearch-border);
+	border-radius: var(--prstsearch-radius-m);
+	transition: border-color 0.15s ease, background-color 0.15s ease;
+
+	@include reduced-motion {
+		transition: none;
+	}
+
+	&:hover {
+		border-color: var(--prstsearch-accent-medium);
+	}
+
+	// The whole card shows the state of the input inside it.
+	&:has(.prstsearch-card__input:checked) {
+		background: var(--prstsearch-accent-surface);
+		border-color: var(--prstsearch-accent);
+		box-shadow: inset 0 0 0 1px var(--prstsearch-accent);
+	}
+
+	&:has(.prstsearch-card__input:focus-visible) {
+
+		@include focus-ring;
+	}
+
+	&__icon {
+		display: grid;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		margin-bottom: var(--prstsearch-space-2);
+		color: var(--prstsearch-accent);
+		background: var(--prstsearch-accent-surface-strong);
+		border-radius: var(--prstsearch-radius-m);
+	}
+
+	&__title {
+		color: var(--prstsearch-text);
+		font-size: 15px;
+		font-weight: 600;
+	}
+
+	&__description {
+		color: var(--prstsearch-text-secondary);
+		line-height: 1.55;
+	}
+
+	&__note {
+		display: block;
+		margin-top: var(--prstsearch-space-2);
+		color: var(--prstsearch-text-muted);
+		font-size: var(--prstsearch-font-size-s);
+	}
+
+	&:has(.prstsearch-card__input:checked) &__note {
+		color: var(--prstsearch-accent);
+	}
+}
+
+// The radio or checkbox sits in the corner and doubles as the check mark.
+.prstsearch-admin .prstsearch-card__input {
+	position: absolute;
+	top: var(--prstsearch-space-5);
+	right: var(--prstsearch-space-5);
+	width: 20px;
+	min-width: 20px;
+	height: 20px;
+	margin: 0;
+	border: 1.5px solid var(--prstsearch-border-control);
+	box-shadow: none;
+
+	&:focus {
+		box-shadow: none; // The ring is drawn around the whole card.
+	}
+
+	&:checked {
+		background: var(--prstsearch-accent);
+		border-color: var(--prstsearch-accent);
+	}
+
+	&[type="radio"]:checked::before {
+		width: 8px;
+		height: 8px;
+		margin: 4.5px;
+		background: var(--prstsearch-surface);
+	}
+
+	// WordPress draws the check as an SVG of 21px, placed for its own, smaller
+	// box. Here it is centred in this one: 20px minus the border leaves 17px.
+	&[type="checkbox"]:checked::before {
+		float: none;
+		display: block;
+		width: 21px;
+		height: 21px;
+		margin: -2px;
+		filter: brightness(0) invert(1); // White, whatever colour WordPress uses.
+	}
+}
+
+.prstsearch-checks {
+	display: grid;
+	gap: var(--prstsearch-space-2);
+	min-width: 220px;
+}
+
+.prstsearch-check {
+	display: flex;
+	gap: var(--prstsearch-space-2);
+	align-items: center;
+	margin-top: var(--prstsearch-space-2);
+	color: var(--prstsearch-text-secondary);
+}
+
+.prstsearch-dialog {
+	width: min(440px, calc(100vw - 32px));
+	padding: 0;
+	color: var(--prstsearch-text);
+	border: 0;
+	border-radius: var(--prstsearch-radius-l);
+	box-shadow: 0 20px 50px var(--prstsearch-shadow);
+
+	&::backdrop {
+		background: var(--prstsearch-backdrop);
+	}
+
+	&__form {
+		padding: var(--prstsearch-space-6);
+	}
+
+	&__title {
+		margin: 0 0 var(--prstsearch-space-2);
+		font-size: var(--prstsearch-font-size-xl);
+	}
+
+	&__text {
+		color: var(--prstsearch-text-secondary);
+		font-size: var(--prstsearch-font-size-l);
+		line-height: 1.5;
+	}
+
+	&__actions {
+		display: flex;
+		gap: var(--prstsearch-space-3);
+		justify-content: flex-end;
+		margin-top: var(--prstsearch-space-6);
+	}
+}
+
+// Test field in the "Search" tab.
+.prstsearch-test {
+
+	&__field {
+		display: flex;
+		gap: var(--prstsearch-space-3);
+	}
+
+	&__status {
+		margin-top: var(--prstsearch-space-3);
+		color: var(--prstsearch-text-muted);
+
+		&:empty {
+			display: none;
+		}
+	}
+
+	&__results {
+		display: grid;
+		gap: var(--prstsearch-space-3);
+		margin: var(--prstsearch-space-4) 0 0;
+		list-style: none;
+
+		&:empty {
+			display: none;
+		}
+	}
+
+	&__result {
+		margin: 0;
+		padding: var(--prstsearch-space-4);
+		border: 1px solid var(--prstsearch-border);
+		border-radius: var(--prstsearch-radius-m);
+	}
+
+	&__title {
+		color: var(--prstsearch-accent);
+		font-size: 15px;
+		font-weight: 600;
+		text-decoration: none;
+
+		&:hover {
+			text-decoration: underline;
+		}
+	}
+
+	&__excerpt {
+		margin-top: var(--prstsearch-space-1);
+		color: var(--prstsearch-text-secondary);
+
+		mark {
+			color: inherit;
+			font-weight: 600;
+			background: var(--prstsearch-accent-surface-strong);
+		}
+	}
+
+	&__reason {
+		margin-top: var(--prstsearch-space-1);
+		color: var(--prstsearch-text-muted);
+		font-size: var(--prstsearch-font-size-s);
+	}
+}

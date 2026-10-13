@@ -1,0 +1,9 @@
+parameters:
+	level: 6
+	paths:
+		- smart-search.php
+		- uninstall.php
+		- src
+	bootstrapFiles:
+		- tests/php/phpstan-bootstrap.php
+	treatPhpDocTypesAsCertain: false

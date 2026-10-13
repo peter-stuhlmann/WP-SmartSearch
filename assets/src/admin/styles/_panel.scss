@@ -1,0 +1,385 @@
+// Cards that group settings, and the pieces inside them.
+
+@use "../../styles/mixins" as *;
+
+.prstsearch-panel {
+	padding: var(--prstsearch-space-6);
+	background: var(--prstsearch-surface);
+	border: 1px solid var(--prstsearch-border);
+	border-radius: var(--prstsearch-radius-l);
+
+	&__title {
+		margin: 0 0 var(--prstsearch-space-1);
+		padding: 0;
+		color: var(--prstsearch-text);
+		font-size: var(--prstsearch-font-size-xl);
+		font-weight: 600;
+		line-height: 1.3;
+	}
+
+	&__description {
+		margin-bottom: var(--prstsearch-space-5);
+		color: var(--prstsearch-text-secondary);
+	}
+
+	&__hint {
+		margin: var(--prstsearch-space-4) 0;
+		padding: var(--prstsearch-space-3);
+		color: var(--prstsearch-text-secondary);
+		background: var(--prstsearch-surface-muted);
+		border-radius: var(--prstsearch-radius-m);
+
+		&--warning {
+			background: var(--prstsearch-warning-surface);
+		}
+	}
+}
+
+// Select and free-text field for a model name, stacked.
+.prstsearch-model {
+	display: grid;
+	gap: var(--prstsearch-space-2);
+}
+
+// A list of label-and-control rows separated by hairlines.
+.prstsearch-rows {
+	margin: 0;
+	border-top: 1px solid var(--prstsearch-border-soft);
+}
+
+.prstsearch-rows--after-cards {
+	margin-top: var(--prstsearch-space-5);
+}
+
+.prstsearch-row {
+	display: flex;
+	gap: var(--prstsearch-space-6);
+	align-items: center;
+	justify-content: space-between;
+	margin: 0;
+	padding: var(--prstsearch-space-4) 0;
+	border-bottom: 1px solid var(--prstsearch-border-soft);
+
+	&__text {
+		flex: 1 1 320px;
+		min-width: 0;
+	}
+
+	&__label {
+		display: block;
+		margin-bottom: 2px;
+		color: var(--prstsearch-text);
+		font-size: var(--prstsearch-font-size-l);
+		font-weight: 500;
+	}
+
+	&__description {
+		color: var(--prstsearch-text-muted);
+	}
+
+	&__controls {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--prstsearch-space-3);
+		align-items: center;
+		justify-content: flex-end;
+	}
+
+	> .prstsearch-input,
+	> .prstsearch-model {
+		flex: 0 1 280px;
+	}
+
+	&--narrow-input > .prstsearch-input {
+		flex-basis: 110px;
+	}
+
+	&--stacked {
+		flex-direction: column;
+		align-items: stretch;
+		gap: var(--prstsearch-space-3);
+
+		// In a column the flex-basis of the text would become its height.
+		> .prstsearch-row__text,
+		> .prstsearch-input {
+			flex: none;
+		}
+	}
+
+	&--group {
+		align-items: flex-start;
+	}
+
+	@include narrow {
+		flex-wrap: wrap;
+		gap: var(--prstsearch-space-3);
+
+		> .prstsearch-input {
+			flex-basis: 100%;
+		}
+	}
+}
+
+// The endpoint address is only relevant for the custom provider.
+.prstsearch-row--custom-only {
+	display: none;
+
+	form:has(#prstsearch-provider-custom:checked) & {
+		display: flex;
+	}
+}
+
+.prstsearch-actions {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--prstsearch-space-4);
+	align-items: center;
+	margin-top: var(--prstsearch-space-5);
+
+	&__note {
+		color: var(--prstsearch-text-muted);
+
+		&[data-state="success"] {
+			color: var(--prstsearch-success-text);
+		}
+
+		&[data-state="error"] {
+			color: var(--prstsearch-error);
+		}
+	}
+}
+
+.prstsearch-rules {
+	display: grid;
+	gap: var(--prstsearch-space-3);
+	margin: var(--prstsearch-space-4) 0 0;
+	padding: 0;
+	list-style: none;
+
+	&__hint {
+		margin-top: var(--prstsearch-space-3);
+		color: var(--prstsearch-text-muted);
+		font-size: var(--prstsearch-font-size-s);
+	}
+}
+
+.prstsearch-rule {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--prstsearch-space-3);
+	align-items: flex-end;
+	margin: 0;
+	padding: var(--prstsearch-space-3);
+	background: var(--prstsearch-surface-muted);
+	border-radius: var(--prstsearch-radius-m);
+
+	&__field {
+		display: grid;
+		flex: 1 1 220px;
+		gap: var(--prstsearch-space-1);
+		min-width: 0;
+	}
+
+	&__label {
+		color: var(--prstsearch-text-secondary);
+		font-size: var(--prstsearch-font-size-s);
+		font-weight: 500;
+	}
+}
+
+.prstsearch-ranking__action {
+	margin-left: var(--prstsearch-space-3);
+	font-size: var(--prstsearch-font-size-s);
+	white-space: nowrap;
+}
+
+.prstsearch-empty {
+	padding: var(--prstsearch-space-5);
+	color: var(--prstsearch-text-muted);
+	text-align: center;
+	background: var(--prstsearch-surface-muted);
+	border-radius: var(--prstsearch-radius-m);
+}
+
+.prstsearch-link {
+	color: var(--prstsearch-accent);
+	font-weight: 500;
+	text-decoration: none;
+
+	&:hover {
+		color: var(--prstsearch-accent-strong);
+		text-decoration: underline;
+	}
+}
+
+// Step-by-step explanations in the "Display" tab. Only the one that belongs
+// to the selected integration is visible.
+.prstsearch-guide {
+	display: none;
+	margin-top: var(--prstsearch-space-5);
+	padding: var(--prstsearch-space-5);
+	color: var(--prstsearch-text-secondary);
+	background: var(--prstsearch-surface-muted);
+	border-radius: var(--prstsearch-radius-m);
+
+	&__title {
+		margin: 0 0 var(--prstsearch-space-2);
+		color: var(--prstsearch-text);
+		font-size: var(--prstsearch-font-size-l);
+	}
+
+	&__list {
+		margin: var(--prstsearch-space-2) 0 var(--prstsearch-space-3) var(--prstsearch-space-5);
+		list-style: disc;
+	}
+
+	code {
+		font-size: var(--prstsearch-font-size-s);
+	}
+}
+
+@each $integration in replace, block, templates {
+	.prstsearch-panel:has(#prstsearch-integration-#{$integration}:checked) .prstsearch-guide--#{$integration} {
+		display: block;
+	}
+}
+
+// Sidebar pieces.
+.prstsearch-distribution {
+	display: flex;
+	gap: 2px;
+	height: 8px;
+	overflow: hidden;
+	border-radius: var(--prstsearch-radius-full);
+
+	&__segment--1 {
+		background: var(--prstsearch-accent);
+	}
+
+	&__segment--2 {
+		background: var(--prstsearch-accent-medium);
+	}
+
+	&__segment--3 {
+		background: var(--prstsearch-accent-soft);
+	}
+}
+
+.prstsearch-legend {
+	display: grid;
+	gap: var(--prstsearch-space-2);
+	margin: var(--prstsearch-space-4) 0 var(--prstsearch-space-5);
+
+	&__item {
+		display: flex;
+		gap: var(--prstsearch-space-2);
+		align-items: center;
+		margin: 0;
+	}
+
+	&__dot {
+		width: 8px;
+		height: 8px;
+		border-radius: 50%;
+	}
+
+	&__value {
+		margin-left: auto;
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+	}
+}
+
+.prstsearch-provider-badge {
+	display: flex;
+	gap: var(--prstsearch-space-3);
+	align-items: center;
+	padding: var(--prstsearch-space-3);
+	background: var(--prstsearch-surface-muted);
+	border-radius: var(--prstsearch-radius-m);
+
+	&__logo {
+		display: grid;
+		place-items: center;
+		width: 36px;
+		height: 36px;
+		color: var(--prstsearch-text-on-accent);
+		font-weight: 600;
+		background: var(--prstsearch-surface-dark);
+		border-radius: var(--prstsearch-radius-m);
+	}
+
+	&__name {
+		font-size: var(--prstsearch-font-size-l);
+		font-weight: 600;
+	}
+
+	&__state {
+		color: var(--prstsearch-text-muted);
+		font-size: var(--prstsearch-font-size-s);
+
+		&--ready {
+			color: var(--prstsearch-success-text);
+		}
+	}
+}
+
+.prstsearch-budget {
+	margin: var(--prstsearch-space-4) 0;
+
+	&__line {
+		display: flex;
+		gap: var(--prstsearch-space-3);
+		justify-content: space-between;
+		color: var(--prstsearch-text-secondary);
+
+		strong {
+			color: var(--prstsearch-text);
+			font-weight: 500;
+		}
+	}
+}
+
+.prstsearch-budget__bar,
+.prstsearch-rebuild__progress {
+	display: block;
+	width: 100%;
+	height: 6px;
+	margin-top: var(--prstsearch-space-2);
+	overflow: hidden;
+	appearance: none;
+	background: var(--prstsearch-border-soft);
+	border: 0;
+	border-radius: var(--prstsearch-radius-full);
+
+	&::-webkit-progress-bar {
+		background: var(--prstsearch-border-soft);
+	}
+
+	&::-webkit-progress-value {
+		background: var(--prstsearch-accent);
+		border-radius: var(--prstsearch-radius-full);
+	}
+
+	&::-moz-progress-bar {
+		background: var(--prstsearch-accent);
+		border-radius: var(--prstsearch-radius-full);
+	}
+
+	&[hidden] {
+		display: none;
+	}
+}
+
+.prstsearch-rebuild__status {
+	margin-top: var(--prstsearch-space-2);
+	color: var(--prstsearch-text-muted);
+
+	&:empty {
+		display: none;
+	}
+
+	&[data-state="error"] {
+		color: var(--prstsearch-error);
+	}
+}

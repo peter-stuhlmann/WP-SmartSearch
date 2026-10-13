@@ -1,0 +1,36 @@
+// Index status in the admin bar, post lists and the classic editor.
+// Deliberately tiny: this file is loaded on every admin page and for logged-in
+// users on the front end.
+
+@use "../styles/tokens";
+@use "../styles/mixins" as *;
+
+.prstsearch-status {
+
+	@include tokens.status-tokens;
+	@include tokens.neutral-tokens;
+
+	display: inline-flex;
+	gap: 6px;
+	align-items: center;
+
+	&__dot {
+
+		@include status-dot(9px);
+	}
+
+	&__detail {
+		margin: 2px 0 0;
+		color: var(--prstsearch-text-muted);
+		font-size: 12px;
+	}
+}
+
+@include status-dot-colors("prstsearch-status");
+
+// The admin bar is dark.
+@include status-dot-colors("prstsearch-status", "#wpadminbar", "-on-dark");
+
+.column-prstsearch_status {
+	width: 9em;
+}

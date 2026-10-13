@@ -1,0 +1,18 @@
+{
+	"name": "smart-search",
+	"version": "1.0.0",
+	"private": true,
+	"description": "Reusable WordPress search with keyword, semantic and AI answer modes.",
+	"license": "GPL-2.0-or-later",
+	"scripts": {
+		"build": "wp-scripts build --source-path=assets/src",
+		"start": "wp-scripts start --source-path=assets/src",
+		"lint:js": "wp-scripts lint-js assets/src tests/js",
+		"lint:css": "wp-scripts lint-style \"assets/src/**/*.scss\"",
+		"test": "wp-scripts test-unit-js"
+	},
+	"devDependencies": {
+		"@wordpress/scripts": "^30.0.0",
+		"typescript": "~5.5.4"
+	}
+}

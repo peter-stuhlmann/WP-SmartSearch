@@ -1,0 +1,62 @@
+// Index status in the block editor: the pill in the header and its sidebar.
+
+@use "../styles/tokens";
+@use "../styles/mixins" as *;
+
+.prstsearch-editor-pill {
+
+	@include tokens.status-tokens;
+
+	display: inline-flex;
+	gap: 8px;
+	align-items: center;
+	padding: 0 4px;
+	font-size: 13px;
+	font-weight: 500;
+	white-space: nowrap;
+
+	&__dot {
+
+		@include status-dot(10px);
+	}
+}
+
+@include status-dot-colors("prstsearch-editor-pill");
+
+// The header button holding the pill is as wide as its text, not icon-sized.
+.editor-header__settings .components-button:has(.prstsearch-editor-pill) {
+
+	@include tokens.neutral-tokens;
+
+	width: auto;
+	padding: 0 10px;
+	background: var(--prstsearch-surface-muted);
+	border: 1px solid var(--prstsearch-border);
+	border-radius: 999px;
+
+	&.is-pressed,
+	&.is-pressed:hover {
+		color: var(--prstsearch-text);
+		background: var(--prstsearch-surface-page);
+	}
+}
+
+.prstsearch-editor-panel {
+
+	@include tokens.neutral-tokens;
+
+	&__description {
+		margin: 12px 0 0;
+	}
+
+	&__detail {
+		margin: 8px 0 0;
+		color: var(--prstsearch-text-muted);
+	}
+
+	&__actions {
+		display: grid;
+		gap: 16px;
+		margin-top: 20px;
+	}
+}

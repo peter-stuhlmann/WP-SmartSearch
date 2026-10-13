@@ -1,0 +1,55 @@
+{
+	"name": "smart-search/smart-search",
+	"description": "Reusable WordPress search with keyword, semantic and AI answer modes.",
+	"type": "wordpress-plugin",
+	"license": "GPL-2.0-or-later",
+	"require": {
+		"php": ">=8.1"
+	},
+	"require-dev": {
+		"brain/monkey": "^2.6",
+		"dealerdirect/phpcodesniffer-composer-installer": "^1.0",
+		"phpcompatibility/phpcompatibility-wp": "^2.1",
+		"phpstan/extension-installer": "^1.4",
+		"phpstan/phpstan": "^2.0",
+		"phpunit/phpunit": "^10.5",
+		"szepeviktor/phpstan-wordpress": "^2.0",
+		"wp-cli/i18n-command": "^2.6",
+		"wp-coding-standards/wpcs": "^3.1"
+	},
+	"autoload": {
+		"psr-4": {
+			"PrstSearch\\": "src/"
+		}
+	},
+	"autoload-dev": {
+		"psr-4": {
+			"PrstSearch\\Tests\\": "tests/php/"
+		}
+	},
+	"config": {
+		"allow-plugins": {
+			"dealerdirect/phpcodesniffer-composer-installer": true,
+			"phpstan/extension-installer": true
+		},
+		"sort-packages": true
+	},
+	"scripts": {
+		"lint": "@php vendor/squizlabs/php_codesniffer/bin/phpcs",
+		"lint:fix": "@php vendor/squizlabs/php_codesniffer/bin/phpcbf",
+		"analyse": "@php vendor/phpstan/phpstan/phpstan analyse --memory-limit=1G",
+		"test": "@php vendor/phpunit/phpunit/phpunit",
+		"test:integration": "@php vendor/phpunit/phpunit/phpunit -c phpunit.integration.xml.dist",
+		"i18n:pot": "wp i18n make-pot . languages/smart-search.pot --exclude=build,node_modules,vendor,tests --domain=smart-search",
+		"i18n:build": [
+			"wp i18n make-mo languages",
+			"wp i18n make-php languages",
+			"node bin/build-translations.js"
+		],
+		"check": [
+			"@lint",
+			"@analyse",
+			"@test"
+		]
+	}
+}

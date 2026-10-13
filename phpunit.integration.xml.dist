@@ -1,0 +1,26 @@
+<?xml version="1.0"?>
+<!--
+	Tests of the SQL, against a real database.
+
+	They need a WordPress installation to connect through:
+
+		WP_LOAD_PATH=/path/to/wp-load.php composer test:integration
+
+	The tests create tables of their own and remove them again. The tables of
+	the plugin and the content of the site are not touched.
+-->
+<phpunit
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:noNamespaceSchemaLocation="vendor/phpunit/phpunit/phpunit.xsd"
+	bootstrap="tests/php/integration-bootstrap.php"
+	colors="true"
+	cacheDirectory=".phpunit.cache"
+	failOnWarning="true"
+	failOnRisky="true"
+>
+	<testsuites>
+		<testsuite name="integration">
+			<directory>tests/php/Integration</directory>
+		</testsuite>
+	</testsuites>
+</phpunit>

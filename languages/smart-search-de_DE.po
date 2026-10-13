@@ -1,0 +1,1746 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: Smart Search 1.0.0\n"
+"Report-Msgid-Bugs-To: https://wordpress.org/support/plugin/smart-search\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"POT-Creation-Date: 2026-10-12T20:56:10+02:00\n"
+"PO-Revision-Date: 2026-10-13T00:01:56+00:00\n"
+"Language: de_DE\n"
+"X-Generator: WP-CLI 2.12.0\n"
+"X-Domain: smart-search\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+
+#. Plugin Name of the plugin
+#: smart-search.php:3
+#: src/Admin/AdminPage.php:67
+#: src/Admin/AdminPage.php:68
+#: src/Privacy/PrivacyPolicy.php:36
+#: views/admin/page.php:28
+msgid "Smart Search"
+msgstr "Smart Search"
+
+#. Description of the plugin
+#: smart-search.php:4
+msgid "Replaces the WordPress search with a fast keyword index, optional semantic search and AI answers."
+msgstr "Ersetzt die WordPress-Suche durch einen schnellen Keyword-Index, auf Wunsch mit semantischer Suche und KI-Antworten."
+
+#. Author of the plugin
+#: smart-search.php:8
+msgid "Peter R. Stuhlmann"
+msgstr "Peter R. Stuhlmann"
+
+#: src/Admin/AdminPage.php:86
+msgid "Settings"
+msgstr "Einstellungen"
+
+#: src/Admin/AdminPage.php:125
+msgid "You are not allowed to view this page."
+msgstr "Du darfst diese Seite nicht ansehen."
+
+#: src/Admin/AdminPage.php:212
+msgid "Content"
+msgstr "Inhalte"
+
+#: src/Admin/AdminPage.php:213
+#: src/Admin/PostIndicators.php:133
+#: src/Frontend/SearchUi.php:51
+#: src/Frontend/SearchUi.php:53
+#: views/admin/tab-search.php:151
+#: assets/src/blocks/search/edit.js:19
+#: assets/src/editor/index.js:39
+#: assets/src/editor/index.js:58
+msgid "Search"
+msgstr "Suche"
+
+#: src/Admin/AdminPage.php:214
+#: views/admin/sidebar.php:79
+msgid "AI provider"
+msgstr "KI-Anbieter"
+
+#: src/Admin/AdminPage.php:215
+msgid "Display"
+msgstr "Darstellung"
+
+#: src/Admin/AdminPage.php:220
+msgid "Statistics"
+msgstr "Statistik"
+
+#: src/Admin/AdminPage.php:224
+msgid "Tools"
+msgstr "Werkzeuge"
+
+#: src/Admin/AdminPage.php:252
+msgid "Settings saved."
+msgstr "Einstellungen gespeichert."
+
+#: src/Admin/AdminPage.php:253
+msgid "Settings saved. The stored API key was removed because the provider or its address changed. Please enter the key for the new service."
+msgstr "Einstellungen gespeichert. Der gespeicherte API-Schlüssel wurde entfernt, weil sich der Anbieter oder seine Adresse geändert hat. Bitte gib den Schlüssel für den neuen Dienst ein."
+
+#: src/Admin/AdminPage.php:254
+msgid "Settings imported."
+msgstr "Einstellungen importiert."
+
+#: src/Admin/AdminPage.php:255
+msgid "Settings imported. Some recommended results were left out because their page does not exist on this website."
+msgstr "Einstellungen importiert. Einige empfohlene Treffer wurden ausgelassen, weil ihre Seite auf dieser Website nicht existiert."
+
+#: src/Admin/AdminPage.php:256
+msgid "The file could not be read. Please choose a file exported by Smart Search."
+msgstr "Die Datei konnte nicht gelesen werden. Bitte wähle eine Datei, die mit Smart Search exportiert wurde."
+
+#: src/Admin/AdminPage.php:257
+msgid "Statistics deleted."
+msgstr "Statistik gelöscht."
+
+#: src/Admin/AdminPage.php:258
+msgid "The content is included in the search again."
+msgstr "Der Inhalt wird wieder durchsucht."
+
+#: src/Admin/FormActions.php:209
+msgid "You are not allowed to do this."
+msgstr "Das darfst du nicht."
+
+#. translators: 1: price for embeddings, 2: price for input, 3: price for output, 4: date.
+#: src/Admin/Format.php:72
+#, php-format
+msgid "Estimated with %1$s (embeddings), %2$s (input) and %3$s (output) per 1 million tokens. Prices as of %4$s."
+msgstr "Geschätzt mit %1$s (Embeddings), %2$s (Eingabe) und %3$s (Ausgabe) pro 1 Million Token. Preise vom %4$s."
+
+#: src/Admin/HelpTabs.php:46
+msgid "How it works"
+msgstr "So funktioniert es"
+
+#: src/Admin/HelpTabs.php:48
+msgid "Smart Search keeps its own index of your content. Whenever you save something, the index is updated, so the search always knows the current version."
+msgstr "Smart Search führt einen eigenen Index deiner Inhalte. Sobald du etwas speicherst, wird der Index aktualisiert. So kennt die Suche immer den aktuellen Stand."
+
+#: src/Admin/HelpTabs.php:49
+msgid "The index is built from the finished page as visitors see it. That is why it works with every editor and page builder."
+msgstr "Der Index entsteht aus der fertigen Seite, so wie Besucher sie sehen. Deshalb funktioniert er mit jedem Editor und jedem Page-Builder."
+
+#: src/Admin/HelpTabs.php:53
+msgid "Search modes"
+msgstr "Suchmodi"
+
+#: src/Admin/HelpTabs.php:55
+msgid "Keyword: finds content that contains the words searched for. Fast, free and without any external service."
+msgstr "Keyword: findet Inhalte, in denen die gesuchten Wörter vorkommen. Schnell, kostenlos und ohne externen Dienst."
+
+#: src/Admin/HelpTabs.php:56
+msgid "Semantic: additionally finds content with the same meaning, even if other words are used. Needs an AI provider and costs very little."
+msgstr "Semantisch: findet zusätzlich Inhalte mit derselben Bedeutung, auch wenn andere Wörter verwendet werden. Braucht einen KI-Anbieter und kostet sehr wenig."
+
+#: src/Admin/HelpTabs.php:57
+msgid "AI answer: additionally writes a short answer from the best results and names its sources. Costs a small amount per search."
+msgstr "KI-Antwort: schreibt zusätzlich eine kurze Antwort aus den besten Treffern und nennt die Quellen. Kostet einen kleinen Betrag pro Suche."
+
+#: src/Admin/HelpTabs.php:58
+msgid "If the AI provider is unreachable or the monthly budget is used up, the search continues as a keyword search. Visitors always get results."
+msgstr "Ist der KI-Anbieter nicht erreichbar oder das Monatsbudget aufgebraucht, läuft die Suche als Keyword-Suche weiter. Besucher bekommen immer Treffer."
+
+#: src/Admin/HelpTabs.php:62
+#: views/admin/sidebar.php:23
+msgid "Index status"
+msgstr "Status des Index"
+
+#: src/Admin/HelpTabs.php:64
+msgid "Indexed (green): the search finds the current version."
+msgstr "Indexiert (grün): Die Suche findet den aktuellen Stand."
+
+#: src/Admin/HelpTabs.php:65
+msgid "Outdated (yellow): the content changed and is being updated in the background. Until then the previous version is found."
+msgstr "Veraltet (gelb): Der Inhalt wurde geändert und wird im Hintergrund aktualisiert. Bis dahin wird der vorherige Stand gefunden."
+
+#: src/Admin/HelpTabs.php:66
+msgid "Error (red): the content could not be read. The Tools tab lists the reason."
+msgstr "Fehler (rot): Der Inhalt konnte nicht gelesen werden. Den Grund findest du im Tab „Werkzeuge“."
+
+#: src/Admin/HelpTabs.php:67
+msgid "Excluded (grey): the content does not appear in the search, for example drafts, password-protected pages or pages you excluded in the editor."
+msgstr "Ausgeschlossen (grau): Der Inhalt erscheint nicht in der Suche, zum Beispiel Entwürfe, passwortgeschützte Seiten oder Seiten, die du im Editor ausgeschlossen hast."
+
+#: src/Admin/HelpTabs.php:71
+msgid "Privacy"
+msgstr "Datenschutz"
+
+#: src/Admin/HelpTabs.php:73
+msgid "The statistics store the search phrase, the time, the mode, the number of results and, if enabled, tokens, costs, response time and the clicked result. IP addresses and user accounts are never stored."
+msgstr "Die Statistik speichert den Suchbegriff, den Zeitpunkt, den Modus, die Anzahl der Treffer und – falls aktiviert – Token, Kosten, Antwortzeit und den angeklickten Treffer. IP-Adressen und Benutzerkonten werden nie gespeichert."
+
+#: src/Admin/HelpTabs.php:74
+msgid "With semantic search or AI answers, search phrases and excerpts of your public content are sent to the AI provider you chose."
+msgstr "Bei semantischer Suche oder KI-Antworten werden Suchbegriffe und Auszüge deiner öffentlichen Inhalte an den gewählten KI-Anbieter gesendet."
+
+#. translators: %s: index status, e.g. "Indexed".
+#: src/Admin/PostIndicators.php:108
+#: src/Admin/PostIndicators.php:172
+#: assets/src/editor/index.js:55
+#, php-format,js-format
+msgid "Search: %s"
+msgstr "Suche: %s"
+
+#: src/Admin/StatsViewModel.php:85
+msgid "Time"
+msgstr "Zeitpunkt"
+
+#: src/Admin/StatsViewModel.php:86
+msgid "Search phrase"
+msgstr "Suchbegriff"
+
+#: src/Admin/StatsViewModel.php:87
+msgid "Mode"
+msgstr "Modus"
+
+#: src/Admin/StatsViewModel.php:88
+#: assets/src/blocks/search/edit.js:60
+msgid "Results"
+msgstr "Treffer"
+
+#: src/Admin/StatsViewModel.php:89
+msgid "Input tokens"
+msgstr "Eingabe-Token"
+
+#: src/Admin/StatsViewModel.php:90
+msgid "Output tokens"
+msgstr "Ausgabe-Token"
+
+#: src/Admin/StatsViewModel.php:91
+msgid "Input cost"
+msgstr "Kosten Eingabe"
+
+#: src/Admin/StatsViewModel.php:92
+msgid "Output cost"
+msgstr "Kosten Ausgabe"
+
+#: src/Admin/StatsViewModel.php:93
+msgid "Total"
+msgstr "Gesamt"
+
+#: src/Admin/StatsViewModel.php:132
+msgid "Today"
+msgstr "Heute"
+
+#: src/Admin/StatsViewModel.php:133
+msgid "7 days"
+msgstr "7 Tage"
+
+#: src/Admin/StatsViewModel.php:134
+msgid "30 days"
+msgstr "30 Tage"
+
+#: src/Admin/StatsViewModel.php:135
+msgid "90 days"
+msgstr "90 Tage"
+
+#: src/Admin/StatsViewModel.php:136
+msgid "This year"
+msgstr "Dieses Jahr"
+
+#: src/Admin/StatsViewModel.php:154
+#: src/Admin/StatsViewModel.php:230
+#: src/Admin/StatsViewModel.php:238
+msgid "Searches"
+msgstr "Suchen"
+
+#. translators: %s: average number of searches.
+#: src/Admin/StatsViewModel.php:157
+#, php-format
+msgid "Ø %s per day"
+msgstr "Ø %s pro Tag"
+
+#: src/Admin/StatsViewModel.php:160
+msgid "Without results"
+msgstr "Ohne Treffer"
+
+#. translators: 1: searches without results, 2: all searches.
+#: src/Admin/StatsViewModel.php:163
+#, php-format
+msgid "%1$s of %2$s searches"
+msgstr "%1$s von %2$s Suchen"
+
+#: src/Admin/StatsViewModel.php:166
+msgid "AI costs"
+msgstr "KI-Kosten"
+
+#. translators: 1: input costs, 2: output costs.
+#: src/Admin/StatsViewModel.php:169
+#, php-format
+msgid "Input %1$s · Output %2$s"
+msgstr "Eingabe %1$s · Ausgabe %2$s"
+
+#: src/Admin/StatsViewModel.php:172
+msgid "Ø cost per search"
+msgstr "Ø Kosten pro Suche"
+
+#. translators: %s: number of searches.
+#: src/Admin/StatsViewModel.php:175
+#, php-format
+msgid "across %s searches"
+msgstr "bei %s Suchen"
+
+#: src/Admin/StatsViewModel.php:181
+msgid "Clicked a result"
+msgstr "Treffer angeklickt"
+
+#. translators: %s: number of searches.
+#: src/Admin/StatsViewModel.php:184
+#, php-format
+msgid "%s searches led to a click"
+msgstr "%s Suchen führten zu einem Klick"
+
+#: src/Admin/StatsViewModel.php:190
+msgid "Ø response time"
+msgstr "Ø Antwortzeit"
+
+#. translators: %s: number of milliseconds.
+#: src/Admin/StatsViewModel.php:192
+#, php-format
+msgid "%s ms"
+msgstr "%s ms"
+
+#: src/Admin/StatsViewModel.php:193
+msgid "for the result list, without the AI answer"
+msgstr "für die Trefferliste, ohne KI-Antwort"
+
+#: src/Admin/StatsViewModel.php:208
+msgctxt "short date in charts"
+msgid "d.m."
+msgstr "d.m."
+
+#: src/Admin/StatsViewModel.php:220
+msgid "Input"
+msgstr "Eingabe"
+
+#: src/Admin/StatsViewModel.php:221
+msgid "Output"
+msgstr "Ausgabe"
+
+#: src/Admin/StatsViewModel.php:226
+#: views/admin/tab-stats.php:73
+msgid "Searches per day"
+msgstr "Suchen pro Tag"
+
+#: src/Admin/StatsViewModel.php:238
+#: src/Admin/StatsViewModel.php:265
+msgid "Day"
+msgstr "Tag"
+
+#: src/Admin/StatsViewModel.php:243
+#: views/admin/tab-stats.php:83
+msgid "AI costs per day"
+msgstr "KI-Kosten pro Tag"
+
+#: src/Admin/ViewModel.php:87
+msgid "Index is empty"
+msgstr "Index ist leer"
+
+#. translators: %s: number of items.
+#: src/Admin/ViewModel.php:91
+#, php-format
+msgid "%s item with an error"
+msgid_plural "%s items with errors"
+msgstr[0] "%s Inhalt mit Fehler"
+msgstr[1] "%s Inhalte mit Fehlern"
+
+#: src/Admin/ViewModel.php:94
+msgid "Index is being updated"
+msgstr "Index wird aktualisiert"
+
+#: src/Admin/ViewModel.php:95
+msgid "Index is up to date"
+msgstr "Index ist aktuell"
+
+#. translators: %s: human-readable time difference, e.g. "2 minutes".
+#: src/Admin/ViewModel.php:105
+#, php-format
+msgid "%s ago"
+msgstr "vor %s"
+
+#: src/Admin/ViewModel.php:138
+#: src/Admin/ViewModel.php:232
+msgid "Custom endpoint"
+msgstr "Eigener Endpoint"
+
+#. translators: 1: number of published items, 2: number of items in the index.
+#: src/Admin/ViewModel.php:166
+#, php-format
+msgid "%1$s published, %2$s in the index."
+msgstr "%1$s veröffentlicht, %2$s im Index."
+
+#: src/Admin/ViewModel.php:170
+msgid "Is searched"
+msgstr "Wird durchsucht"
+
+#: src/Admin/ViewModel.php:170
+msgid "Not searched"
+msgstr "Wird nicht durchsucht"
+
+#: src/Admin/ViewModel.php:218
+msgid "US provider with a large choice of models."
+msgstr "US-Anbieter mit großer Auswahl an Modellen."
+
+#: src/Admin/ViewModel.php:219
+msgid "The models by Google."
+msgstr "Die Modelle von Google."
+
+#: src/Admin/ViewModel.php:220
+msgid "European provider with servers in the EU."
+msgstr "Europäischer Anbieter mit Servern in der EU."
+
+#: src/Admin/ViewModel.php:221
+msgid "Any service that follows the OpenAI standard, such as Ollama on your own server."
+msgstr "Jeder Dienst, der dem OpenAI-Standard folgt, zum Beispiel Ollama auf deinem eigenen Server."
+
+#: src/Admin/ViewModel.php:235
+#: views/admin/sidebar.php:91
+msgid "Configured"
+msgstr "Eingerichtet"
+
+#: src/Admin/ViewModel.php:236
+msgid "Address of your choice"
+msgstr "Adresse deiner Wahl"
+
+#: src/Admin/ViewModel.php:237
+msgid "Not configured"
+msgstr "Nicht eingerichtet"
+
+#. translators: %d: number of suggestions.
+#: src/Frontend/FrontendAssets.php:131
+#, php-format
+msgid "%d suggestions available. Use the arrow keys to choose one."
+msgstr "%d Vorschläge verfügbar. Wähle mit den Pfeiltasten einen aus."
+
+#: src/Frontend/FrontendAssets.php:132
+msgid "1 suggestion available. Use the arrow keys to choose it."
+msgstr "1 Vorschlag verfügbar. Mit den Pfeiltasten auswählen."
+
+#: src/Frontend/FrontendAssets.php:133
+msgid "The search is not available at the moment. Please try again."
+msgstr "Die Suche ist gerade nicht verfügbar. Bitte versuche es noch einmal."
+
+#: src/Frontend/FrontendAssets.php:134
+msgid "More results could not be loaded. Please try again."
+msgstr "Weitere Treffer konnten nicht geladen werden. Bitte versuche es erneut."
+
+#: src/Frontend/FrontendAssets.php:135
+#: assets/src/admin/test-search.js:26
+msgid "Searching …"
+msgstr "Suche läuft …"
+
+#: src/Frontend/FrontendAssets.php:136
+msgid "Looking for further matching pages …"
+msgstr "Suche nach weiteren passenden Seiten …"
+
+#. translators: %s: search phrase.
+#: src/Frontend/ResultRenderer.php:68
+#, php-format
+msgid "No results for “%s”."
+msgstr "Keine Treffer für „%s“."
+
+#. translators: 1: number of results, 2: search phrase.
+#: src/Frontend/ResultRenderer.php:73
+#, php-format
+msgid "%1$s result for “%2$s”"
+msgid_plural "%1$s results for “%2$s”"
+msgstr[0] "%1$s Treffer für „%2$s“"
+msgstr[1] "%1$s Treffer für „%2$s“"
+
+#: src/Frontend/ResultRenderer.php:110
+msgid "Recommended"
+msgstr "Empfohlen"
+
+#: src/Frontend/ResultRenderer.php:160
+msgid "All"
+msgstr "Alle"
+
+#. translators: 1: citation number, 2: page title.
+#: src/Frontend/ResultRenderer.php:298
+#, php-format
+msgid "Source %1$d: %2$s"
+msgstr "Quelle %1$d: %2$s"
+
+#: src/Index/Eligibility.php:44
+msgid "This content type is not included in the search."
+msgstr "Dieser Inhaltstyp wird nicht durchsucht."
+
+#: src/Index/Eligibility.php:45
+msgid "Only published content is searchable."
+msgstr "Nur veröffentlichte Inhalte sind durchsuchbar."
+
+#: src/Index/Eligibility.php:46
+msgid "Password-protected content is not searchable."
+msgstr "Passwortgeschützte Inhalte sind nicht durchsuchbar."
+
+#: src/Index/Eligibility.php:47
+msgid "Excluded from the search by hand."
+msgstr "Von Hand aus der Suche ausgeschlossen."
+
+#: src/Index/Eligibility.php:63
+msgid "Excluded by a custom rule."
+msgstr "Durch eine eigene Regel ausgeschlossen."
+
+#: src/Index/EmbeddingQueue.php:78
+msgid "The monthly budget is used up."
+msgstr "Das Monatsbudget ist aufgebraucht."
+
+#. translators: %s: human-readable time difference, e.g. "5 minutes".
+#: src/Index/IndexReport.php:55
+#, php-format
+msgid "Last updated %s ago"
+msgstr "Zuletzt aktualisiert vor %s"
+
+#: src/Index/IndexStatus.php:27
+msgid "Indexed"
+msgstr "Indexiert"
+
+#: src/Index/IndexStatus.php:28
+msgid "Outdated"
+msgstr "Veraltet"
+
+#: src/Index/IndexStatus.php:29
+msgid "Error"
+msgstr "Fehler"
+
+#: src/Index/IndexStatus.php:30
+msgid "Excluded"
+msgstr "Ausgeschlossen"
+
+#: src/Index/IndexStatus.php:39
+msgid "The search finds the current version of this content."
+msgstr "Die Suche findet den aktuellen Stand dieses Inhalts."
+
+#: src/Index/IndexStatus.php:40
+msgid "The index is being updated in the background. The content is already found by its words; the search by meaning follows."
+msgstr "Der Index wird im Hintergrund aktualisiert. Der Inhalt wird bereits über seine Wörter gefunden; die Suche nach Bedeutung folgt."
+
+#: src/Index/IndexStatus.php:41
+msgid "The content could not be added to the index."
+msgstr "Der Inhalt konnte nicht in den Index aufgenommen werden."
+
+#: src/Index/IndexStatus.php:42
+msgid "This content does not appear in search results."
+msgstr "Dieser Inhalt erscheint nicht in den Suchergebnissen."
+
+#: src/Privacy/PrivacyPolicy.php:31
+msgid "When you use the search on this website, we store the search phrase, the time, the number of results and, where applicable, which result was opened. We use this to improve the search and our content. We do not store your IP address or any other data that identifies you."
+msgstr "Wenn du die Suche auf dieser Website nutzt, speichern wir den Suchbegriff, den Zeitpunkt, die Anzahl der Treffer und gegebenenfalls, welcher Treffer geöffnet wurde. Damit verbessern wir die Suche und unsere Inhalte. Wir speichern weder deine IP-Adresse noch andere Daten, mit denen du identifiziert werden kannst."
+
+#: src/Privacy/PrivacyPolicy.php:32
+msgid "If semantic search or AI answers are enabled, your search phrase and excerpts of our public content are transmitted to the AI provider we use, in order to find matching content and to write an answer."
+msgstr "Sind die semantische Suche oder KI-Antworten aktiviert, werden dein Suchbegriff und Auszüge unserer öffentlichen Inhalte an den von uns genutzten KI-Anbieter übertragen, um passende Inhalte zu finden und eine Antwort zu schreiben."
+
+#: src/Rest/IndexRoutes.php:259
+msgid "This content does not exist."
+msgstr "Diesen Inhalt gibt es nicht."
+
+#: src/Rest/ProviderRoutes.php:131
+msgid "Not configured yet: address, API key or model is missing."
+msgstr "Noch nicht eingerichtet: Adresse, API-Schlüssel oder Modell fehlt."
+
+#: src/Rest/ProviderRoutes.php:146
+msgid "Works."
+msgstr "Funktioniert."
+
+#: src/Search/Relevance.php:64
+msgid "Very relevant"
+msgstr "Sehr passend"
+
+#: src/Search/Relevance.php:65
+msgid "Relevant"
+msgstr "Passend"
+
+#: src/Search/Relevance.php:66
+msgid "Weak match"
+msgstr "Schwach"
+
+#: src/Search/SearchHit.php:47
+msgid "Recommended for this search in the settings."
+msgstr "In den Einstellungen für diese Suche empfohlen."
+
+#: src/Search/SearchHit.php:48
+msgid "The language model considers this page a fit for the search."
+msgstr "Das Sprachmodell hält diese Seite für passend zur Suche."
+
+#: src/Search/SearchHit.php:49
+msgid "A search word is in the title."
+msgstr "Ein Suchwort steht im Titel."
+
+#: src/Search/SearchHit.php:50
+msgid "Contains the search words and matches the meaning."
+msgstr "Enthält die Suchwörter und passt zur Bedeutung."
+
+#: src/Search/SearchHit.php:51
+msgid "Contains the search words."
+msgstr "Enthält die Suchwörter."
+
+#: src/Search/SearchHit.php:52
+msgid "Matches the meaning; the search words do not appear literally."
+msgstr "Passt zur Bedeutung; die Suchwörter kommen nicht wörtlich vor."
+
+#: src/Search/SearchMode.php:26
+#: views/admin/tab-search.php:18
+msgid "Keyword"
+msgstr "Keyword"
+
+#: src/Search/SearchMode.php:27
+#: views/admin/tab-search.php:24
+msgid "Semantic"
+msgstr "Semantisch"
+
+#: src/Search/SearchMode.php:28
+#: templates/answer-placeholder.php:28
+#: views/admin/tab-search.php:30
+msgid "AI answer"
+msgstr "KI-Antwort"
+
+#: templates/answer-placeholder.php:32
+msgid "Writing an answer …"
+msgstr "Antwort wird geschrieben …"
+
+#: templates/answer.php:30
+msgid "Sources"
+msgstr "Quellen"
+
+#: templates/answer.php:40
+msgid "This answer was generated by AI from the content of this website. Please check important details against the sources."
+msgstr "Diese Antwort wurde von einer KI aus den Inhalten dieser Website erstellt. Bitte prüfe wichtige Angaben anhand der Quellen."
+
+#: templates/results.php:17
+msgid "Search results"
+msgstr "Suchergebnisse"
+
+#. translators: %s: corrected search phrase.
+#: templates/results.php:25
+#, php-format
+msgid "Nothing was found for your spelling. Showing results for “%s”."
+msgstr "Für deine Schreibweise wurde nichts gefunden. Angezeigt werden Treffer für „%s“."
+
+#: templates/results.php:34
+msgid "Try fewer or more general words, or check the spelling."
+msgstr "Versuche es mit weniger oder allgemeineren Wörtern oder prüfe die Schreibweise."
+
+#: templates/results.php:43
+msgid "Show more results"
+msgstr "Weitere Treffer anzeigen"
+
+#: templates/search-form.php:32
+msgid "Suggestions"
+msgstr "Vorschläge"
+
+#: templates/type-filter.php:14
+msgid "Limit the results to a content type"
+msgstr "Treffer auf einen Inhaltstyp begrenzen"
+
+#: views/admin/chart.php:34
+msgid "Show as table"
+msgstr "Als Tabelle anzeigen"
+
+#. translators: %s: title of a chart.
+#: views/admin/chart.php:36
+#, php-format
+msgid "%s, table"
+msgstr "%s, Tabelle"
+
+#: views/admin/page.php:29
+msgid "The search of your website – by keyword, by meaning or with an AI answer."
+msgstr "Die Suche deiner Website – nach Keyword, nach Bedeutung oder mit KI-Antwort."
+
+#: views/admin/page.php:34
+msgid "Items in the index"
+msgstr "Inhalte im Index"
+
+#: views/admin/page.php:38
+msgid "Text passages"
+msgstr "Textabschnitte"
+
+#: views/admin/page.php:42
+msgid "Last updated"
+msgstr "Zuletzt aktualisiert"
+
+#: views/admin/page.php:54
+msgid "Smart Search sections"
+msgstr "Bereiche von Smart Search"
+
+#: views/admin/page.php:79
+msgid "Overview"
+msgstr "Übersicht"
+
+#: views/admin/page.php:90
+msgid "Cancel"
+msgstr "Abbrechen"
+
+#: views/admin/recommendation-row.php:17
+msgid "When someone searches for"
+msgstr "Wenn jemand sucht nach"
+
+#: views/admin/recommendation-row.php:24
+msgid "opening hours, open, when open"
+msgstr "öffnungszeiten, geöffnet, wann offen"
+
+#: views/admin/recommendation-row.php:30
+msgid "show this page first"
+msgstr "diese Seite zuerst zeigen"
+
+#: views/admin/recommendation-row.php:39
+msgid "Type part of the title"
+msgstr "Teil des Titels tippen"
+
+#: views/admin/recommendation-row.php:46
+msgid "Remove"
+msgstr "Entfernen"
+
+#: views/admin/recommendation-row.php:47
+msgid "this recommendation"
+msgstr "diese Empfehlung"
+
+#. translators: 1: number of indexed items, 2: number of searchable items.
+#: views/admin/sidebar.php:29
+#, php-format
+msgid "%1$s of %2$s items are in the index."
+msgstr "%1$s von %2$s Inhalten sind im Index."
+
+#. translators: %s: number of text passages.
+#: views/admin/sidebar.php:61
+#, php-format
+msgid "%s text passage is still waiting for the AI provider."
+msgid_plural "%s text passages are still waiting for the AI provider."
+msgstr[0] "%s Textabschnitt wartet noch auf den KI-Anbieter."
+msgstr[1] "%s Textabschnitte warten noch auf den KI-Anbieter."
+
+#: views/admin/sidebar.php:71
+#: views/admin/tab-tools.php:110
+msgid "Rebuild index"
+msgstr "Index neu aufbauen"
+
+#: views/admin/sidebar.php:73
+#: views/admin/tab-tools.php:107
+msgid "Progress of the index rebuild"
+msgstr "Fortschritt beim Neuaufbau des Index"
+
+#: views/admin/sidebar.php:80
+msgid "For semantic search and AI answers."
+msgstr "Für semantische Suche und KI-Antworten."
+
+#: views/admin/sidebar.php:89
+msgid "Not needed for keyword search"
+msgstr "Für die Keyword-Suche nicht nötig"
+
+#: views/admin/sidebar.php:93
+msgid "Not configured yet"
+msgstr "Noch nicht eingerichtet"
+
+#: views/admin/sidebar.php:102
+msgid "Costs this month"
+msgstr "Kosten in diesem Monat"
+
+#. translators: 1: costs so far, 2: monthly budget.
+#: views/admin/sidebar.php:109
+#, php-format
+msgid "%1$s of %2$s"
+msgstr "%1$s von %2$s"
+
+#: views/admin/sidebar.php:122
+msgid "Share of the monthly budget used"
+msgstr "Verbrauchter Anteil des Monatsbudgets"
+
+#: views/admin/sidebar.php:126
+msgid "The budget is used up. Until next month the search runs as a keyword search."
+msgstr "Das Budget ist aufgebraucht. Bis zum nächsten Monat läuft die Suche als Keyword-Suche."
+
+#: views/admin/sidebar.php:131
+msgid "Manage provider"
+msgstr "Anbieter verwalten"
+
+#: views/admin/tab-content.php:24
+#: views/admin/tab-content.php:27
+msgid "Content types"
+msgstr "Inhaltstypen"
+
+#: views/admin/tab-content.php:25
+msgid "Choose what the search covers. Every public content type of this website is listed, including those of plugins."
+msgstr "Wähle, was durchsucht wird. Aufgelistet sind alle öffentlichen Inhaltstypen dieser Website, auch die von Plugins."
+
+#: views/admin/tab-content.php:33
+msgid "Search new content types automatically"
+msgstr "Neue Inhaltstypen automatisch durchsuchen"
+
+#: views/admin/tab-content.php:34
+msgid "Content types that a plugin or theme adds later, such as products, books or news, are searched without you having to tick them here."
+msgstr "Inhaltstypen, die ein Plugin oder Theme später hinzufügt, etwa Produkte, Bücher oder News, werden durchsucht, ohne dass du sie hier anhaken musst."
+
+#: views/admin/tab-content.php:41
+msgid "Additional fields"
+msgstr "Zusätzliche Felder"
+
+#: views/admin/tab-content.php:42
+msgid "What is searched besides title and content."
+msgstr "Was neben Titel und Inhalt durchsucht wird."
+
+#: views/admin/tab-content.php:48
+msgid "Comments"
+msgstr "Kommentare"
+
+#: views/admin/tab-content.php:49
+msgid "Approved comments are searched with the content they belong to. The result is that content, not the single comment."
+msgstr "Freigegebene Kommentare werden zusammen mit dem Inhalt durchsucht, zu dem sie gehören. Der Treffer ist dieser Inhalt, nicht der einzelne Kommentar."
+
+#: views/admin/tab-content.php:54
+msgid "Categories and tags"
+msgstr "Kategorien und Schlagwörter"
+
+#: views/admin/tab-content.php:55
+msgid "Assigned terms are searched as well."
+msgstr "Zugewiesene Begriffe werden mit durchsucht."
+
+#: views/admin/tab-content.php:60
+msgid "Custom fields"
+msgstr "Eigene Felder"
+
+#: views/admin/tab-content.php:61
+msgid "Field names separated by commas, for example from ACF."
+msgstr "Feldnamen, durch Kommas getrennt, zum Beispiel aus ACF."
+
+#: views/admin/tab-content.php:62
+msgid "subtitle, summary"
+msgstr "untertitel, zusammenfassung"
+
+#: views/admin/tab-content.php:67
+msgid "Search the excerpt"
+msgstr "Textauszug durchsuchen"
+
+#: views/admin/tab-content.php:68
+msgid "The manual excerpt counts in addition to the content."
+msgstr "Der von Hand geschriebene Textauszug zählt zusätzlich zum Inhalt."
+
+#: views/admin/tab-content.php:73
+msgid "Read the public page if the content is empty"
+msgstr "Öffentliche Seite lesen, wenn der Inhalt leer ist"
+
+#: views/admin/tab-content.php:74
+msgid "For page builders that only output their content on the finished page. Slower, so only used when little text was found."
+msgstr "Für Page-Builder, die ihre Inhalte erst auf der fertigen Seite ausgeben. Langsamer, deshalb nur genutzt, wenn wenig Text gefunden wurde."
+
+#: views/admin/tab-content.php:80
+#: views/admin/tab-display.php:130
+#: views/admin/tab-provider.php:192
+#: views/admin/tab-search.php:101
+#: views/admin/tab-search.php:137
+#: views/admin/tab-stats.php:265
+#: views/admin/tab-tools.php:174
+msgid "Save changes"
+msgstr "Änderungen speichern"
+
+#: views/admin/tab-content.php:81
+msgid "After a change the index is updated in the background."
+msgstr "Nach einer Änderung wird der Index im Hintergrund aktualisiert."
+
+#: views/admin/tab-content.php:87
+msgid "Excluded content"
+msgstr "Ausgeschlossene Inhalte"
+
+#: views/admin/tab-content.php:88
+msgid "This content does not appear in the search. You can exclude content directly in the editor."
+msgstr "Diese Inhalte erscheinen nicht in der Suche. Du kannst Inhalte direkt im Editor ausschließen."
+
+#: views/admin/tab-content.php:91
+msgid "Nothing is excluded."
+msgstr "Nichts ist ausgeschlossen."
+
+#: views/admin/tab-content.php:108
+msgid "Include again"
+msgstr "Wieder aufnehmen"
+
+#: views/admin/tab-display.php:17
+msgid "Replace the engine only"
+msgstr "Nur Technik ersetzen"
+
+#: views/admin/tab-display.php:18
+msgid "Search field and results page still come from your theme. Nothing changes visually."
+msgstr "Suchfeld und Ergebnisseite kommen weiterhin aus deinem Theme. Am Aussehen ändert sich nichts."
+
+#: views/admin/tab-display.php:19
+msgid "Default · no own CSS"
+msgstr "Standard · kein eigenes CSS"
+
+#: views/admin/tab-display.php:23
+msgid "Own search block"
+msgstr "Eigener Such-Block"
+
+#: views/admin/tab-display.php:24
+msgid "A block for search field and results. It takes font and colours from the theme."
+msgstr "Ein Block für Suchfeld und Treffer. Er übernimmt Schrift und Farben aus dem Theme."
+
+#: views/admin/tab-display.php:25
+msgid "Adjustable in the editor"
+msgstr "Im Editor anpassbar"
+
+#: views/admin/tab-display.php:29
+msgid "Own templates"
+msgstr "Eigene Templates"
+
+#: views/admin/tab-display.php:30
+msgid "For developers: override the output in the theme or use the interface only."
+msgstr "Für Entwickler: Überschreibe die Ausgabe im Theme oder nutze nur die Schnittstelle."
+
+#: views/admin/tab-display.php:31
+msgid "Full control in code"
+msgstr "Volle Kontrolle im Code"
+
+#: views/admin/tab-display.php:42
+#: views/admin/tab-display.php:45
+msgid "Integration"
+msgstr "Einbindung"
+
+#: views/admin/tab-display.php:43
+msgid "Choose how the search appears on your website. By default the look stays as it is."
+msgstr "Wähle, wie die Suche auf deiner Website erscheint. Standardmäßig bleibt das Aussehen, wie es ist."
+
+#: views/admin/tab-display.php:48
+msgid "Your theme decides the look"
+msgstr "Dein Theme bestimmt das Aussehen"
+
+#: views/admin/tab-display.php:49
+msgid "The plugin only delivers the results. Search field and results page keep using the templates of your theme."
+msgstr "Das Plugin liefert nur die Treffer. Suchfeld und Ergebnisseite nutzen weiterhin die Templates deines Themes."
+
+#: views/admin/tab-display.php:53
+msgid "How to use the block"
+msgstr "So nutzt du den Block"
+
+#: views/admin/tab-display.php:54
+msgid "Insert the block “Smart Search” in the editor wherever the search should appear. In classic content these shortcodes do the same:"
+msgstr "Füge den Block „Smart Search“ im Editor dort ein, wo die Suche erscheinen soll. In klassischen Inhalten leisten diese Shortcodes dasselbe:"
+
+#: views/admin/tab-display.php:56
+msgid "search field with results and AI answer on the same page"
+msgstr "Suchfeld mit Treffern und KI-Antwort auf derselben Seite"
+
+#: views/admin/tab-display.php:57
+msgid "search field only, results appear on the search page"
+msgstr "Nur das Suchfeld, die Treffer erscheinen auf der Suchseite"
+
+#: views/admin/tab-display.php:58
+msgid "results and AI answer for a search page built in the editor"
+msgstr "Treffer und KI-Antwort für eine im Editor gebaute Suchseite"
+
+#: views/admin/tab-display.php:63
+msgid "How to use your own templates"
+msgstr "So nutzt du eigene Templates"
+
+#: views/admin/tab-display.php:64
+msgid "Copy a template from the plugin folder “templates” into a folder “smart-search” in your theme and change it there:"
+msgstr "Kopiere ein Template aus dem Plugin-Ordner „templates“ in einen Ordner „smart-search“ in deinem Theme und passe es dort an:"
+
+#: views/admin/tab-display.php:68
+msgid "In theme files these functions print the parts:"
+msgstr "In Theme-Dateien geben diese Funktionen die einzelnen Teile aus:"
+
+#: views/admin/tab-display.php:71
+msgid "the raw results for completely custom markup"
+msgstr "die rohen Treffer für ein komplett eigenes Markup"
+
+#. translators: %s: REST route.
+#: views/admin/tab-display.php:77
+#, php-format
+msgid "For apps and headless front ends the search is available at %s."
+msgstr "Für Apps und Headless-Frontends ist die Suche unter %s erreichbar."
+
+#: views/admin/tab-display.php:86
+msgid "What is shown"
+msgstr "Was angezeigt wird"
+
+#: views/admin/tab-display.php:87
+msgid "These options apply to the AI answer, the block and the plugin’s templates."
+msgstr "Diese Optionen gelten für die KI-Antwort, den Block und die Templates des Plugins."
+
+#: views/admin/tab-display.php:93
+msgid "Offer a filter by content type"
+msgstr "Filter nach Inhaltstyp anbieten"
+
+#: views/admin/tab-display.php:94
+msgid "Above the results visitors can choose, for example, pages only or posts only. Shown as soon as the results are of more than one type."
+msgstr "Über den Treffern können Besucher zum Beispiel nur Seiten oder nur Beiträge wählen. Erscheint, sobald die Treffer aus mehr als einem Typ stammen."
+
+#: views/admin/tab-display.php:99
+msgid "Open results at the passage that was found"
+msgstr "Treffer an der gefundenen Textstelle öffnen"
+
+#: views/admin/tab-display.php:100
+msgid "The browser scrolls to the matching text and marks it. Browsers that cannot do this open the page at the top as usual."
+msgstr "Der Browser scrollt zur passenden Textstelle und markiert sie. Browser, die das nicht können, öffnen die Seite wie gewohnt oben."
+
+#: views/admin/tab-display.php:105
+msgid "Show the AI answer while it is written"
+msgstr "KI-Antwort schon beim Schreiben anzeigen"
+
+#: views/admin/tab-display.php:106
+msgid "The text appears word by word instead of all at once. It does not get faster, but visitors see sooner that something is happening. Some servers hold the text back; the answer then appears in one piece as before."
+msgstr "Der Text erscheint Wort für Wort statt auf einmal. Schneller wird es dadurch nicht, aber Besucher sehen früher, dass etwas passiert. Manche Server halten den Text zurück; die Antwort erscheint dann wie bisher in einem Stück."
+
+#: views/admin/tab-display.php:111
+msgid "Show the AI answer above the theme’s results"
+msgstr "KI-Antwort über den Treffern des Themes anzeigen"
+
+#: views/admin/tab-display.php:112
+msgid "Only for “Replace the engine only” and the search mode “AI answer”. The answer takes font and colours from the theme."
+msgstr "Nur bei „Nur Technik ersetzen“ und dem Suchmodus „KI-Antwort“. Die Antwort übernimmt Schrift und Farben aus dem Theme."
+
+#: views/admin/tab-display.php:117
+msgid "List sources below the AI answer"
+msgstr "Quellen unter der KI-Antwort auflisten"
+
+#: views/admin/tab-display.php:118
+msgid "Visitors see which pages the answer is based on."
+msgstr "Besucher sehen, auf welchen Seiten die Antwort beruht."
+
+#: views/admin/tab-display.php:123
+msgid "Show the relevance of each result"
+msgstr "Relevanz jedes Treffers anzeigen"
+
+#: views/admin/tab-display.php:124
+msgid "A label such as “Very relevant” next to each result of the block."
+msgstr "Ein Hinweis wie „Sehr passend“ neben jedem Treffer des Blocks."
+
+#: views/admin/tab-provider.php:26
+#: views/admin/tab-provider.php:35
+msgid "Provider"
+msgstr "Anbieter"
+
+#: views/admin/tab-provider.php:27
+msgid "The provider handles semantic search and AI answers. After a change the index is recalculated."
+msgstr "Der Anbieter übernimmt die semantische Suche und die KI-Antworten. Nach einem Wechsel wird der Index neu berechnet."
+
+#: views/admin/tab-provider.php:31
+msgid "Provider, endpoint address and API key can only be changed by administrators. Your other changes on this page are saved."
+msgstr "Anbieter, Endpunkt-Adresse und API-Schlüssel können nur Administratoren ändern. Deine übrigen Änderungen auf dieser Seite werden gespeichert."
+
+#: views/admin/tab-provider.php:39
+msgid "Access and costs"
+msgstr "Zugang und Kosten"
+
+#: views/admin/tab-provider.php:40
+msgid "Credentials of the chosen provider and protection against unexpected costs."
+msgstr "Zugangsdaten des gewählten Anbieters und Schutz vor unerwarteten Kosten."
+
+#: views/admin/tab-provider.php:44
+msgid "The stored API key can no longer be decrypted, probably because the security keys of the website changed. Please enter it again."
+msgstr "Der gespeicherte API-Schlüssel lässt sich nicht mehr entschlüsseln, vermutlich weil sich die Sicherheitsschlüssel der Website geändert haben. Bitte gib ihn noch einmal ein."
+
+#: views/admin/tab-provider.php:52
+msgid "Address of the endpoint"
+msgstr "Adresse des Endpoints"
+
+#: views/admin/tab-provider.php:53
+msgid "Root of the OpenAI-compatible API, for example http://localhost:11434/v1 for Ollama."
+msgstr "Basisadresse der OpenAI-kompatiblen API, zum Beispiel http://localhost:11434/v1 für Ollama."
+
+#: views/admin/tab-provider.php:66
+msgid "API key"
+msgstr "API-Schlüssel"
+
+#: views/admin/tab-provider.php:70
+msgid "Set as PRSTSEARCH_API_KEY in wp-config.php. It cannot be changed here."
+msgstr "Als PRSTSEARCH_API_KEY in der wp-config.php festgelegt. Hier nicht änderbar."
+
+#. translators: %s: masked API key.
+#: views/admin/tab-provider.php:73
+#, php-format
+msgid "Stored encrypted: %s. Leave the field empty to keep it."
+msgstr "Verschlüsselt gespeichert: %s. Lass das Feld leer, um ihn zu behalten."
+
+#: views/admin/tab-provider.php:75
+msgid "Stored encrypted. Alternatively set PRSTSEARCH_API_KEY in wp-config.php."
+msgstr "Wird verschlüsselt gespeichert. Alternativ kannst du PRSTSEARCH_API_KEY in der wp-config.php festlegen."
+
+#: views/admin/tab-provider.php:82
+msgid "Remove the stored key"
+msgstr "Gespeicherten Schlüssel entfernen"
+
+#: views/admin/tab-provider.php:101
+msgid "Model for semantic search"
+msgstr "Modell für die semantische Suche"
+
+#: views/admin/tab-provider.php:102
+msgid "Turns content and queries into vectors. A change recalculates the index."
+msgstr "Wandelt Inhalte und Suchanfragen in Vektoren um. Bei einer Änderung wird der Index neu berechnet."
+
+#: views/admin/tab-provider.php:111
+msgid "Model for the AI answer"
+msgstr "Modell für die KI-Antwort"
+
+#: views/admin/tab-provider.php:112
+msgid "Writes the answer from the results. Can be changed at any time."
+msgstr "Schreibt die Antwort aus den Treffern. Lässt sich jederzeit ändern."
+
+#: views/admin/tab-provider.php:121
+msgid "Monthly cost limit"
+msgstr "Monatliches Kostenlimit"
+
+#: views/admin/tab-provider.php:122
+msgid "When the limit is reached, the search continues as a keyword search. 0 means no limit."
+msgstr "Ist das Limit erreicht, läuft die Suche als Keyword-Suche weiter. 0 bedeutet kein Limit."
+
+#: views/admin/tab-provider.php:133
+msgid "Cache queries"
+msgstr "Suchanfragen zwischenspeichern"
+
+#: views/admin/tab-provider.php:134
+msgid "A repeated query is not sent to the provider again: its search for an hour, its AI answer for a day. That saves costs and time."
+msgstr "Eine wiederholte Anfrage wird nicht erneut an den Anbieter geschickt: ihre Suche eine Stunde lang, ihre KI-Antwort einen Tag lang. Das spart Kosten und Zeit."
+
+#: views/admin/tab-provider.php:141
+msgid "Additional instructions for the AI answer"
+msgstr "Zusätzliche Anweisungen für die KI-Antwort"
+
+#: views/admin/tab-provider.php:142
+msgid "Optional, for example the tone of voice: “Address visitors informally.” The AI always answers from your content only."
+msgstr "Optional, zum Beispiel die Ansprache: „Sprich Besucher mit du an.“ Die KI antwortet immer nur aus deinen Inhalten."
+
+#: views/admin/tab-provider.php:149
+msgid "Prices for the cost estimate"
+msgstr "Preise für die Kostenschätzung"
+
+#: views/admin/tab-provider.php:152
+msgid "The list prices belong to the recommended models. If you choose another model, enter its prices here."
+msgstr "Die Listenpreise gehören zu den empfohlenen Modellen. Wenn du ein anderes Modell wählst, trage hier dessen Preise ein."
+
+#: views/admin/tab-provider.php:159
+msgid "Currency"
+msgstr "Währung"
+
+#: views/admin/tab-provider.php:160
+msgid "The preset prices are the providers’ list prices in US dollars. If you choose euros, please enter your own prices."
+msgstr "Die voreingestellten Preise sind die Listenpreise der Anbieter in US-Dollar. Wenn du Euro wählst, trage bitte eigene Preise ein."
+
+#: views/admin/tab-provider.php:162
+msgid "US dollar ($)"
+msgstr "US-Dollar ($)"
+
+#: views/admin/tab-provider.php:163
+msgid "Euro (€)"
+msgstr "Euro (€)"
+
+#: views/admin/tab-provider.php:168
+msgid "Embeddings, per 1 million tokens"
+msgstr "Embeddings, pro 1 Million Token"
+
+#: views/admin/tab-provider.php:169
+msgid "Input, per 1 million tokens"
+msgstr "Eingabe, pro 1 Million Token"
+
+#: views/admin/tab-provider.php:170
+msgid "Output, per 1 million tokens"
+msgstr "Ausgabe, pro 1 Million Token"
+
+#: views/admin/tab-provider.php:177
+msgid "Leave empty to use the provider’s list price."
+msgstr "Leer lassen, um den Listenpreis des Anbieters zu verwenden."
+
+#: views/admin/tab-provider.php:193
+msgid "Test connection"
+msgstr "Verbindung testen"
+
+#: views/admin/tab-provider.php:194
+msgid "The test uses the saved settings."
+msgstr "Der Test nutzt die gespeicherten Einstellungen."
+
+#: views/admin/tab-search.php:19
+msgid "Fast full-text search on your own index. Runs without external services."
+msgstr "Schnelle Volltextsuche im eigenen Index. Läuft ohne externe Dienste."
+
+#: views/admin/tab-search.php:20
+msgid "Free · no API key"
+msgstr "Kostenlos · kein API-Schlüssel"
+
+#: views/admin/tab-search.php:25
+msgid "Also finds content with the same meaning, even if the search word does not appear."
+msgstr "Findet auch Inhalte mit derselben Bedeutung, selbst wenn das Suchwort nicht vorkommt."
+
+#: views/admin/tab-search.php:26
+msgid "API key needed · very low cost"
+msgstr "API-Schlüssel nötig · sehr geringe Kosten"
+
+#: views/admin/tab-search.php:31
+msgid "Writes an answer from the results and links the sources."
+msgstr "Schreibt eine Antwort aus den Treffern und verlinkt die Quellen."
+
+#: views/admin/tab-search.php:32
+msgid "API key needed · cost per search"
+msgstr "API-Schlüssel nötig · Kosten pro Suche"
+
+#: views/admin/tab-search.php:43
+#: views/admin/tab-search.php:46
+msgid "Search mode"
+msgstr "Suchmodus"
+
+#: views/admin/tab-search.php:44
+msgid "Choose how visitors get their results. You can switch at any time."
+msgstr "Wähle, wie Besucher ihre Treffer bekommen. Du kannst jederzeit wechseln."
+
+#: views/admin/tab-search.php:50
+msgid "Behaviour"
+msgstr "Verhalten"
+
+#: views/admin/tab-search.php:51
+msgid "Fine-tuning for the search on your website."
+msgstr "Feineinstellungen für die Suche auf deiner Website."
+
+#: views/admin/tab-search.php:57
+msgid "Replace the default WordPress search"
+msgstr "Standardsuche von WordPress ersetzen"
+
+#: views/admin/tab-search.php:58
+msgid "The search field of your theme then uses this index automatically."
+msgstr "Das Suchfeld deines Themes nutzt dann automatisch diesen Index."
+
+#: views/admin/tab-search.php:63
+msgid "Results per page"
+msgstr "Treffer pro Seite"
+
+#: views/admin/tab-search.php:64
+msgid "How many results are shown at once."
+msgstr "Wie viele Treffer auf einmal angezeigt werden."
+
+#: views/admin/tab-search.php:76
+msgid "Give titles more weight"
+msgstr "Titel stärker gewichten"
+
+#: views/admin/tab-search.php:77
+msgid "Matches in the title rank higher than matches in the text."
+msgstr "Fundstellen im Titel zählen mehr als Fundstellen im Text."
+
+#: views/admin/tab-search.php:82
+msgid "Ask the language model when the search is unsure"
+msgstr "Bei Unsicherheit das Sprachmodell fragen"
+
+#: views/admin/tab-search.php:83
+msgid "If no result is a clear match, the model for the AI answer picks the fitting pages from the nearest ones. This finds “poultry” although the page only says “chicken”. Needs the mode “Semantic” or “AI answer” and costs one small request per such search."
+msgstr "Wenn kein Treffer klar passt, wählt das Modell für die KI-Antwort aus den nächstliegenden Seiten die passenden aus. So wird „Geflügel“ gefunden, obwohl auf der Seite nur „Hähnchen“ steht. Braucht den Modus „Semantisch“ oder „KI-Antwort“ und kostet eine kleine Anfrage pro solcher Suche."
+
+#: views/admin/tab-search.php:88
+msgid "Hide weak matches"
+msgstr "Schwache Treffer ausblenden"
+
+#: views/admin/tab-search.php:89
+msgid "Results with the lowest relevance level are not shown."
+msgstr "Treffer der niedrigsten Relevanzstufe werden nicht angezeigt."
+
+#: views/admin/tab-search.php:94
+msgid "Suggestions while typing"
+msgstr "Vorschläge beim Tippen"
+
+#: views/admin/tab-search.php:95
+msgid "The search block suggests matching pages below the field."
+msgstr "Der Such-Block schlägt unter dem Feld passende Seiten vor."
+
+#: views/admin/tab-search.php:106
+msgid "Recommended results"
+msgstr "Empfohlene Treffer"
+
+#: views/admin/tab-search.php:107
+msgid "Name the page that answers a search, even if it does not use the words of the search. It is then listed first. The statistics show which searches found nothing."
+msgstr "Lege fest, welche Seite eine Suche beantwortet, auch wenn sie die Wörter der Suche nicht enthält. Sie steht dann an erster Stelle. Die Statistik zeigt, welche Suchen nichts gefunden haben."
+
+#: views/admin/tab-search.php:117
+msgid "Separate several search terms with commas. A term applies in every word form, and to longer searches that contain it. For the page, type part of its title and choose it from the list; the number after “#” identifies it."
+msgstr "Mehrere Suchbegriffe mit Kommas trennen. Ein Begriff gilt in jeder Wortform und auch für längere Suchen, die ihn enthalten. Für die Seite einen Teil des Titels tippen und sie aus der Liste wählen; die Zahl hinter „#“ bezeichnet sie eindeutig."
+
+#: views/admin/tab-search.php:138
+msgid "Add a recommendation"
+msgstr "Empfehlung hinzufügen"
+
+#: views/admin/tab-search.php:144
+msgid "Try the search"
+msgstr "Suche ausprobieren"
+
+#: views/admin/tab-search.php:145
+msgid "Test a query with the saved settings. Below every result you see why it was found."
+msgstr "Teste eine Suchanfrage mit den gespeicherten Einstellungen. Unter jedem Treffer siehst du, warum er gefunden wurde."
+
+#: views/admin/tab-search.php:148
+msgid "Test query"
+msgstr "Test-Suchanfrage"
+
+#: views/admin/tab-search.php:150
+msgid "For example: shipping costs abroad"
+msgstr "Zum Beispiel: Versandkosten ins Ausland"
+
+#: views/admin/tab-stats.php:24
+msgid "Period"
+msgstr "Zeitraum"
+
+#: views/admin/tab-stats.php:45
+msgid "From"
+msgstr "Von"
+
+#: views/admin/tab-stats.php:47
+msgid "to"
+msgstr "bis"
+
+#: views/admin/tab-stats.php:49
+msgid "Show"
+msgstr "Anzeigen"
+
+#: views/admin/tab-stats.php:53
+msgid "Export CSV"
+msgstr "CSV exportieren"
+
+#: views/admin/tab-stats.php:94
+msgid "Most frequent search phrases"
+msgstr "Häufigste Suchbegriffe"
+
+#: views/admin/tab-stats.php:94
+msgid "No searches in this period."
+msgstr "Keine Suchen in diesem Zeitraum."
+
+#: views/admin/tab-stats.php:95
+msgid "Searches without results"
+msgstr "Suchen ohne Treffer"
+
+#: views/admin/tab-stats.php:95
+msgid "Every search found something."
+msgstr "Jede Suche hat etwas gefunden."
+
+#: views/admin/tab-stats.php:111
+msgid "Recommend a page"
+msgstr "Seite empfehlen"
+
+#. translators: %s: search phrase.
+#: views/admin/tab-stats.php:115
+#, php-format
+msgid "for “%s”"
+msgstr "für „%s“"
+
+#: views/admin/tab-stats.php:122
+msgid "searches"
+msgstr "Suchen"
+
+#: views/admin/tab-stats.php:133
+msgid "All searches"
+msgstr "Alle Suchen"
+
+#: views/admin/tab-stats.php:142
+#: views/admin/tab-stats.php:143
+msgid "Filter by search phrase"
+msgstr "Nach Suchbegriff filtern"
+
+#: views/admin/tab-stats.php:145
+msgid "Filter by mode"
+msgstr "Nach Modus filtern"
+
+#: views/admin/tab-stats.php:147
+msgid "All modes"
+msgstr "Alle Modi"
+
+#: views/admin/tab-stats.php:153
+msgid "Filter"
+msgstr "Filtern"
+
+#: views/admin/tab-stats.php:157
+msgid "No searches match. As soon as visitors search, their queries appear here."
+msgstr "Keine passenden Suchen. Sobald Besucher suchen, erscheinen ihre Suchanfragen hier."
+
+#: views/admin/tab-stats.php:159
+msgid "All searches, table"
+msgstr "Alle Suchanfragen, Tabelle"
+
+#: views/admin/tab-stats.php:180
+msgid "Pages of the search list"
+msgstr "Seiten der Suchliste"
+
+#. translators: 1: current page, 2: number of pages, 3: number of entries.
+#: views/admin/tab-stats.php:186
+#, php-format
+msgid "Page %1$s of %2$s · %3$s entries"
+msgstr "Seite %1$s von %2$s · %3$s Einträge"
+
+#: views/admin/tab-stats.php:196
+msgid "Previous"
+msgstr "Zurück"
+
+#: views/admin/tab-stats.php:199
+msgid "Next"
+msgstr "Weiter"
+
+#: views/admin/tab-stats.php:220
+msgid "Recording"
+msgstr "Aufzeichnung"
+
+#: views/admin/tab-stats.php:221
+msgid "Choose what is stored for the statistics. IP addresses and users are never stored."
+msgstr "Wähle, was für die Statistik gespeichert wird. IP-Adressen und Benutzer werden nie gespeichert."
+
+#: views/admin/tab-stats.php:227
+msgid "Search phrases"
+msgstr "Suchbegriffe"
+
+#: views/admin/tab-stats.php:228
+msgid "Phrase, time, mode and number of results. Basis for the rankings and the table. Without it nothing is recorded."
+msgstr "Suchbegriff, Zeitpunkt, Modus und Anzahl der Treffer. Grundlage für die Ranglisten und die Tabelle. Ohne sie wird nichts aufgezeichnet."
+
+#: views/admin/tab-stats.php:233
+msgid "AI usage"
+msgstr "KI-Verbrauch"
+
+#: views/admin/tab-stats.php:234
+msgid "Input and output tokens with costs per search."
+msgstr "Eingabe- und Ausgabe-Token mit Kosten pro Suche."
+
+#: views/admin/tab-stats.php:239
+msgid "Clicks on results"
+msgstr "Klicks auf Treffer"
+
+#: views/admin/tab-stats.php:240
+msgid "Which result was opened. Loads a small script on the front end."
+msgstr "Welcher Treffer geöffnet wurde. Lädt ein kleines Skript im Frontend."
+
+#: views/admin/tab-stats.php:245
+msgid "Response time"
+msgstr "Antwortzeit"
+
+#: views/admin/tab-stats.php:246
+msgid "How long a search took."
+msgstr "Wie lange eine Suche gedauert hat."
+
+#: views/admin/tab-stats.php:251
+msgid "Retention in days"
+msgstr "Aufbewahrung in Tagen"
+
+#: views/admin/tab-stats.php:252
+msgid "Older entries are deleted automatically."
+msgstr "Ältere Einträge werden automatisch gelöscht."
+
+#: views/admin/tab-stats.php:270
+msgid "All recorded searches are deleted permanently."
+msgstr "Alle aufgezeichneten Suchen werden endgültig gelöscht."
+
+#: views/admin/tab-stats.php:271
+msgid "Delete the statistics?"
+msgstr "Statistik löschen?"
+
+#: views/admin/tab-stats.php:272
+#: views/admin/tab-stats.php:274
+msgid "Delete statistics"
+msgstr "Statistik löschen"
+
+#: views/admin/tab-tools.php:21
+msgid "Transfer settings"
+msgstr "Einstellungen übertragen"
+
+#: views/admin/tab-tools.php:22
+msgid "Take a proven configuration to another project."
+msgstr "Nimm eine bewährte Konfiguration in ein anderes Projekt mit."
+
+#: views/admin/tab-tools.php:27
+#: views/admin/tab-tools.php:31
+msgid "Export"
+msgstr "Exportieren"
+
+#: views/admin/tab-tools.php:28
+msgid "Downloads all settings and the recommended results as a file. API keys are not included."
+msgstr "Lädt alle Einstellungen und die empfohlenen Treffer als Datei herunter. API-Schlüssel sind nicht enthalten."
+
+#: views/admin/tab-tools.php:43
+#: views/admin/tab-tools.php:53
+#: views/admin/tab-tools.php:55
+msgid "Import"
+msgstr "Importieren"
+
+#: views/admin/tab-tools.php:44
+msgid "Takes settings and recommended results from an export file. Existing values are overwritten."
+msgstr "Übernimmt Einstellungen und empfohlene Treffer aus einer Exportdatei. Vorhandene Werte werden überschrieben."
+
+#: views/admin/tab-tools.php:51
+msgid "All current settings are replaced by those from the file."
+msgstr "Alle aktuellen Einstellungen werden durch die aus der Datei ersetzt."
+
+#: views/admin/tab-tools.php:52
+msgid "Import settings?"
+msgstr "Einstellungen importieren?"
+
+#: views/admin/tab-tools.php:64
+msgid "Problems while indexing"
+msgstr "Probleme beim Indexieren"
+
+#: views/admin/tab-tools.php:67
+msgid "All content was read without problems."
+msgstr "Alle Inhalte wurden ohne Probleme gelesen."
+
+#. translators: %s: number of items.
+#: views/admin/tab-tools.php:74
+#, php-format
+msgid "%s item could not be read."
+msgid_plural "%s items could not be read."
+msgstr[0] "%s Inhalt konnte nicht gelesen werden."
+msgstr[1] "%s Inhalte konnten nicht gelesen werden."
+
+#: views/admin/tab-tools.php:89
+msgid "Open"
+msgstr "Öffnen"
+
+#: views/admin/tab-tools.php:99
+msgid "Index"
+msgstr "Index"
+
+#: views/admin/tab-tools.php:100
+msgid "Normally the index looks after itself. These tools help after a migration or when something looks wrong."
+msgstr "Normalerweise pflegt sich der Index von selbst. Diese Werkzeuge helfen nach einem Umzug oder wenn etwas nicht stimmt."
+
+#: views/admin/tab-tools.php:105
+msgid "Rebuild the index"
+msgstr "Index neu aufbauen"
+
+#: views/admin/tab-tools.php:106
+msgid "Reads all content again. Text that did not change is not sent to the AI provider again."
+msgstr "Liest alle Inhalte neu ein. Unveränderter Text wird nicht noch einmal an den KI-Anbieter gesendet."
+
+#: views/admin/tab-tools.php:115
+msgid "Empty the index"
+msgstr "Index leeren"
+
+#: views/admin/tab-tools.php:116
+msgid "Removes everything from the index, including what the AI provider calculated. Until it is rebuilt, WordPress searches the old way."
+msgstr "Entfernt alles aus dem Index, auch das, was der KI-Anbieter berechnet hat. Bis zum Neuaufbau sucht WordPress auf die alte Art."
+
+#: views/admin/tab-tools.php:122
+msgid "The index is emptied. Rebuilding it with semantic search costs tokens again."
+msgstr "Der Index wird geleert. Der Neuaufbau mit semantischer Suche kostet erneut Token."
+
+#: views/admin/tab-tools.php:123
+msgid "Empty the index?"
+msgstr "Index leeren?"
+
+#: views/admin/tab-tools.php:124
+#: views/admin/tab-tools.php:126
+msgid "Empty index"
+msgstr "Index leeren"
+
+#: views/admin/tab-tools.php:138
+msgid "Access and data"
+msgstr "Zugriff und Daten"
+
+#: views/admin/tab-tools.php:139
+msgid "Who may use the plugin and what happens when it is removed. Administrators always have full access."
+msgstr "Wer das Plugin nutzen darf und was beim Entfernen passiert. Administratoren haben immer vollen Zugriff."
+
+#: views/admin/tab-tools.php:143
+msgid "Who may use the plugin can only be changed by administrators."
+msgstr "Wer das Plugin nutzen darf, können nur Administratoren ändern."
+
+#: views/admin/tab-tools.php:151
+msgid "View statistics"
+msgstr "Statistik ansehen"
+
+#: views/admin/tab-tools.php:152
+msgid "These roles see the tab “Statistics”."
+msgstr "Diese Rollen sehen den Tab „Statistik“."
+
+#: views/admin/tab-tools.php:159
+msgid "Change settings"
+msgstr "Einstellungen ändern"
+
+#: views/admin/tab-tools.php:160
+msgid "These roles may edit the settings. Provider, API key, import and this list of roles stay reserved for administrators."
+msgstr "Diese Rollen dürfen die Einstellungen bearbeiten. Anbieter, API-Schlüssel, Import und diese Rollenliste bleiben Administratoren vorbehalten."
+
+#: views/admin/tab-tools.php:167
+msgid "Remove data when the plugin is deleted"
+msgstr "Daten beim Löschen des Plugins entfernen"
+
+#: views/admin/tab-tools.php:168
+msgid "Index, statistics and settings are deleted when the plugin is deleted. Deactivating keeps everything."
+msgstr "Index, Statistik und Einstellungen werden gelöscht, wenn das Plugin gelöscht wird. Beim Deaktivieren bleibt alles erhalten."
+
+#. translators: %s: label of the field, e.g. "Model for the AI answer".
+#: assets/src/admin/model-picker.js:62
+#, js-format
+msgid "%s: model name"
+msgstr "%s: Modellname"
+
+#. translators: %s: model name.
+#: assets/src/admin/model-picker.js:124
+#, js-format
+msgid "Recommended: %s"
+msgstr "Empfohlen: %s"
+
+#: assets/src/admin/model-picker.js:127
+msgid "Choose a model …"
+msgstr "Modell wählen …"
+
+#: assets/src/admin/model-picker.js:132
+msgid "Other model …"
+msgstr "Anderes Modell …"
+
+#: assets/src/admin/provider.js:52
+msgid "You have unsaved changes. Save first: the test checks the saved settings."
+msgstr "Du hast ungespeicherte Änderungen. Speichere zuerst: Der Test prüft die gespeicherten Einstellungen."
+
+#: assets/src/admin/provider.js:148
+msgid "Testing the connection …"
+msgstr "Verbindung wird getestet …"
+
+#. translators: 1: result for semantic search, 2: result for AI answers.
+#: assets/src/admin/provider.js:158
+#, js-format
+msgid "Semantic search: %1$s AI answer: %2$s"
+msgstr "Semantische Suche: %1$s KI-Antwort: %2$s"
+
+#: assets/src/admin/provider.js:166
+msgid "The test could not be run."
+msgstr "Der Test konnte nicht ausgeführt werden."
+
+#: assets/src/admin/rebuild.js:64
+msgid "Rebuilding the index …"
+msgstr "Index wird neu aufgebaut …"
+
+#. translators: %d: number of items.
+#: assets/src/admin/rebuild.js:76
+#, js-format
+msgid "Done. %d item is in the index."
+msgid_plural "Done. %d items are in the index."
+msgstr[0] "Fertig. %d Inhalt ist im Index."
+msgstr[1] "Fertig. %d Inhalte sind im Index."
+
+#: assets/src/admin/rebuild.js:91
+msgid "The index could not be rebuilt. Please try again."
+msgstr "Der Index konnte nicht neu aufgebaut werden. Bitte versuche es noch einmal."
+
+#. translators: 1: items processed, 2: all items.
+#: assets/src/admin/rebuild.js:125
+#, js-format
+msgid "Reading content: %1$d of %2$d"
+msgstr "Inhalte werden gelesen: %1$d von %2$d"
+
+#: assets/src/admin/rebuild.js:157
+msgid "The content is searchable by keyword. Semantic search is being prepared in the background and will be ready shortly."
+msgstr "Der Inhalt ist per Stichwort durchsuchbar. Die semantische Suche wird im Hintergrund vorbereitet und ist in Kürze bereit."
+
+#. translators: %s: error message of the AI provider.
+#: assets/src/admin/rebuild.js:174
+#, js-format
+msgid "The content is searchable by keyword. The AI provider reported: %s"
+msgstr "Die Inhalte sind per Keyword durchsuchbar. Der KI-Anbieter meldet: %s"
+
+#. translators: %d: number of text passages.
+#: assets/src/admin/rebuild.js:186
+#, js-format
+msgid "Preparing semantic search: %d passages left"
+msgstr "Semantische Suche wird vorbereitet: noch %d Textabschnitte"
+
+#: assets/src/admin/rebuild.js:231
+msgid "The index could not be emptied."
+msgstr "Der Index konnte nicht geleert werden."
+
+#: assets/src/admin/test-search.js:39
+msgid "The test search failed."
+msgstr "Die Testsuche ist fehlgeschlagen."
+
+#. translators: %d: number of results.
+#: assets/src/admin/test-search.js:54
+#, js-format
+msgid "%d result."
+msgid_plural "%d results."
+msgstr[0] "%d Treffer."
+msgstr[1] "%d Treffer."
+
+#. translators: %s: corrected search phrase.
+#: assets/src/admin/test-search.js:64
+#, js-format
+msgid "Searched for “%s” instead, because the spelling found nothing."
+msgstr "Stattdessen wurde nach „%s“ gesucht, weil die Schreibweise nichts gefunden hat."
+
+#: assets/src/admin/test-search.js:77
+msgid "The AI provider was not available, so this is a keyword search."
+msgstr "Der KI-Anbieter war nicht erreichbar, deshalb ist das eine Keyword-Suche."
+
+#. translators: 1: relevance level, 2: raw score, 3: explanation why the result was found.
+#: assets/src/admin/test-search.js:109
+#, js-format
+msgid "%1$s (%2$s) · %3$s"
+msgstr "%1$s (%2$s) · %3$s"
+
+#: assets/src/blocks/search/edit.js:24
+msgid "Texts"
+msgstr "Texte"
+
+#: assets/src/blocks/search/edit.js:28
+msgid "Label"
+msgstr "Beschriftung"
+
+#: assets/src/blocks/search/edit.js:29
+msgid "Names the field for all visitors, including screen reader users."
+msgstr "Benennt das Feld für alle Besucher, auch für Nutzer von Screenreadern."
+
+#: assets/src/blocks/search/edit.js:42
+msgid "Placeholder"
+msgstr "Platzhalter"
+
+#: assets/src/blocks/search/edit.js:51
+msgid "Button text"
+msgstr "Button-Text"
+
+#: assets/src/blocks/search/edit.js:63
+msgid "Show results on this page"
+msgstr "Treffer auf dieser Seite anzeigen"
+
+#: assets/src/blocks/search/edit.js:69
+msgid "Results appear below the field without leaving the page."
+msgstr "Die Treffer erscheinen unter dem Feld, ohne dass die Seite verlassen wird."
+
+#: assets/src/blocks/search/edit.js:73
+msgid "The search opens the results page of the theme."
+msgstr "Die Suche öffnet die Ergebnisseite des Themes."
+
+#: assets/src/blocks/search/edit.js:86
+msgid "Show the AI answer"
+msgstr "KI-Antwort anzeigen"
+
+#: assets/src/blocks/search/edit.js:87
+msgid "Only appears if the search mode “AI answer” is active."
+msgstr "Erscheint nur, wenn der Suchmodus „KI-Antwort“ aktiv ist."
+
+#: assets/src/editor/index.js:98
+msgid "Exclude from the search"
+msgstr "Von der Suche ausschließen"
+
+#: assets/src/editor/index.js:102
+msgid "Applies immediately, without saving."
+msgstr "Gilt sofort, ohne Speichern."
+
+#: assets/src/editor/index.js:121
+msgid "Update now"
+msgstr "Jetzt aktualisieren"
+
+#: assets/src/editor/use-index-status.js:51
+msgid "The search status could not be loaded."
+msgstr "Der Suchstatus konnte nicht geladen werden."
+
+#: assets/src/blocks/search/block.json
+msgctxt "block title"
+msgid "Smart Search"
+msgstr "Smart Search"
+
+#: assets/src/blocks/search/block.json
+msgctxt "block description"
+msgid "Search field of Smart Search, optionally with results and AI answer on the same page."
+msgstr "Suchfeld von Smart Search, auf Wunsch mit Treffern und KI-Antwort auf derselben Seite."
+
+#: assets/src/blocks/search/block.json
+msgctxt "block keyword"
+msgid "search"
+msgstr "suche"
+
+#: assets/src/blocks/search/block.json
+msgctxt "block keyword"
+msgid "find"
+msgstr "finden"
+
+#: assets/src/blocks/search/block.json
+msgctxt "block keyword"
+msgid "ai"
+msgstr "ki"

@@ -1,0 +1,13 @@
+// Styles of the Smart Search settings page.
+
+@use "../styles/tokens";
+@use "styles/layout";
+@use "styles/panel";
+@use "styles/controls";
+@use "styles/stats";
+
+.prstsearch-admin {
+
+	@include tokens.admin-tokens;
+	@include tokens.status-tokens;
+}

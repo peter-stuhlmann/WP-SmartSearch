@@ -1,0 +1,106 @@
+<?xml version="1.0"?>
+<ruleset name="Smart Search">
+	<description>WordPress Coding Standards, adapted to PSR-4 class files.</description>
+
+	<file>smart-search.php</file>
+	<file>uninstall.php</file>
+	<file>src</file>
+	<file>templates</file>
+	<file>views</file>
+	<file>tests/php</file>
+
+	<arg name="extensions" value="php"/>
+	<arg name="colors"/>
+	<arg value="sp"/>
+	<arg name="parallel" value="8"/>
+
+	<config name="minimum_wp_version" value="6.6"/>
+	<config name="testVersion" value="8.1-"/>
+
+	<rule ref="WordPress-Extra">
+		<!-- Classes follow PSR-4: one class per file, named like the class. -->
+		<exclude name="WordPress.Files.FileName"/>
+		<!-- Type declarations already say what a parameter is. -->
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamTag"/>
+		<exclude name="Squiz.Commenting.FunctionComment.MissingParamComment"/>
+		<exclude name="Squiz.Commenting.FunctionComment.ParamCommentFullStop"/>
+		<!-- These two do not understand array shapes and generics in doc comments. -->
+		<exclude name="Squiz.Commenting.FunctionComment.IncorrectTypeHint"/>
+		<exclude name="Squiz.Commenting.FunctionComment.ParamNameNoMatch"/>
+		<exclude name="Squiz.Commenting.VariableComment.MissingVar"/>
+		<exclude name="Generic.Commenting.DocComment.MissingShort"/>
+		<!-- The short ternary is clear where "the value, or else a fallback" is meant. -->
+		<exclude name="Universal.Operators.DisallowShortTernary"/>
+	</rule>
+
+	<rule ref="WordPress-Docs"/>
+	<rule ref="PHPCompatibilityWP">
+		<!-- PHPCompatibility 9 predates enums and reports $this and self inside them. -->
+		<exclude name="PHPCompatibility.Variables.ForbiddenThisUseContexts"/>
+		<exclude name="PHPCompatibility.FunctionDeclarations.NewParamTypeDeclarations.SelfOutsideClassScopeFound"/>
+	</rule>
+
+	<rule ref="WordPress.WP.I18n">
+		<properties>
+			<property name="text_domain" type="array">
+				<element value="smart-search"/>
+			</property>
+		</properties>
+	</rule>
+
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<properties>
+			<property name="prefixes" type="array">
+				<element value="prstsearch"/>
+				<element value="PrstSearch"/>
+			</property>
+		</properties>
+	</rule>
+
+	<!-- The repositories exist to run direct queries on the plugin's own tables, the status store to read post meta in bulk. -->
+	<rule ref="WordPress.DB.DirectDatabaseQuery">
+		<exclude-pattern>src/Database/*</exclude-pattern>
+		<exclude-pattern>src/Index/IndexStatusStore.php</exclude-pattern>
+	</rule>
+
+	<!--
+		The sniff only recognises prepare() on a variable called $wpdb. The repositories
+		and the status store receive wpdb as a dependency and prepare every query, with
+		%i for identifiers.
+	-->
+	<rule ref="WordPress.DB.PreparedSQL.NotPrepared">
+		<exclude-pattern>src/Database/*</exclude-pattern>
+		<exclude-pattern>src/Index/IndexStatusStore.php</exclude-pattern>
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+
+	<!-- The test setup stands in for WordPress: it defines its constants and classes and sets hooks before it loads. -->
+	<rule ref="WordPress.NamingConventions.PrefixAllGlobals">
+		<exclude-pattern>tests/php/stubs.php</exclude-pattern>
+	</rule>
+	<rule ref="Generic.Files.OneObjectStructurePerFile">
+		<exclude-pattern>tests/php/stubs.php</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.GlobalVariablesOverride">
+		<exclude-pattern>tests/php/integration-bootstrap.php</exclude-pattern>
+	</rule>
+
+	<!-- Tests name methods after behaviour and use PHPUnit conventions. -->
+	<rule ref="WordPress.NamingConventions.ValidFunctionName">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="Squiz.Commenting">
+		<exclude-pattern>tests/*</exclude-pattern>
+		<!-- A block long enough to need "end foreach" at its brace should be split up instead. -->
+		<exclude name="Squiz.Commenting.LongConditionClosingComment"/>
+	</rule>
+	<rule ref="Generic.Commenting">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.PHP.DiscouragedPHPFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<rule ref="WordPress.WP.AlternativeFunctions">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+</ruleset>

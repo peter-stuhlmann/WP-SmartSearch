@@ -1,0 +1,192 @@
+// Page frame: header, tabs, columns.
+
+@use "../../styles/mixins" as *;
+
+.prstsearch-admin {
+	max-width: 1280px;
+	margin-top: var(--prstsearch-space-5);
+	color: var(--prstsearch-text);
+	font-size: var(--prstsearch-font-size-m);
+
+	*,
+	*::before,
+	*::after {
+		box-sizing: border-box;
+	}
+
+	// :where() keeps the reset at the specificity of a single class, so the
+	// components below can set their own margins.
+	:where(p) {
+		margin: 0;
+		font-size: inherit;
+	}
+
+	a:focus-visible,
+	button:focus-visible,
+	summary:focus-visible,
+	[tabindex]:focus-visible {
+
+		@include focus-ring;
+	}
+}
+
+.prstsearch-hero {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--prstsearch-space-6);
+	align-items: center;
+	justify-content: space-between;
+	padding: var(--prstsearch-space-8) 36px;
+	color: var(--prstsearch-text-on-accent);
+	background: linear-gradient(100deg, var(--prstsearch-hero-start) 0%, var(--prstsearch-hero-middle) 55%, var(--prstsearch-accent) 100%);
+	border-radius: var(--prstsearch-radius-l);
+
+
+	&__tagline {
+		font-size: 15px;
+	}
+
+	&__stats {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--prstsearch-space-3);
+		margin: 0;
+	}
+
+	&__stat {
+		display: flex;
+		flex-direction: column-reverse;
+		gap: var(--prstsearch-space-1);
+		min-width: 132px;
+		padding: var(--prstsearch-space-4) var(--prstsearch-space-5);
+		background: var(--prstsearch-surface-on-dark);
+		border-radius: var(--prstsearch-radius-m);
+
+		dt {
+			font-size: var(--prstsearch-font-size-s);
+		}
+
+		dd {
+			margin: 0;
+			font-size: 26px;
+			font-weight: 600;
+			line-height: 1.2;
+		}
+	}
+}
+
+// Doubled class: WordPress styles ".wrap h1" with a higher specificity.
+.prstsearch-hero__title.prstsearch-hero__title {
+	margin: var(--prstsearch-space-3) 0 var(--prstsearch-space-2);
+	padding: 0;
+	color: inherit;
+	font-size: var(--prstsearch-font-size-display);
+	font-weight: 600;
+	line-height: 1.2;
+}
+
+.prstsearch-pill {
+	display: inline-flex;
+	gap: var(--prstsearch-space-2);
+	align-items: center;
+	padding: 5px 12px 5px 10px;
+	font-size: var(--prstsearch-font-size-s);
+	font-weight: 500;
+	background: var(--prstsearch-surface-on-dark);
+	border-radius: var(--prstsearch-radius-full);
+
+	&__dot {
+
+		@include status-dot(8px);
+	}
+}
+
+// The pill sits on the dark header.
+@include status-dot-colors("prstsearch-pill", "", "-on-dark");
+
+.prstsearch-notice {
+	margin-top: var(--prstsearch-space-4);
+	padding: var(--prstsearch-space-3) var(--prstsearch-space-4);
+	border-left: 4px solid var(--prstsearch-success);
+	border-radius: var(--prstsearch-radius-s);
+	background: var(--prstsearch-success-surface);
+
+	&--error {
+		border-color: var(--prstsearch-error);
+		background: var(--prstsearch-error-surface);
+	}
+
+	&--info {
+		margin: 0 0 var(--prstsearch-space-5);
+		border-color: var(--prstsearch-accent);
+		background: var(--prstsearch-accent-surface);
+	}
+}
+
+.prstsearch-tabs {
+	margin: var(--prstsearch-space-6) 0;
+	border-bottom: 1px solid var(--prstsearch-border);
+
+	&__list {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--prstsearch-space-1);
+		margin: 0;
+
+		li {
+			margin: 0;
+		}
+	}
+
+	&__link {
+		display: block;
+		margin-bottom: -1px;
+		padding: var(--prstsearch-space-3) var(--prstsearch-space-4);
+		color: var(--prstsearch-text-muted);
+		font-size: var(--prstsearch-font-size-l);
+		text-decoration: none;
+		border-bottom: 2px solid transparent;
+
+		&:hover {
+			color: var(--prstsearch-text);
+		}
+
+		&[aria-current="page"] {
+			color: var(--prstsearch-accent);
+			font-weight: 600;
+			border-bottom-color: var(--prstsearch-accent);
+		}
+	}
+}
+
+.prstsearch-layout {
+	display: grid;
+	gap: var(--prstsearch-space-6);
+	align-items: start;
+
+	&--with-sidebar {
+		grid-template-columns: minmax(0, 1fr) 340px;
+
+		@media (max-width: 1100px) {
+			grid-template-columns: minmax(0, 1fr);
+		}
+	}
+
+	&__main,
+	&__sidebar {
+		display: grid;
+		gap: var(--prstsearch-space-6);
+		min-width: 0;
+	}
+
+	&__main > form {
+		display: grid;
+		gap: var(--prstsearch-space-6);
+	}
+}
+
+.prstsearch-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
+	gap: var(--prstsearch-space-6);
+}

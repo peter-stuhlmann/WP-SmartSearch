@@ -1,0 +1,46 @@
+{
+	"$schema": "https://schemas.wp.org/trunk/block.json",
+	"apiVersion": 3,
+	"name": "prstsearch/search",
+	"title": "Smart Search",
+	"category": "widgets",
+	"icon": "search",
+	"description": "Search field of Smart Search, optionally with results and AI answer on the same page.",
+	"keywords": [ "search", "find", "ai" ],
+	"textdomain": "smart-search",
+	"attributes": {
+		"label": {
+			"type": "string",
+			"default": ""
+		},
+		"placeholder": {
+			"type": "string",
+			"default": ""
+		},
+		"buttonLabel": {
+			"type": "string",
+			"default": ""
+		},
+		"showResults": {
+			"type": "boolean",
+			"default": true
+		},
+		"showAnswer": {
+			"type": "boolean",
+			"default": true
+		}
+	},
+	"supports": {
+		"html": false,
+		"align": [ "wide", "full" ],
+		"spacing": {
+			"margin": true,
+			"padding": true
+		},
+		"typography": {
+			"fontSize": true
+		}
+	},
+	"editorScript": "file:./index.js",
+	"style": "prstsearch-frontend"
+}

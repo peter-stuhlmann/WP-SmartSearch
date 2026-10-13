@@ -1,0 +1,96 @@
+// Design tokens of the admin UI.
+// They mirror the variables of the Figma file. Everything else in the admin
+// styles refers to these custom properties, so a different look only needs
+// new values here, or an override of the properties from outside.
+
+// Greys of the WordPress admin. Shared by everything the plugin shows there.
+@mixin neutral-tokens {
+	--prstsearch-text: #1d2327;
+	--prstsearch-text-secondary: #3c434a;
+	--prstsearch-text-muted: #646970;
+	--prstsearch-surface: #fff;
+	--prstsearch-surface-page: #f0f0f1;
+	--prstsearch-surface-muted: #f6f7f7;
+	--prstsearch-border: #dcdcde;
+}
+
+@mixin admin-tokens {
+
+	@include neutral-tokens;
+
+	// Accent.
+	--prstsearch-accent: #3858e9;
+	--prstsearch-accent-strong: #2a45c4;
+	--prstsearch-accent-medium: #8fa2f4;
+	--prstsearch-accent-soft: #c7d0fa;
+	--prstsearch-accent-surface: #f4f6fe;
+	--prstsearch-accent-surface-strong: #e8ecfd;
+
+	// Text and surfaces beyond the shared greys.
+	--prstsearch-text-on-accent: #fff;
+	--prstsearch-surface-dark: #1d2327;
+	--prstsearch-surface-on-dark: rgb(255 255 255 / 12%);
+	--prstsearch-hero-start: #12151f;
+	--prstsearch-hero-middle: #1c2553;
+	--prstsearch-shadow: rgb(0 0 0 / 25%);
+	--prstsearch-backdrop: rgb(0 0 0 / 45%);
+
+	// Borders. "control" meets the 3:1 contrast required for form controls.
+	--prstsearch-border-soft: #f0f0f1;
+	--prstsearch-border-control: #8c8f94;
+
+	// Status.
+	// "success" is for bars, borders and icons. As a text colour it misses
+	// the 4.5:1 contrast on grey surfaces; "success-text" is for that.
+	--prstsearch-success: #008a20;
+	--prstsearch-success-text: #007017;
+	--prstsearch-success-surface: #edfaef;
+	--prstsearch-error: #cc1818;
+	--prstsearch-error-strong: #a81313;
+	--prstsearch-error-surface: #fcf0f1;
+	--prstsearch-warning: #dba617;
+	--prstsearch-warning-surface: #fcf9e8;
+	--prstsearch-neutral: #8c8f94;
+
+	// Charts.
+	--prstsearch-chart-primary: var(--prstsearch-accent);
+	--prstsearch-chart-input: var(--prstsearch-accent);
+	--prstsearch-chart-output: #d9730d;
+
+	// Shape and rhythm.
+	--prstsearch-radius-s: 4px;
+	--prstsearch-radius-m: 8px;
+	--prstsearch-radius-l: 12px;
+	--prstsearch-radius-full: 999px;
+	--prstsearch-space-1: 4px;
+	--prstsearch-space-2: 8px;
+	--prstsearch-space-3: 12px;
+	--prstsearch-space-4: 16px;
+	--prstsearch-space-5: 20px;
+	--prstsearch-space-6: 24px;
+	--prstsearch-space-8: 32px;
+
+	// Type.
+	--prstsearch-font-size-s: 12px;
+	--prstsearch-font-size-m: 13px;
+	--prstsearch-font-size-l: 14px;
+	--prstsearch-font-size-xl: 17px;
+	--prstsearch-font-size-display: 28px;
+
+	--prstsearch-focus-ring: 0 0 0 2px var(--prstsearch-surface), 0 0 0 4px var(--prstsearch-accent);
+}
+
+// The four index states, shared by admin UI, editor and admin bar.
+@mixin status-tokens {
+	--prstsearch-status-indexed: #008a20;
+	--prstsearch-status-stale: #dba617;
+	--prstsearch-status-error: #cc1818;
+	--prstsearch-status-excluded: #8c8f94;
+
+	// On dark surfaces, such as the admin bar, the colours need to be
+	// lighter to stay visible.
+	--prstsearch-status-indexed-on-dark: #4ade80;
+	--prstsearch-status-stale-on-dark: #facc15;
+	--prstsearch-status-error-on-dark: #f87171;
+	--prstsearch-status-excluded-on-dark: #a7aaad;
+}

@@ -1,0 +1,287 @@
+// Statistics: toolbar, tiles, charts, tables.
+
+@use "../../styles/mixins" as *;
+
+.prstsearch-toolbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--prstsearch-space-4);
+	align-items: center;
+	justify-content: space-between;
+
+	&__custom {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--prstsearch-space-2);
+		align-items: center;
+		margin-left: auto;
+
+		.prstsearch-input {
+			width: auto;
+		}
+	}
+}
+
+.prstsearch-segments {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2px;
+	margin: 0;
+	padding: 3px;
+	background: var(--prstsearch-surface);
+	border: 1px solid var(--prstsearch-border);
+	border-radius: var(--prstsearch-radius-m);
+
+	li {
+		margin: 0;
+	}
+
+	&__link {
+		display: block;
+		padding: 6px var(--prstsearch-space-3);
+		color: var(--prstsearch-text-secondary);
+		text-decoration: none;
+		border-radius: var(--prstsearch-radius-s);
+
+		&:hover {
+			color: var(--prstsearch-text);
+			background: var(--prstsearch-surface-muted);
+		}
+
+		&[aria-current="true"] {
+			color: var(--prstsearch-accent);
+			font-weight: 500;
+			background: var(--prstsearch-accent-surface-strong);
+		}
+	}
+}
+
+// A rounded number whose exact value is in its title attribute. The dotted
+// line is the conventional hint that hovering reveals more.
+.prstsearch-figure {
+	text-decoration: underline dotted var(--prstsearch-border-control);
+	text-underline-offset: 3px;
+	cursor: help;
+}
+
+.prstsearch-tiles {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+	gap: var(--prstsearch-space-4);
+	margin: 0;
+}
+
+.prstsearch-tile {
+	margin: 0;
+	padding: var(--prstsearch-space-5);
+	background: var(--prstsearch-surface);
+	border: 1px solid var(--prstsearch-border);
+	border-radius: var(--prstsearch-radius-l);
+
+	&__label {
+		color: var(--prstsearch-text-secondary);
+	}
+
+	&__value {
+		margin: var(--prstsearch-space-1) 0;
+		font-size: var(--prstsearch-font-size-display);
+		font-weight: 600;
+		line-height: 1.2;
+		font-variant-numeric: tabular-nums;
+	}
+
+	&__note {
+		color: var(--prstsearch-text-muted);
+		font-size: var(--prstsearch-font-size-s);
+	}
+}
+
+.prstsearch-chart {
+
+	&__head {
+		display: flex;
+		flex-wrap: wrap;
+		gap: var(--prstsearch-space-3);
+		align-items: baseline;
+		justify-content: space-between;
+		margin-bottom: var(--prstsearch-space-3);
+	}
+
+	&__legend {
+		display: flex;
+		gap: var(--prstsearch-space-4);
+		margin: 0;
+		color: var(--prstsearch-text-secondary);
+		font-size: var(--prstsearch-font-size-s);
+
+		li {
+			display: flex;
+			gap: 6px;
+			align-items: center;
+			margin: 0;
+		}
+	}
+
+	&__swatch {
+		width: 10px;
+		height: 10px;
+		border-radius: 2px;
+	}
+
+	&__svg {
+		display: block;
+		width: 100%;
+		height: auto;
+	}
+
+	// Series colours live here, not in the SVG, so they follow the tokens.
+	&__bar--primary,
+	&__swatch--primary {
+		fill: var(--prstsearch-chart-primary);
+		background: var(--prstsearch-chart-primary);
+	}
+
+	&__bar--input,
+	&__swatch--input {
+		fill: var(--prstsearch-chart-input);
+		background: var(--prstsearch-chart-input);
+	}
+
+	&__bar--output,
+	&__swatch--output {
+		fill: var(--prstsearch-chart-output);
+		background: var(--prstsearch-chart-output);
+	}
+
+	&__bar:hover {
+		opacity: 0.8;
+	}
+
+	&__grid {
+		stroke: var(--prstsearch-border-soft);
+		stroke-width: 1;
+	}
+
+	&__tick {
+		fill: var(--prstsearch-text-muted);
+		font-size: 11px;
+	}
+
+	&__note {
+		margin-top: var(--prstsearch-space-3);
+		color: var(--prstsearch-text-muted);
+		font-size: var(--prstsearch-font-size-s);
+	}
+
+	&__data {
+		margin-top: var(--prstsearch-space-3);
+
+		summary {
+			display: inline-block;
+			color: var(--prstsearch-accent);
+			cursor: pointer;
+		}
+	}
+
+	// In forced colours fills are replaced; keep the bars distinguishable.
+	@media (forced-colors: active) {
+
+		&__bar {
+			fill: CanvasText;
+			stroke: Canvas;
+		}
+
+		&__bar--output {
+			fill: Highlight;
+		}
+	}
+}
+
+.prstsearch-ranking {
+	margin: 0;
+	list-style: none;
+
+	&__item {
+		display: flex;
+		gap: var(--prstsearch-space-4);
+		justify-content: space-between;
+		margin: 0;
+		padding: var(--prstsearch-space-3) 0;
+		border-bottom: 1px solid var(--prstsearch-border-soft);
+
+		&:last-child {
+			border-bottom: 0;
+		}
+	}
+
+	&__query {
+		overflow-wrap: anywhere;
+	}
+
+	&__count {
+		font-weight: 500;
+		font-variant-numeric: tabular-nums;
+	}
+}
+
+.prstsearch-filter {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--prstsearch-space-2);
+	margin: var(--prstsearch-space-4) 0;
+
+	.prstsearch-input {
+		width: auto;
+		min-width: 200px;
+	}
+}
+
+.prstsearch-table-wrap {
+	overflow-x: auto;
+}
+
+.prstsearch-table {
+	width: 100%;
+	border-collapse: collapse;
+
+	th,
+	td {
+		padding: var(--prstsearch-space-3) var(--prstsearch-space-3) var(--prstsearch-space-3) 0;
+		text-align: left;
+		white-space: nowrap;
+		border-bottom: 1px solid var(--prstsearch-border-soft);
+	}
+
+	thead th {
+		color: var(--prstsearch-text-muted);
+		font-weight: 400;
+	}
+
+	tbody th {
+		font-weight: 400;
+	}
+
+	&__number {
+		font-variant-numeric: tabular-nums;
+	}
+
+	// Doubled class: beats the generic cell rule above.
+	.prstsearch-table__number.prstsearch-table__number {
+		padding-right: 0;
+		padding-left: var(--prstsearch-space-3);
+		text-align: right;
+	}
+}
+
+.prstsearch-pagination {
+	display: flex;
+	flex-wrap: wrap;
+	gap: var(--prstsearch-space-4);
+	align-items: center;
+	margin-top: var(--prstsearch-space-4);
+
+	&__info {
+		margin-right: auto;
+		color: var(--prstsearch-text-muted);
+	}
+}
