@@ -8,6 +8,11 @@
 import { request } from './api';
 
 const DEBOUNCE_MS = 200;
+
+/**
+ * Number of the most recent request for pages.
+ */
+let lastAsked = 0;
 const MIN_LENGTH = 2;
 
 /**
@@ -98,17 +103,24 @@ async function offerPages( text, pages ) {
 		return;
 	}
 
+	// Answers can arrive in another order than the questions. Only the answer to the last question counts.
+	const asked = ++lastAsked;
+
 	try {
 		const found = await request(
 			`/index/pages?q=${ encodeURIComponent( text ) }`
 		);
 
+		if ( asked !== lastAsked || ! Array.isArray( found ) ) {
+			return;
+		}
+
 		pages.replaceChildren(
 			...found.map( ( page ) => {
 				const option = document.createElement( 'option' );
 
+				// The value alone: some browsers show a label instead of it, and the label would hide the title.
 				option.value = `${ page.title } #${ page.id }`;
-				option.label = page.type;
 
 				return option;
 			} )

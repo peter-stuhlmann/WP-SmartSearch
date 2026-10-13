@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-13T02:01:55+02:00\n"
+"POT-Creation-Date: 2026-10-13T03:30:06+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: smart-search\n"
@@ -437,29 +437,29 @@ msgid "Looking for further matching pages …"
 msgstr ""
 
 #. translators: %s: search phrase.
-#: src/Frontend/ResultRenderer.php:68
+#: src/Frontend/ResultRenderer.php:69
 #, php-format
 msgid "No results for “%s”."
 msgstr ""
 
 #. translators: 1: number of results, 2: search phrase.
-#: src/Frontend/ResultRenderer.php:73
+#: src/Frontend/ResultRenderer.php:74
 #, php-format
 msgid "%1$s result for “%2$s”"
 msgid_plural "%1$s results for “%2$s”"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Frontend/ResultRenderer.php:110
+#: src/Frontend/ResultRenderer.php:111
 msgid "Recommended"
 msgstr ""
 
-#: src/Frontend/ResultRenderer.php:160
+#: src/Frontend/ResultRenderer.php:161
 msgid "All"
 msgstr ""
 
 #. translators: 1: citation number, 2: page title.
-#: src/Frontend/ResultRenderer.php:298
+#: src/Frontend/ResultRenderer.php:320
 #, php-format
 msgid "Source %1$d: %2$s"
 msgstr ""
@@ -598,6 +598,10 @@ msgstr ""
 msgid "AI answer"
 msgstr ""
 
+#: src/Support/PostTitle.php:29
+msgid "(no title)"
+msgstr ""
+
 #: templates/answer-placeholder.php:32
 msgid "Writing an answer …"
 msgstr ""
@@ -624,7 +628,7 @@ msgstr ""
 msgid "Try fewer or more general words, or check the spelling."
 msgstr ""
 
-#: templates/results.php:43
+#: templates/results.php:46
 msgid "Show more results"
 msgstr ""
 
@@ -662,15 +666,15 @@ msgstr ""
 msgid "Last updated"
 msgstr ""
 
-#: views/admin/page.php:54
+#: views/admin/page.php:57
 msgid "Smart Search sections"
 msgstr ""
 
-#: views/admin/page.php:79
+#: views/admin/page.php:82
 msgid "Overview"
 msgstr ""
 
-#: views/admin/page.php:90
+#: views/admin/page.php:93
 msgid "Cancel"
 msgstr ""
 
@@ -786,7 +790,7 @@ msgid "Comments"
 msgstr ""
 
 #: views/admin/tab-content.php:49
-msgid "Approved comments are searched with the content they belong to. The result is that content, not the single comment."
+msgid "Approved comments are searched with the content they belong to. The result is that content, not the single comment. AI answers can quote them too, so switch this off if comments appear without being checked."
 msgstr ""
 
 #: views/admin/tab-content.php:54

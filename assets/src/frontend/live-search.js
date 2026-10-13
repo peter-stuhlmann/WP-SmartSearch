@@ -2,11 +2,17 @@
  * Search that shows its results on the same page.
  *
  * Progressive enhancement: without this script the form submits to the
- * regular search page, and the filter links lead there as well.
+ * regular search page, and the filter and "more" links lead there as well.
  */
 import { getJson, settings } from './api';
 import { loadAnswers } from './answer';
 import { createClickTracker } from './clicks';
+
+const MORE = '[data-prstsearch-more]';
+const FILTER = '[data-prstsearch-type]';
+const CURRENT_FILTER = `${ FILTER }[aria-current="true"]`;
+const ANSWER = '[data-prstsearch-answer]';
+const RESULT_LINK = '[data-prstsearch-list] a';
 
 /**
  * Turns a container with a search form and an output region into a live search.
@@ -34,7 +40,10 @@ export function enhanceLiveSearch( container, rendered = null ) {
 	 */
 	let shown = {
 		query: input.defaultValue.trim(),
-		type: '',
+		// A list the server printed can already be limited to a content type.
+		type:
+			output.querySelector( CURRENT_FILTER )?.dataset.prstsearchType ??
+			'',
 		token: rendered?.token ?? '',
 	};
 
@@ -45,6 +54,13 @@ export function enhanceLiveSearch( container, rendered = null ) {
 	 * @type {?AbortController}
 	 */
 	let request = null;
+
+	/**
+	 * Whether a new search is on its way. Until it arrives, the list on
+	 * screen is on its way out, and its controls no longer do anything:
+	 * acting on them would cancel the search the visitor just started.
+	 */
+	let isSearching = false;
 
 	if ( rendered ) {
 		tracker.replace( rendered.token, rendered.posts );
@@ -66,13 +82,28 @@ export function enhanceLiveSearch( container, rendered = null ) {
 	const end = ( current ) => {
 		if ( request === current ) {
 			request = null;
+			isSearching = false;
 			output.removeAttribute( 'aria-busy' );
 		}
 	};
 
 	const show = ( data ) => {
+		// An answer that is already there, or being written, is the answer to this query whatever the filter.
+		const answer = output.querySelector( ANSWER );
+		const keeps = answer?.dataset.query === data.query;
+
 		// The markup comes from the plugin's own, escaped PHP templates.
 		output.innerHTML = ( showAnswer ? data.answer_html : '' ) + data.html;
+
+		if ( keeps ) {
+			const placeholder = output.querySelector( ANSWER );
+
+			if ( placeholder ) {
+				placeholder.replaceWith( answer );
+			} else {
+				output.prepend( answer );
+			}
+		}
 
 		loadAnswers( output );
 		tracker.replace( data.token, postsOf( data ) );
@@ -89,10 +120,10 @@ export function enhanceLiveSearch( container, rendered = null ) {
 		const note = pendingNote( settings().strings.refining );
 
 		output.prepend( note );
+		// Said through the region that was there from the start; a note inserted with its text would stay silent.
+		announce( settings().strings.refining );
 		// A further page would belong to the list that is about to change.
-		output
-			.querySelector( '[data-prstsearch-more]' )
-			?.setAttribute( 'aria-disabled', 'true' );
+		output.querySelector( MORE )?.setAttribute( 'aria-disabled', 'true' );
 
 		try {
 			const data = await getJson(
@@ -106,27 +137,27 @@ export function enhanceLiveSearch( container, rendered = null ) {
 				current.signal
 			);
 
-			if ( sameResults( first, data ) ) {
+			assertResults( data );
+
+			if ( sameResults( first, data ) && ! data.answer_html ) {
+				announce( first.summary );
 				return;
 			}
 
-			const hadFocus = output.contains(
-				output.ownerDocument.activeElement
-			);
+			const focused = describeFocus( output );
 
 			show( data );
-
-			// Replacing the list removes the element that had focus. It must not fall back to the top of the page.
-			if ( hadFocus ) {
-				output.querySelector( '[data-prstsearch-list] a' )?.focus();
-			}
+			restoreFocus( output, focused );
 		} catch {
 			// The results the search found by itself stay. Nothing is lost, so nothing is reported.
+			if ( ! current.signal.aborted ) {
+				announce( first.summary );
+			}
 		} finally {
 			if ( ! current.signal.aborted ) {
 				note.remove();
 				output
-					.querySelector( '[data-prstsearch-more]' )
+					.querySelector( MORE )
 					?.removeAttribute( 'aria-disabled' );
 			}
 
@@ -134,9 +165,17 @@ export function enhanceLiveSearch( container, rendered = null ) {
 		}
 	};
 
-	const search = async ( query, type = '' ) => {
+	/**
+	 * Searches and shows the results.
+	 *
+	 * @param {string}  query        The search phrase.
+	 * @param {string}  [type]       Content type to limit the results to.
+	 * @param {boolean} [keepsFocus] Whether the search was started from inside the results, so focus has to stay there.
+	 */
+	const search = async ( query, type = '', keepsFocus = false ) => {
 		const current = begin();
 
+		isSearching = true;
 		output.setAttribute( 'aria-busy', 'true' );
 		announce( settings().strings.searching );
 
@@ -147,8 +186,16 @@ export function enhanceLiveSearch( container, rendered = null ) {
 				current.signal
 			);
 
+			assertResults( data );
+
 			shown = { query, type, token: data.token };
 			show( data );
+
+			// The filter that was chosen is gone with the old list. Focus goes to its successor.
+			if ( keepsFocus ) {
+				output.querySelector( CURRENT_FILTER )?.focus();
+			}
+
 			end( current );
 
 			if ( data.pending ) {
@@ -166,21 +213,22 @@ export function enhanceLiveSearch( container, rendered = null ) {
 		}
 	};
 
-	const loadMore = async ( button ) => {
+	const loadMore = async ( link ) => {
 		const current = begin();
 
-		// aria-disabled instead of disabled keeps the button focusable while loading.
-		button.setAttribute( 'aria-disabled', 'true' );
+		// aria-disabled keeps the link focusable while loading.
+		link.setAttribute( 'aria-disabled', 'true' );
 		output.querySelector( '[data-prstsearch-error]' )?.remove();
 
 		try {
 			const data = await getJson(
 				'/search',
-				{ q: shown.query, type: shown.type, page: button.dataset.page },
+				{ q: shown.query, type: shown.type, page: link.dataset.page },
 				current.signal
 			);
 
-			appendResults( output, button, data );
+			assertResults( data );
+			appendResults( output, link, data );
 
 			// Only the first page is logged, so further pages count towards its entry.
 			tracker.add( shown.token, postsOf( data ) );
@@ -189,8 +237,8 @@ export function enhanceLiveSearch( container, rendered = null ) {
 				return;
 			}
 
-			button.removeAttribute( 'aria-disabled' );
-			button.after( errorMessage( settings().strings.moreError ) );
+			link.removeAttribute( 'aria-disabled' );
+			link.after( errorMessage( settings().strings.moreError ) );
 		} finally {
 			end( current );
 		}
@@ -208,17 +256,25 @@ export function enhanceLiveSearch( container, rendered = null ) {
 
 	output.addEventListener( 'click', ( event ) => {
 		const target = event.target instanceof Element ? event.target : null;
-		const button = target?.closest( '[data-prstsearch-more]' );
-		const filter = target?.closest( '[data-prstsearch-type]' );
+		const more = target?.closest( MORE );
+		const filter = target?.closest( FILTER );
 
-		if ( button && button.getAttribute( 'aria-disabled' ) !== 'true' ) {
-			loadMore( button );
+		// Somebody opening a link in a new tab wants the link, not this script. And without a query
+		// to work with, the link does what it would do without the script: go to the search page.
+		if ( ( ! more && ! filter ) || isModified( event ) || ! shown.query ) {
+			return;
 		}
 
-		// Without a query to filter, the link goes to the search page as it would without this script.
-		if ( filter && shown.query ) {
-			event.preventDefault();
-			search( shown.query, filter.dataset.prstsearchType );
+		event.preventDefault();
+
+		if ( isSearching ) {
+			return;
+		}
+
+		if ( more && more.getAttribute( 'aria-disabled' ) !== 'true' ) {
+			loadMore( more );
+		} else if ( filter ) {
+			search( shown.query, filter.dataset.prstsearchType, true );
 		}
 	} );
 }
@@ -227,10 +283,10 @@ export function enhanceLiveSearch( container, rendered = null ) {
  * Adds a further page of results to the list and moves focus to the first new one.
  *
  * @param {HTMLElement} output Output region.
- * @param {HTMLElement} button The "more" button that was pressed.
+ * @param {HTMLElement} link   The "more" link that was activated.
  * @param {Object}      data   Response of the search route.
  */
-function appendResults( output, button, data ) {
+function appendResults( output, link, data ) {
 	const list = output.querySelector( '[data-prstsearch-list]' );
 
 	if ( ! list ) {
@@ -241,17 +297,104 @@ function appendResults( output, button, data ) {
 
 	list.insertAdjacentHTML( 'beforeend', data.items_html );
 
-	// Keyboard users continue where the new results begin, not at the button that may be gone.
+	// Keyboard users continue where the new results begin, not at the link that may be gone.
 	const firstNewLink = list.children[ previousCount ]?.querySelector( 'a' );
 
 	if ( data.page < data.pages ) {
-		button.dataset.page = String( data.page + 1 );
-		button.removeAttribute( 'aria-disabled' );
+		link.dataset.page = String( data.page + 1 );
+		link.removeAttribute( 'aria-disabled' );
 	} else {
-		button.remove();
+		link.remove();
 	}
 
 	firstNewLink?.focus();
+}
+
+/**
+ * Makes sure a response is what the search route sends.
+ *
+ * A proxy or a security plugin can answer in its place, with status 200 and
+ * something else entirely. That is a failed search, not an empty one.
+ *
+ * @param {*} data Decoded response.
+ */
+function assertResults( data ) {
+	const isValid =
+		data &&
+		Array.isArray( data.results ) &&
+		typeof data.html === 'string' &&
+		typeof data.items_html === 'string';
+
+	if ( ! isValid ) {
+		throw new Error( 'Unexpected response of the search.' );
+	}
+}
+
+/**
+ * Tells whether a click was made with a key or a button that asks the browser for something else.
+ *
+ * @param {MouseEvent} event The click.
+ * @return {boolean} Whether to leave the click to the browser.
+ */
+function isModified( event ) {
+	return (
+		event.button > 0 ||
+		event.ctrlKey ||
+		event.metaKey ||
+		event.shiftKey ||
+		event.altKey
+	);
+}
+
+/**
+ * Notes what has focus inside the output region, in a way that survives the region being rebuilt.
+ *
+ * @param {HTMLElement} output Output region.
+ * @return {?{selector: string, href: string}} What to look for afterwards, null if focus is elsewhere.
+ */
+function describeFocus( output ) {
+	const focused = output.ownerDocument.activeElement;
+
+	if ( ! focused || ! output.contains( focused ) ) {
+		return null;
+	}
+
+	if ( focused.matches( MORE ) ) {
+		return { selector: MORE, href: '' };
+	}
+
+	if ( focused.matches( FILTER ) ) {
+		return { selector: CURRENT_FILTER, href: '' };
+	}
+
+	return {
+		selector: RESULT_LINK,
+		href: focused.getAttribute( 'href' ) ?? '',
+	};
+}
+
+/**
+ * Puts focus back where it was after the output region was rebuilt.
+ *
+ * On the same control if it still exists, otherwise on the first result:
+ * never on nothing, which would send a keyboard user back to the top of the page.
+ *
+ * @param {HTMLElement}                       output  Output region.
+ * @param {?{selector: string, href: string}} focused What had focus, see describeFocus().
+ */
+function restoreFocus( output, focused ) {
+	if ( ! focused ) {
+		return;
+	}
+
+	const candidates = [ ...output.querySelectorAll( focused.selector ) ];
+	const same = focused.href
+		? candidates.find(
+				( link ) => link.getAttribute( 'href' ) === focused.href
+		  )
+		: candidates[ 0 ];
+
+	( same ?? output.querySelector( RESULT_LINK ) )?.focus();
 }
 
 /**
@@ -281,7 +424,7 @@ function sameResults( a, b ) {
 }
 
 /**
- * Builds the line that says the search is still looking.
+ * Builds the visible line that says the search is still looking.
  *
  * @param {string} [text] The message.
  * @return {HTMLElement} The line.
@@ -290,8 +433,8 @@ function pendingNote( text ) {
 	const note = document.createElement( 'p' );
 
 	note.className = 'prstsearch__pending';
-	// Read once, without interrupting the results the visitor is reading.
-	note.setAttribute( 'role', 'status' );
+	// Screen readers hear it from the status region; twice would be once too often.
+	note.setAttribute( 'aria-hidden', 'true' );
 	note.textContent = text ?? '';
 
 	return note;

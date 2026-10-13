@@ -45,25 +45,29 @@ export function createClickTracker( root, ignored = '' ) {
 	};
 
 	if ( settings().trackClicks ) {
+		const onOpen = ( event ) => {
+			const link =
+				event.target instanceof Element
+					? event.target.closest( 'a[href]' )
+					: null;
+
+			if ( ! link || isBesideTheResults( link, root, ignored ) ) {
+				return;
+			}
+
+			const result = results.get( normalize( link.href ) );
+
+			if ( result ) {
+				report( result );
+			}
+		};
+
 		// Capturing, so the click is seen even if a theme script stops it from bubbling.
+		root.addEventListener( 'click', onOpen, true );
+		// The middle button opens a result in a new tab. To the browser that is not a click.
 		root.addEventListener(
-			'click',
-			( event ) => {
-				const link =
-					event.target instanceof Element
-						? event.target.closest( 'a[href]' )
-						: null;
-
-				if ( ! link || isBesideTheResults( link, ignored ) ) {
-					return;
-				}
-
-				const result = results.get( normalize( link.href ) );
-
-				if ( result ) {
-					report( result );
-				}
-			},
+			'auxclick',
+			( event ) => event.button === 1 && onOpen( event ),
 			true
 		);
 	}
@@ -74,20 +78,30 @@ export function createClickTracker( root, ignored = '' ) {
 /**
  * Tells whether a link sits in a part of the page that does not show results.
  *
+ * Only what lies between the link and the watched region counts. Where the
+ * region itself is placed says nothing: a search in the site's header or in
+ * a sidebar shows its results there, and they are results all the same.
+ *
  * @param {Element} link    The clicked link.
+ * @param {Element} root    The watched region.
  * @param {string}  ignored Selector of parts that belong to another tracker.
  * @return {boolean} Whether the click should be ignored.
  */
-function isBesideTheResults( link, ignored ) {
-	if (
-		link.closest( NAVIGATION ) ||
-		( ignored && link.closest( ignored ) )
-	) {
+function isBesideTheResults( link, root, ignored ) {
+	const inside = ( selector ) => {
+		const found = link.closest( selector );
+
+		return found !== null && found !== root && root.contains( found )
+			? found
+			: null;
+	};
+
+	if ( inside( NAVIGATION ) || ( ignored && inside( ignored ) ) ) {
 		return true;
 	}
 
 	// Themes wrap result titles in a header inside the article. Only the site's own header and footer are meant.
-	const landmark = link.closest( 'header, footer' );
+	const landmark = inside( 'header, footer' );
 
 	return landmark !== null && landmark.closest( CONTENT ) === null;
 }

@@ -19,6 +19,7 @@ use PrstSearch\Security\Capabilities;
 use PrstSearch\Settings\Settings;
 use PrstSearch\Stats\SearchLogger;
 use PrstSearch\Support\Cache;
+use PrstSearch\Support\PostTitle;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -247,7 +248,7 @@ final class SearchRoutes implements Hookable {
 
 			foreach ( array_slice( $post_ids, 0, self::SUGGESTION_LIMIT ) as $post_id ) {
 				$suggestions[] = array(
-					'title' => html_entity_decode( get_the_title( $post_id ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
+					'title' => html_entity_decode( PostTitle::of( $post_id ), ENT_QUOTES | ENT_HTML5, 'UTF-8' ),
 					'url'   => esc_url_raw( (string) get_permalink( $post_id ) ),
 				);
 			}

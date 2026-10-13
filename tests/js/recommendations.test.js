@@ -137,16 +137,38 @@ describe( 'initRecommendations', () => {
 		expect( request ).not.toHaveBeenCalled();
 	} );
 
-	it( 'still accepts a page ID when the pages cannot be loaded', async () => {
+	it( 'keeps the pages it offered when a later lookup fails', async () => {
+		const { list, pages } = renderList();
+		const field = list.querySelector( '[data-prstsearch-rule-page]' );
+
+		await type( field, 'cont' );
+
 		request.mockRejectedValue( new Error( 'offline' ) );
 
-		const { list, pages } = renderList();
+		// A failure must neither empty the list nor surface as an error nobody handles.
+		await expect( type( field, 'conta' ) ).resolves.toBeUndefined();
+		expect( pages.children ).toHaveLength( 2 );
+	} );
 
-		await type(
-			list.querySelector( '[data-prstsearch-rule-page]' ),
-			'cont'
+	it( 'ignores an answer that arrives after a later question was asked', async () => {
+		const { list, pages } = renderList();
+		const field = list.querySelector( '[data-prstsearch-rule-page]' );
+		const answers = [];
+
+		request.mockImplementation(
+			() => new Promise( ( resolve ) => answers.push( resolve ) )
 		);
 
-		expect( pages.children ).toHaveLength( 0 );
+		await type( field, 'co' );
+		await type( field, 'contact f' );
+
+		answers[ 1 ]( [ { id: 34, title: 'Contact form', type: 'Page' } ] );
+		await jest.runAllTimersAsync();
+		answers[ 0 ]( [ { id: 99, title: 'Cookies', type: 'Page' } ] );
+		await jest.runAllTimersAsync();
+
+		expect( pages.querySelector( 'option' ).value ).toBe(
+			'Contact form #34'
+		);
 	} );
 } );

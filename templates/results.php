@@ -6,7 +6,7 @@
  *
  * @package PrstSearch
  *
- * @var array{results: \PrstSearch\Search\SearchResults, summary: string, types_html: string, items_html: string, has_more: bool} $args
+ * @var array{results: \PrstSearch\Search\SearchResults, summary: string, types_html: string, items_html: string, has_more: bool, more_url: string} $args
  */
 
 defined( 'ABSPATH' ) || exit;
@@ -39,9 +39,12 @@ $prstsearch_results = $args['results'];
 		</ol>
 
 		<?php if ( $args['has_more'] ) : ?>
-			<button type="button" class="prstsearch-results__more wp-element-button" data-prstsearch-more data-page="<?php echo esc_attr( (string) ( $prstsearch_results->page + 1 ) ); ?>">
+			<?php
+			// A link to the next page of the search. Inside a live search the script loads that page into this list instead.
+			?>
+			<a class="prstsearch-results__more wp-element-button" href="<?php echo esc_url( $args['more_url'] ); ?>" data-prstsearch-more data-page="<?php echo esc_attr( (string) ( $prstsearch_results->page + 1 ) ); ?>">
 				<?php esc_html_e( 'Show more results', 'smart-search' ); ?>
-			</button>
+			</a>
 		<?php endif; ?>
 	<?php endif; ?>
 </div>

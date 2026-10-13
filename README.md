@@ -24,7 +24,7 @@ Requires WordPress 6.6 and PHP 8.1. Global identifiers use the prefix `prstsearc
 - **Statistics.** Search phrase, time, mode, number of results and optionally tokens, costs, response time and the clicked result. No IP address, no user ID. Costs are stored with each search at the prices of that moment.
 - **Streaming.** AI answers can be shown while they are written (off by default). The provider's stream is passed on as server-sent events; the finished answer, with its links and sources, replaces the text at the end. If the server holds output back, the provider does not stream or the browser cannot read event streams, the answer arrives in one piece as before. A client plugged in through `prstsearch_ai_client` takes part by implementing `StreamingAiClient`.
 - **Caches.** The comparison by meaning of a query is kept for ten minutes, the embedding of a query for an hour, AI answers and the model's choices for a day, suggestions for five minutes. Values derived from the whole index, the vocabulary for spelling correction and the mean embedding, are never rebuilt while a visitor waits: after a change the previous value serves until the new one is ready.
-- **Limits.** Visitors can trigger paid provider calls, so these are capped per minute, for the whole site and per visitor. To tell visitors apart, a hash of the IP address serves as the name of a counter that lives for two minutes; the address itself is never stored and nothing of it reaches the statistics.
+- **Limits.** Visitors can trigger paid provider calls and entries in the statistics, so both are capped per minute, for the whole site and per visitor. Visitors are told apart without anything being kept that identifies them: the IP address is hashed together with the current minute and cut down to one of 4,096 group numbers, which many addresses share and which is another one a minute later. Only a count per group is stored, for two minutes. The address itself is never stored and nothing of it reaches the statistics. Behind a proxy or CDN every visitor arrives with the same address; pass the real one through `prstsearch_visitor_address`, otherwise all visitors share one limit. A search is cut to 200 characters and returns at most 200 results.
 
 ## Integration
 
@@ -61,7 +61,8 @@ The public routes return nothing a visitor could not read on the published websi
 | `prstsearch_centered_similarity_thresholds` | Tune the relevance levels of semantic search |
 | `prstsearch_similarity_thresholds` | The same for small websites, where similarities are compared as the provider reports them |
 | `prstsearch_ai_client` | Plug in a provider with a different API |
-| `prstsearch_requests_per_minute` | Provider calls visitors may trigger per minute, for the site and per visitor; 0 switches a limit off |
+| `prstsearch_requests_per_minute` | What visitors may trigger per minute, for the site and per visitor, by kind (`chat`, `embedding`, `log`); 0 switches a limit off |
+| `prstsearch_visitor_address` | The address visitors are told apart by for these limits; needed behind a proxy or CDN |
 | `prstsearch_template` | Change the path of a front-end template |
 
 ## Front-end styling

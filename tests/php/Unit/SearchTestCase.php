@@ -58,6 +58,7 @@ abstract class SearchTestCase extends WordPressTestCase {
 		$this->container->set( HttpTransport::class, fn (): HttpTransport => $this->provider );
 
 		Functions\stubTranslationFunctions();
+		Functions\when( 'wp_strip_all_tags' )->alias( 'strip_tags' );
 		Functions\when( 'get_post' )->alias( fn ( int $post_id ): ?WP_Post => $this->posts[ $post_id ] ?? null );
 		Functions\when( 'get_post_type' )->alias( fn ( int $post_id ): string|false => isset( $this->posts[ $post_id ] ) ? $this->posts[ $post_id ]->post_type : false );
 		Functions\when( 'get_post_meta' )->justReturn( '' );

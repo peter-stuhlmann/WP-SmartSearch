@@ -192,18 +192,64 @@ describe( 'loadAnswers', () => {
 			expect( global.fetch ).not.toHaveBeenCalled();
 		} );
 
-		it( 'falls back to the ordinary route when the stream fails, without reconnecting', async () => {
+		it( 'uses the ordinary route when the stream fails before anything arrived', async () => {
 			const { body } = renderPlaceholder();
 			const [ source ] = FakeEventSource.instances;
 
-			source.emit( 'text', 'We sh' );
 			source.emit( 'error' );
 			await settle();
 
 			expect( source.isClosed ).toBe( true );
-			expect( FakeEventSource.instances ).toHaveLength( 1 );
 			expect( global.fetch ).toHaveBeenCalledTimes( 1 );
 			expect( body.innerHTML ).toBe( FINISHED );
+		} );
+
+		it( 'keeps what was written and asks for no second answer when the stream breaks off', async () => {
+			const { region, body } = renderPlaceholder();
+			const [ source ] = FakeEventSource.instances;
+
+			source.emit( 'text', 'We ship worldwide' );
+			source.emit( 'error' );
+			await settle();
+
+			expect( source.isClosed ).toBe( true );
+			expect( global.fetch ).not.toHaveBeenCalled();
+			expect( region.isConnected ).toBe( true );
+			expect( body.textContent ).toBe( 'We ship worldwide' );
+			expect( body.getAttribute( 'aria-busy' ) ).toBe( 'false' );
+		} );
+
+		it( 'treats data it cannot read as a failed stream instead of waiting for ever', async () => {
+			const { body } = renderPlaceholder();
+			const [ source ] = FakeEventSource.instances;
+
+			source.listeners.done( { data: 'not json' } );
+			await settle();
+
+			expect( source.isClosed ).toBe( true );
+			expect( body.innerHTML ).toBe( FINISHED );
+		} );
+
+		it( 'keeps the growing text away from screen readers, which read the finished answer', () => {
+			const { body } = renderPlaceholder();
+
+			FakeEventSource.instances[ 0 ].emit( 'text', 'We ship' );
+
+			expect( body.firstElementChild.getAttribute( 'aria-hidden' ) ).toBe(
+				'true'
+			);
+		} );
+
+		it( 'stops listening when a new search has replaced the region', async () => {
+			const { region } = renderPlaceholder();
+			const [ source ] = FakeEventSource.instances;
+
+			region.remove();
+			source.emit( 'text', 'We ship' );
+			await settle();
+
+			expect( source.isClosed ).toBe( true );
+			expect( global.fetch ).not.toHaveBeenCalled();
 		} );
 
 		it( 'uses the ordinary route in browsers without event streams', async () => {

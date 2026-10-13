@@ -105,4 +105,20 @@
 	<rule ref="WordPress.WP.AlternativeFunctions">
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
+	<!-- Test doubles keep the signature of what they replace, also where they ignore a parameter. -->
+	<rule ref="Generic.CodeAnalysis.UnusedFunctionParameter">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<!-- Tests print nothing; an exception message there is read by PHPUnit, not by a browser. -->
+	<rule ref="WordPress.Security.EscapeOutput">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<!-- The sniff takes the arrow of a short closure for an assignment. -->
+	<rule ref="WordPress.CodeAnalysis.AssignmentInTernaryCondition">
+		<exclude-pattern>tests/*</exclude-pattern>
+	</rule>
+	<!-- The stand-in for wpdb has to carry its name. -->
+	<rule ref="PEAR.NamingConventions.ValidClassName">
+		<exclude-pattern>tests/php/stubs.php</exclude-pattern>
+	</rule>
 </ruleset>

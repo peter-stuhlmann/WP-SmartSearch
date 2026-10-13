@@ -267,6 +267,51 @@ describe( 'enhanceCombobox', () => {
 		expect( global.fetch ).not.toHaveBeenCalled();
 	} );
 
+	it( 'closes the list when the search is submitted, also if suggestions are still on their way', async () => {
+		const { input, listbox } = renderForm();
+		const form = document.querySelector( 'form' );
+
+		await type( input, 'ship' );
+		form.dispatchEvent( new Event( 'submit' ) );
+
+		expect( listbox.hidden ).toBe( true );
+
+		// Typed and submitted within the pause before suggestions are asked for.
+		input.value = 'shipping';
+		input.dispatchEvent( new Event( 'input' ) );
+		form.dispatchEvent( new Event( 'submit' ) );
+		await jest.runAllTimersAsync();
+
+		expect( listbox.hidden ).toBe( true );
+		expect( input.getAttribute( 'aria-expanded' ) ).toBe( 'false' );
+	} );
+
+	it( 'drops suggestions for text that has been typed over', async () => {
+		const answers = [];
+
+		global.fetch = jest.fn(
+			( url, { signal } ) =>
+				new Promise( ( resolve, reject ) => {
+					signal.addEventListener( 'abort', () =>
+						reject( new DOMException( 'Aborted', 'AbortError' ) )
+					);
+					answers.push( { signal } );
+				} )
+		);
+
+		const { input, listbox } = renderForm();
+
+		await type( input, 'sh' );
+
+		expect( answers ).toHaveLength( 1 );
+
+		input.value = 'shoes';
+		input.dispatchEvent( new Event( 'input' ) );
+
+		expect( answers[ 0 ].signal.aborted ).toBe( true );
+		expect( listbox.hidden ).toBe( true );
+	} );
+
 	it( 'does not ask the server twice for the same text', async () => {
 		const { input, listbox } = renderForm();
 

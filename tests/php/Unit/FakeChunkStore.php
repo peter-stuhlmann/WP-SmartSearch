@@ -42,6 +42,16 @@ final class FakeChunkStore implements ChunkStore {
 	public array $word_rows = array();
 
 	/**
+	 * Passages an older version of the plugin stored, which are still to be brought up to date.
+	 */
+	public int $incomplete = 0;
+
+	/**
+	 * The highest passage ID handed out so far.
+	 */
+	private int $last_id = 100000;
+
+	/**
 	 * Names of the search methods that were called, in order.
 	 *
 	 * @var string[]
@@ -49,19 +59,49 @@ final class FakeChunkStore implements ChunkStore {
 	public array $calls = array();
 
 	public function replace_post_chunks( int $post_id, string $post_type, string $title, array $chunks ): bool {
+		$stored = array();
+
+		foreach ( $this->passages as $passage ) {
+			if ( $passage['post_id'] === $post_id ) {
+				$stored[] = $passage['title'] . '|' . $passage['content'];
+			}
+		}
+
+		if ( array_map( static fn ( string $chunk ): string => $title . '|' . $chunk, array_values( $chunks ) ) === $stored ) {
+			return false;
+		}
+
+		$this->delete_post( $post_id );
+
+		foreach ( $chunks as $chunk ) {
+			$this->passages[] = array(
+				'id'      => ++$this->last_id,
+				'post_id' => $post_id,
+				'title'   => $title,
+				'content' => $chunk,
+			);
+		}
+
 		return true;
 	}
 
 	public function delete_post( int $post_id ): bool {
-		return false;
+		$before         = count( $this->passages );
+		$this->passages = array_values( array_filter( $this->passages, static fn ( array $passage ): bool => $passage['post_id'] !== $post_id ) );
+
+		return count( $this->passages ) < $before;
 	}
 
 	public function post_ids_after( int $after_id, int $limit ): array {
-		return array();
+		$post_ids = array_values( array_unique( array_column( $this->passages, 'post_id' ) ) );
+
+		sort( $post_ids );
+
+		return array_slice( array_values( array_filter( $post_ids, static fn ( int $post_id ): bool => $post_id > $after_id ) ), 0, $limit );
 	}
 
 	public function has_chunks( int $post_id ): bool {
-		return false;
+		return in_array( $post_id, array_column( $this->passages, 'post_id' ), true );
 	}
 
 	public function delete_other_post_types( array $post_types ): void {}
@@ -87,14 +127,25 @@ final class FakeChunkStore implements ChunkStore {
 	}
 
 	public function missing_embeddings( string $embedding_model, int $limit, int $post_id = 0 ): array {
-		return array();
+		$missing = array_filter(
+			$this->passages,
+			static fn ( array $passage ): bool => ! isset( $passage['embedding'] ) && ( 0 === $post_id || $passage['post_id'] === $post_id )
+		);
+
+		return array_slice( array_values( $missing ), 0, $limit );
 	}
 
 	public function has_missing_embeddings( int $post_id, string $embedding_model ): bool {
-		return false;
+		return array() !== $this->missing_embeddings( $embedding_model, 1, $post_id );
 	}
 
-	public function save_embedding( int $chunk_id, string $embedding, string $embedding_model ): void {}
+	public function save_embedding( int $chunk_id, string $embedding, string $embedding_model ): void {
+		foreach ( $this->passages as $position => $passage ) {
+			if ( $passage['id'] === $chunk_id ) {
+				$this->passages[ $position ]['embedding'] = Vector::unpack( $embedding );
+			}
+		}
+	}
 
 	public function fulltext_search( string $boolean_query, int $limit ): array {
 		$this->calls[] = 'fulltext';
@@ -197,7 +248,10 @@ final class FakeChunkStore implements ChunkStore {
 	}
 
 	public function complete_passages( int $limit ): int {
-		return 0;
+		$done              = min( $limit, $this->incomplete );
+		$this->incomplete -= $done;
+
+		return $done;
 	}
 
 	public function texts(): Generator {
@@ -248,7 +302,17 @@ final class FakeChunkStore implements ChunkStore {
 	}
 
 	public function suggest( string $text, int $limit ): array {
-		return array();
+		$this->calls[] = 'suggest';
+
+		$post_ids = array();
+
+		foreach ( $this->passages as $passage ) {
+			if ( '' !== $text && false !== mb_stripos( $passage['title'], $text ) ) {
+				$post_ids[] = $passage['post_id'];
+			}
+		}
+
+		return array_slice( array_values( array_unique( $post_ids ) ), 0, $limit );
 	}
 
 	/**

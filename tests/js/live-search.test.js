@@ -16,7 +16,7 @@ function response( title, extra = {} ) {
 		results: [ { id: 1, url: `https://example.org/${ title }/` } ],
 		answer_html: '',
 		html: `<ol data-prstsearch-list><li><a href="https://example.org/${ title }/">${ title }</a></li></ol>
-			<button type="button" data-prstsearch-more data-page="2">More</button>`,
+			<a href="https://example.org/?s=${ title }&paged=2" data-prstsearch-more data-page="2">More</a>`,
 		items_html: `<li><a href="https://example.org/${ title }/">${ title }</a></li>`,
 		...extra,
 	};
@@ -166,6 +166,52 @@ describe( 'enhanceLiveSearch', () => {
 			expect( searchParams.get( 'token' ) ).toBe( 'token-1' );
 		} );
 
+		it( 'says through the status region that it is still looking', async () => {
+			const requests = holdRequests();
+			const search = renderSearch();
+
+			submit( search, 'poultry' );
+			requests[ 0 ].resolve( NOTHING );
+			await settle();
+
+			// The region that was on the page from the start. A note inserted with its text would not be read out.
+			expect( search.status.textContent ).toBe(
+				'Looking for further matching pages …'
+			);
+			expect(
+				search.output
+					.querySelector( '.prstsearch__pending' )
+					.getAttribute( 'aria-hidden' )
+			).toBe( 'true' );
+
+			requests[ 1 ].resolve( { ...NOTHING, pending: false } );
+			await settle();
+
+			expect( search.status.textContent ).toBe(
+				'No results for poultry.'
+			);
+		} );
+
+		it( 'keeps focus on the same control when the results are replaced', async () => {
+			const requests = holdRequests();
+			const search = renderSearch();
+
+			submit( search, 'poultry' );
+			requests[ 0 ].resolve( {
+				...response( 'weak' ),
+				pending: true,
+			} );
+			await settle();
+
+			search.output.querySelector( '[data-prstsearch-more]' ).focus();
+			requests[ 1 ].resolve( response( 'chicken' ) );
+			await settle();
+
+			expect( document.activeElement ).toBe(
+				search.output.querySelector( '[data-prstsearch-more]' )
+			);
+		} );
+
 		it( 'replaces the results when the model found more', async () => {
 			const requests = holdRequests();
 			const search = renderSearch();
@@ -253,6 +299,125 @@ describe( 'enhanceLiveSearch', () => {
 		const FILTER =
 			'<nav><a href="https://example.org/?s=shipping&post_type=post" data-prstsearch-type="post">Posts</a></nav>';
 
+		it( 'leaves the link to the browser when it is opened in a new tab', async () => {
+			const requests = holdRequests();
+			const search = renderSearch();
+
+			submit( search, 'shipping' );
+			requests[ 0 ].resolve(
+				response( 'shipping', {
+					html: FILTER + response( 'shipping' ).html,
+				} )
+			);
+			await settle();
+
+			const click = new MouseEvent( 'click', {
+				bubbles: true,
+				cancelable: true,
+				ctrlKey: true,
+			} );
+
+			search.output
+				.querySelector( '[data-prstsearch-type]' )
+				.dispatchEvent( click );
+
+			expect( click.defaultPrevented ).toBe( false );
+			expect( requests ).toHaveLength( 1 );
+		} );
+
+		it( 'keeps keyboard focus in the results after a type was chosen', async () => {
+			const requests = holdRequests();
+			const search = renderSearch();
+			const chosen =
+				'<nav><a href="#" data-prstsearch-type="post" aria-current="true">Posts</a></nav>';
+
+			submit( search, 'shipping' );
+			requests[ 0 ].resolve(
+				response( 'shipping', {
+					html: FILTER + response( 'shipping' ).html,
+				} )
+			);
+			await settle();
+
+			const link = search.output.querySelector(
+				'[data-prstsearch-type]'
+			);
+
+			link.focus();
+			link.click();
+			requests[ 1 ].resolve(
+				response( 'shipping', {
+					html: chosen + response( 'shipping' ).html,
+				} )
+			);
+			await settle();
+
+			expect( document.activeElement ).toBe(
+				search.output.querySelector( '[aria-current="true"]' )
+			);
+		} );
+
+		it( 'continues a list the server already limited to a type', () => {
+			const requests = holdRequests();
+
+			document.body.innerHTML = `
+				<div data-prstsearch-live>
+					<form data-prstsearch-form><input type="search" name="s" value="shipping" /></form>
+					<div data-prstsearch-output>
+						<nav><a href="#" data-prstsearch-type="post" aria-current="true">Posts</a></nav>
+						${ response( 'shipping' ).html }
+					</div>
+				</div>`;
+
+			enhanceLiveSearch(
+				document.querySelector( '[data-prstsearch-live]' )
+			);
+			document.querySelector( '[data-prstsearch-more]' ).click();
+
+			expect( requests[ 0 ].url.searchParams.get( 'type' ) ).toBe(
+				'post'
+			);
+		} );
+
+		it( 'does not ask for the answer again, which is the same for every type', async () => {
+			const requests = holdRequests();
+			const search = renderSearch();
+			const placeholder =
+				'<section data-prstsearch-answer data-query="shipping" data-loaded="true"><p>The answer.</p></section>';
+
+			submit( search, 'shipping' );
+			requests[ 0 ].resolve(
+				response( 'shipping', {
+					query: 'shipping',
+					answer_html: placeholder,
+					html: FILTER + response( 'shipping' ).html,
+				} )
+			);
+			await settle();
+
+			const answer = search.output.querySelector(
+				'[data-prstsearch-answer]'
+			);
+
+			search.output.querySelector( '[data-prstsearch-type]' ).click();
+			requests[ 1 ].resolve(
+				response( 'shipping', {
+					query: 'shipping',
+					answer_html: placeholder.replace(
+						' data-loaded="true"',
+						''
+					),
+				} )
+			);
+			await settle();
+
+			// The very element, not a new placeholder that would load the answer once more.
+			expect(
+				search.output.querySelector( '[data-prstsearch-answer]' )
+			).toBe( answer );
+			expect( requests ).toHaveLength( 2 );
+		} );
+
 		it( 'searches again for the chosen type instead of leaving the page', async () => {
 			const requests = holdRequests();
 			const search = renderSearch();
@@ -291,6 +456,69 @@ describe( 'enhanceLiveSearch', () => {
 			);
 			expect( requests[ 2 ].url.searchParams.get( 'page' ) ).toBe( '2' );
 		} );
+	} );
+
+	describe( 'while a new search is on its way', () => {
+		it( 'does not let a control of the old list cancel it', async () => {
+			const requests = holdRequests();
+			const search = renderSearch();
+
+			submit( search, 'first' );
+			requests[ 0 ].resolve( response( 'first' ) );
+			await settle();
+
+			submit( search, 'second' );
+			search.output.querySelector( '[data-prstsearch-more]' ).click();
+
+			expect( requests ).toHaveLength( 2 );
+			expect( requests[ 1 ].signal.aborted ).toBe( false );
+
+			requests[ 1 ].resolve( response( 'second' ) );
+			await settle();
+
+			expect( search.output.querySelector( 'a' ).textContent ).toBe(
+				'second'
+			);
+			expect( search.status.textContent ).toBe( '1 result for second' );
+		} );
+	} );
+
+	it( 'reports a response that is not from the search as a failed search', async () => {
+		const requests = holdRequests();
+		const search = renderSearch();
+
+		submit( search, 'shipping' );
+		// What a proxy or a security plugin answers in place of the website, with status 200.
+		requests[ 0 ].resolve( { code: 'blocked' } );
+		await settle();
+
+		expect(
+			search.output.querySelector( '[role="alert"]' ).textContent
+		).toBe( 'The search is not available.' );
+		expect( search.output.textContent ).not.toContain( 'undefined' );
+	} );
+
+	it( 'keeps the list as it is when a further page comes back as something else', async () => {
+		const requests = holdRequests();
+		const search = renderSearch();
+
+		submit( search, 'shipping' );
+		requests[ 0 ].resolve( response( 'shipping' ) );
+		await settle();
+
+		const more = search.output.querySelector( '[data-prstsearch-more]' );
+
+		more.click();
+		requests[ 1 ].resolve( { code: 'blocked' } );
+		await settle();
+
+		expect(
+			search.output.querySelectorAll( '[data-prstsearch-list] a' )
+		).toHaveLength( 1 );
+		expect( more.isConnected ).toBe( true );
+		expect(
+			search.output.querySelector( '[role="alert"]' ).textContent
+		).toBe( 'More results could not be loaded.' );
 	} );
 
 	it( 'does not search for an empty query', () => {

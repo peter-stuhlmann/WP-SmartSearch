@@ -46,7 +46,7 @@ $prstsearch_excluded = $view->excluded_posts();
 			$fields->switch_row(
 				'index_comments',
 				__( 'Comments', 'smart-search' ),
-				__( 'Approved comments are searched with the content they belong to. The result is that content, not the single comment.', 'smart-search' )
+				__( 'Approved comments are searched with the content they belong to. The result is that content, not the single comment. AI answers can quote them too, so switch this off if comments appear without being checked.', 'smart-search' )
 			);
 
 			$fields->switch_row(

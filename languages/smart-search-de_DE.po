@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-12T20:56:10+02:00\n"
-"PO-Revision-Date: 2026-10-13T00:01:56+00:00\n"
+"PO-Revision-Date: 2026-10-13T01:30:07+00:00\n"
 "Language: de_DE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: smart-search\n"
@@ -437,29 +437,29 @@ msgid "Looking for further matching pages …"
 msgstr "Suche nach weiteren passenden Seiten …"
 
 #. translators: %s: search phrase.
-#: src/Frontend/ResultRenderer.php:68
+#: src/Frontend/ResultRenderer.php:69
 #, php-format
 msgid "No results for “%s”."
 msgstr "Keine Treffer für „%s“."
 
 #. translators: 1: number of results, 2: search phrase.
-#: src/Frontend/ResultRenderer.php:73
+#: src/Frontend/ResultRenderer.php:74
 #, php-format
 msgid "%1$s result for “%2$s”"
 msgid_plural "%1$s results for “%2$s”"
 msgstr[0] "%1$s Treffer für „%2$s“"
 msgstr[1] "%1$s Treffer für „%2$s“"
 
-#: src/Frontend/ResultRenderer.php:110
+#: src/Frontend/ResultRenderer.php:111
 msgid "Recommended"
 msgstr "Empfohlen"
 
-#: src/Frontend/ResultRenderer.php:160
+#: src/Frontend/ResultRenderer.php:161
 msgid "All"
 msgstr "Alle"
 
 #. translators: 1: citation number, 2: page title.
-#: src/Frontend/ResultRenderer.php:298
+#: src/Frontend/ResultRenderer.php:320
 #, php-format
 msgid "Source %1$d: %2$s"
 msgstr "Quelle %1$d: %2$s"
@@ -598,6 +598,10 @@ msgstr "Semantisch"
 msgid "AI answer"
 msgstr "KI-Antwort"
 
+#: src/Support/PostTitle.php:29
+msgid "(no title)"
+msgstr "(ohne Titel)"
+
 #: templates/answer-placeholder.php:32
 msgid "Writing an answer …"
 msgstr "Antwort wird geschrieben …"
@@ -624,7 +628,7 @@ msgstr "Für deine Schreibweise wurde nichts gefunden. Angezeigt werden Treffer 
 msgid "Try fewer or more general words, or check the spelling."
 msgstr "Versuche es mit weniger oder allgemeineren Wörtern oder prüfe die Schreibweise."
 
-#: templates/results.php:43
+#: templates/results.php:46
 msgid "Show more results"
 msgstr "Weitere Treffer anzeigen"
 
@@ -662,15 +666,15 @@ msgstr "Textabschnitte"
 msgid "Last updated"
 msgstr "Zuletzt aktualisiert"
 
-#: views/admin/page.php:54
+#: views/admin/page.php:57
 msgid "Smart Search sections"
 msgstr "Bereiche von Smart Search"
 
-#: views/admin/page.php:79
+#: views/admin/page.php:82
 msgid "Overview"
 msgstr "Übersicht"
 
-#: views/admin/page.php:90
+#: views/admin/page.php:93
 msgid "Cancel"
 msgstr "Abbrechen"
 
@@ -786,8 +790,8 @@ msgid "Comments"
 msgstr "Kommentare"
 
 #: views/admin/tab-content.php:49
-msgid "Approved comments are searched with the content they belong to. The result is that content, not the single comment."
-msgstr "Freigegebene Kommentare werden zusammen mit dem Inhalt durchsucht, zu dem sie gehören. Der Treffer ist dieser Inhalt, nicht der einzelne Kommentar."
+msgid "Approved comments are searched with the content they belong to. The result is that content, not the single comment. AI answers can quote them too, so switch this off if comments appear without being checked."
+msgstr "Freigegebene Kommentare werden zusammen mit dem Inhalt durchsucht, zu dem sie gehören. Der Treffer ist dieser Inhalt, nicht der einzelne Kommentar. Auch KI-Antworten können daraus zitieren. Schalte das deshalb aus, wenn Kommentare ungeprüft erscheinen."
 
 #: views/admin/tab-content.php:54
 msgid "Categories and tags"

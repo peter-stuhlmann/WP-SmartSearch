@@ -15,10 +15,11 @@
 	--prstsearch-surface-muted: color-mix(in srgb, currentcolor 5%, transparent);
 
 	// The list of suggestions lies on top of the page and brings its own
-	// background. Background and text come as a pair, or the light text of a
-	// dark section would end up on a light list.
-	--prstsearch-surface-overlay: var(--wp--preset--color--base, Canvas);
-	--prstsearch-text-overlay: var(--wp--preset--color--contrast, CanvasText);
+	// background. Background and text are the browser's pair for exactly
+	// that, which always fits together. Two presets of a theme do not have
+	// to: one may be defined and the other missing.
+	--prstsearch-surface-overlay: Canvas;
+	--prstsearch-text-overlay: CanvasText;
 	--prstsearch-shadow: rgb(0 0 0 / 12%);
 	--prstsearch-error: color-mix(in srgb, #cc1818 75%, currentcolor);
 	--prstsearch-text-muted: color-mix(in srgb, currentcolor 70%, transparent);
@@ -74,7 +75,9 @@
 		list-style: none;
 	}
 
-	&__link {
+	// With the element, so the look of the chips holds against a theme's
+	// rule for links in the content, such as ".entry-content a".
+	a.prstsearch-types__link {
 		display: inline-flex;
 		gap: 0.4em;
 		align-items: baseline;
@@ -227,6 +230,7 @@
 	}
 
 	&__more {
+		display: inline-block;
 		margin-top: calc(var(--prstsearch-gap) * 1.5);
 		cursor: pointer;
 

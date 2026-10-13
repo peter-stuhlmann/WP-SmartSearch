@@ -24,8 +24,10 @@ final class Installer {
 	 * decimals, because the embedding of a search phrase costs less than a millionth of a dollar,
 	 * and removes the single cost column of version 1. Version 4 searches word stems instead
 	 * of the text itself and stores a signature of every embedding, see IndexTerms and Vector.
+	 * Version 5 changed nothing in the tables, but how words are reduced to their stems, so the
+	 * stems stored for every passage have to be built again.
 	 */
-	private const SCHEMA_VERSION = '4';
+	private const SCHEMA_VERSION = '5';
 
 	/**
 	 * Creates the installer.
@@ -90,6 +92,9 @@ final class Installer {
 
 		$this->drop_index( $this->chunks_table(), 'search_text' );
 		$this->drop_index( $this->chunks_table(), 'embedding_model' );
+
+		// Passages without terms count as stored by an older version and are completed in the background.
+		$this->wpdb->query( $this->wpdb->prepare( "UPDATE %i SET terms = ''", $this->chunks_table() ) );
 
 		dbDelta(
 			"CREATE TABLE {$this->log_table()} (

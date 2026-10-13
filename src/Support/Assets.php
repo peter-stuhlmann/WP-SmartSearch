@@ -57,6 +57,9 @@ final class Assets {
 	 */
 	public function register_style( string $handle, string $name, array $dependencies = array() ): void {
 		wp_register_style( $handle, $this->build_url . $name . '.css', $dependencies, $this->meta( $name )['version'] );
+
+		// The build writes a mirrored copy of every stylesheet. This tells WordPress to load it for right-to-left languages.
+		wp_style_add_data( $handle, 'rtl', 'replace' );
 	}
 
 	/**

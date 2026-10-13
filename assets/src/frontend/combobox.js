@@ -9,6 +9,7 @@ import { getJson, settings } from './api';
 
 const MIN_LENGTH = 2;
 const DEBOUNCE_MS = 200;
+const MAX_REMEMBERED = 50;
 
 /**
  * Adds suggestions to a search field.
@@ -138,12 +139,12 @@ export function enhanceCombobox( field ) {
 					current.signal
 				) );
 
-			known.set( key, items );
-
 			// Cancelled while the response was read: the field was left or its text changed.
-			if ( current.signal.aborted ) {
+			if ( current.signal.aborted || ! Array.isArray( items ) ) {
 				return;
 			}
+
+			remember( known, key, items );
 
 			if ( items.length > 0 ) {
 				open( items );
@@ -159,9 +160,13 @@ export function enhanceCombobox( field ) {
 	};
 
 	input.addEventListener( 'input', () => {
-		window.clearTimeout( timer );
+		// Also the request already on its way: its answer would be suggestions for text that is no longer there.
+		cancel();
 		timer = window.setTimeout( load, DEBOUNCE_MS );
 	} );
+
+	// Searching is the end of choosing. Without this the list would open over the results a moment later.
+	input.form?.addEventListener( 'submit', close );
 
 	input.addEventListener( 'keydown', ( event ) => {
 		if ( ! isOpen() ) {
@@ -217,6 +222,22 @@ export function enhanceCombobox( field ) {
 	} );
 
 	input.addEventListener( 'blur', close );
+}
+
+/**
+ * Keeps suggestions for a text, and lets go of the oldest ones.
+ *
+ * @param {Map<string, Array>} known Suggestions by text.
+ * @param {string}             key   The text.
+ * @param {Array}              items Its suggestions.
+ */
+function remember( known, key, items ) {
+	known.set( key, items );
+
+	// A Map keeps the order of insertion, so the first key is the oldest.
+	if ( known.size > MAX_REMEMBERED ) {
+		known.delete( known.keys().next().value );
+	}
 }
 
 /**

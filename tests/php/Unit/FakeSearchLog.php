@@ -21,6 +21,13 @@ final class FakeSearchLog implements SearchLog {
 	 */
 	public array $entries = array();
 
+	/**
+	 * Clicked posts, keyed by the ID of the search.
+	 *
+	 * @var array<int, int>
+	 */
+	public array $clicks = array();
+
 	public function insert( array $entry ): int {
 		$id = count( $this->entries ) + 1;
 
@@ -34,7 +41,10 @@ final class FakeSearchLog implements SearchLog {
 		$this->entries[ $id ]['output_tokens'] += $output_tokens;
 	}
 
-	public function set_clicked_post( int $id, int $post_id ): void {}
+	public function set_clicked_post( int $id, int $post_id ): void {
+		// Only the first click counts, as in the database.
+		$this->clicks[ $id ] ??= $post_id;
+	}
 
 	public function delete_before( string $utc_datetime ): void {}
 

@@ -15,6 +15,7 @@ use PrstSearch\Search\Excerpt;
 use PrstSearch\Search\SearchHit;
 use PrstSearch\Search\SearchResults;
 use PrstSearch\Settings\Settings;
+use PrstSearch\Support\PostTitle;
 use WeakMap;
 
 /**
@@ -101,7 +102,7 @@ final class ResultRenderer {
 
 			$items[] = array(
 				'id'              => $post->ID,
-				'title'           => get_the_title( $post ),
+				'title'           => PostTitle::of( $post ),
 				'url'             => esc_url_raw( $this->url_of_passage( (string) get_permalink( $post ), Excerpt::fragment( $content, $terms, ! $hit->by_keyword ) ) ),
 				'type'            => null === $type ? '' : $type->labels->singular_name,
 				'excerpt'         => Excerpt::highlight( $passage, $terms ),
@@ -156,7 +157,7 @@ final class ResultRenderer {
 
 		arsort( $counts );
 
-		$current = 1 === count( $results->post_types ) ? $results->post_types[0] : '';
+		$current = self::chosen_type( $results );
 		$types   = array( $this->type_choice( '', __( 'All', 'smart-search' ), array_sum( $counts ), $results->query, $current ) );
 
 		foreach ( $counts as $post_type => $count ) {
@@ -165,6 +166,13 @@ final class ResultRenderer {
 		}
 
 		return $types;
+	}
+
+	/**
+	 * Returns the content type the results are limited to, or an empty string if they are not.
+	 */
+	private static function chosen_type( SearchResults $results ): string {
+		return 1 === count( $results->post_types ) ? $results->post_types[0] : '';
 	}
 
 	/**
@@ -177,12 +185,7 @@ final class ResultRenderer {
 			'type'       => $post_type,
 			'label'      => $label,
 			'count'      => $count,
-			// The address of the ordinary search page, so the filter works without JavaScript too.
-			'url'        => add_query_arg(
-				// Not array_filter(): a search for "0" is a search.
-				array( 's' => rawurlencode( $query ) ) + ( '' === $post_type ? array() : array( 'post_type' => $post_type ) ),
-				home_url( '/' )
-			),
+			'url'        => $this->search_url( $query, $post_type ),
 			'is_current' => $post_type === $current,
 		);
 	}
@@ -227,8 +230,31 @@ final class ResultRenderer {
 				'types_html' => $this->render_types( $results ),
 				'items_html' => $this->render_items( $results ),
 				'has_more'   => $results->page < $results->page_count(),
+				'more_url'   => $this->search_url( $results->query, self::chosen_type( $results ), $results->page + 1 ),
 			)
 		);
+	}
+
+	/**
+	 * Returns the address of a page of the ordinary search results, which works without JavaScript.
+	 *
+	 * @param string $query     The search phrase.
+	 * @param string $post_type Content type to limit the results to, or an empty string.
+	 * @param int    $page      Page of the results.
+	 */
+	private function search_url( string $query, string $post_type = '', int $page = 1 ): string {
+		// Built up, not filtered down: array_filter() would drop a search for "0".
+		$args = array( 's' => rawurlencode( $query ) );
+
+		if ( '' !== $post_type ) {
+			$args['post_type'] = $post_type;
+		}
+
+		if ( $page > 1 ) {
+			$args['paged'] = $page;
+		}
+
+		return add_query_arg( $args, home_url( '/' ) );
 	}
 
 	/**
@@ -252,7 +278,7 @@ final class ResultRenderer {
 
 		foreach ( $answer->source_ids as $position => $post_id ) {
 			$sources[ $position + 1 ] = array(
-				'title' => get_the_title( $post_id ),
+				'title' => PostTitle::of( $post_id ),
 				'url'   => (string) get_permalink( $post_id ),
 			);
 		}

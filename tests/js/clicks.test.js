@@ -98,6 +98,37 @@ describe( 'createClickTracker', () => {
 		expect( click( 'other' ) ).toBeNull();
 	} );
 
+	it( 'counts results of a search that itself sits in a header, a sidebar or a menu', () => {
+		for ( const wrapper of [ 'header', 'aside', 'nav' ] ) {
+			document.body.innerHTML = `<${ wrapper }><div id="live"><a id="hit" href="${ RESULT_URL }">Shipping</a></div></${ wrapper }>`;
+
+			createClickTracker( document.getElementById( 'live' ) ).replace(
+				'token-1',
+				{ [ RESULT_URL ]: 7 }
+			);
+
+			expect( click( 'hit' ) ).toEqual( {
+				token: 'token-1',
+				post_id: 7,
+			} );
+		}
+	} );
+
+	it( 'counts a result opened in a new tab with the middle button', () => {
+		createClickTracker( renderPage() ).replace( 'token-1', {
+			[ RESULT_URL ]: 7,
+		} );
+
+		navigator.sendBeacon.mockClear();
+		document
+			.getElementById( 'result' )
+			.dispatchEvent(
+				new MouseEvent( 'auxclick', { bubbles: true, button: 1 } )
+			);
+
+		expect( navigator.sendBeacon ).toHaveBeenCalledTimes( 1 );
+	} );
+
 	it( 'forgets the results of the previous search', () => {
 		const tracker = createClickTracker( renderPage() );
 

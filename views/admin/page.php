@@ -46,7 +46,10 @@ $prstsearch_has_sidebar = ! in_array( $data['current'], array( SettingsSchema::T
 	</header>
 
 	<?php if ( null !== $data['notice'] ) : ?>
-		<div class="prstsearch-notice prstsearch-notice--<?php echo esc_attr( $data['notice']['type'] ); ?>" role="<?php echo 'error' === $data['notice']['type'] ? 'alert' : 'status'; ?>">
+		<?php
+		// A message that is on the page from the start is not read out by itself. The script announces it.
+		?>
+		<div class="prstsearch-notice prstsearch-notice--<?php echo esc_attr( $data['notice']['type'] ); ?>" data-prstsearch-notice="<?php echo esc_attr( $data['notice']['type'] ); ?>">
 			<?php echo esc_html( $data['notice']['message'] ); ?>
 		</div>
 	<?php endif; ?>

@@ -24,6 +24,11 @@
 		transition: none;
 	}
 
+	// "display" above would otherwise show a button the markup hides.
+	&[hidden] {
+		display: none;
+	}
+
 	&--primary {
 		color: var(--prstsearch-text-on-accent);
 		background: var(--prstsearch-accent);
@@ -238,6 +243,16 @@
 		background: var(--prstsearch-accent-surface);
 		border-color: var(--prstsearch-accent);
 		box-shadow: inset 0 0 0 1px var(--prstsearch-accent);
+	}
+
+	// Forced colours remove backgrounds and shadows, which is all that
+	// marks the choice above.
+	@media (forced-colors: active) {
+
+		&:has(.prstsearch-card__input:checked) {
+			outline: 3px solid Highlight;
+			outline-offset: -3px;
+		}
 	}
 
 	&:has(.prstsearch-card__input:focus-visible) {
