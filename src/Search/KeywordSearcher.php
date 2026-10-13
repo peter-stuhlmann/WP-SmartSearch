@@ -25,6 +25,10 @@ use PrstSearch\Settings\Settings;
  * The order follows what a searcher would call the better match: first the
  * pages with more of the words, among those the ones where the words stand
  * together, then the score of the database, and at last the newer page.
+ *
+ * A word counts as a word, in any of its forms, or as the beginning or the
+ * end of a longer one. If no page has the search words that way, and the
+ * setting allows it, pages are returned that have them anywhere, inside words.
  */
 final class KeywordSearcher {
 
@@ -67,21 +71,42 @@ final class KeywordSearcher {
 		 * Several passages of one post can match, so more rows than posts are needed.
 		 *
 		 * A query of nothing but very short words, such as "ei", has no words the
-		 * index knows, and only then every passage is read for them. Not whenever
-		 * the index finds nothing: that is what a typing error looks like, and
-		 * reading the whole table for each would be the slowest answer to the
-		 * most common mistake. Typing errors are for the spelling correction.
+		 * index knows, so every passage is read for them.
 		 */
 		$rows = '' === $boolean_query
 			? $this->chunks->word_search( array_map( array( Stemmer::class, 'spellings' ), $terms->all() ), $limit * 3 )
 			: $this->chunks->fulltext_search( $boolean_query, $limit * 3 );
 
+		$matches = $this->ranked( $rows, $terms, $limit, false );
+
+		if ( array() !== $matches || ! $this->settings->bool( 'match_inside_words' ) ) {
+			return $matches;
+		}
+
+		/*
+		 * Nothing has the words as words. What remains is text inside words, which no index
+		 * finds: every passage has to be read, as the search of WordPress itself always does.
+		 * That is also what a typing error costs, which is why it can be switched off.
+		 */
+		$parts = array_values( array_filter( $terms->all(), static fn ( string $term ): bool => null !== TermCoverage::inside_pattern( $term ) ) );
+
+		return $this->ranked( $this->chunks->part_search( $parts, $limit * 3 ), $terms, $limit, true );
+	}
+
+	/**
+	 * Judges the rows the database returned and puts the posts they belong to in order.
+	 *
+	 * @param array<int, array{id: int, post_id: int, title: string, content: string, score: float}> $rows Rows, best first.
+	 * @param bool                                                                                   $anywhere Whether a term also counts where it stands inside a word.
+	 * @return array<int, array{chunk_id: int, coverage: float, in_title: bool, proximity: float, score: float}> Matches by post ID, best first.
+	 */
+	private function ranked( array $rows, QueryTerms $terms, int $limit, bool $anywhere ): array {
 		$compounds = $this->compounds( array_merge( array_column( $rows, 'title' ), array_column( $rows, 'content' ) ), $terms );
 
 		$matches = array();
 		$found   = array();
 
-		foreach ( $this->judge( $rows, $terms, $compounds ) as $row ) {
+		foreach ( $this->judge( $rows, $terms, $compounds, $anywhere ) as $row ) {
 			// The database decides roughly what a word is. A row without a single real match is none.
 			if ( 0.0 === $row['coverage'] ) {
 				continue;
@@ -109,7 +134,7 @@ final class KeywordSearcher {
 
 		$matches = array_slice( $matches, 0, $limit, true );
 
-		foreach ( $this->post_coverage( $matches, $found, $terms, $compounds ) as $post_id => $coverage ) {
+		foreach ( $this->post_coverage( $matches, $found, $terms, $compounds, $anywhere ) as $post_id => $coverage ) {
 			$matches[ $post_id ]['coverage'] = $coverage;
 		}
 
@@ -154,13 +179,14 @@ final class KeywordSearcher {
 	 * @param array<int, array<string, mixed>> $matches   Matches by post ID, best first.
 	 * @param array<int, string>               $found     Title and matching passages by post ID.
 	 * @param array<string, string[]>          $compounds Compounds of the matching passages that end with a short term.
+	 * @param bool                             $anywhere  Whether a term also counts where it stands inside a word.
 	 * @return array<int, float> Coverage by post ID.
 	 */
-	private function post_coverage( array $matches, array $found, QueryTerms $terms, array $compounds ): array {
+	private function post_coverage( array $matches, array $found, QueryTerms $terms, array $compounds, bool $anywhere ): array {
 		$coverage = array();
 
 		foreach ( array_keys( $matches ) as $post_id ) {
-			$coverage[ $post_id ] = TermCoverage::of( $found[ $post_id ], $terms->all(), $compounds );
+			$coverage[ $post_id ] = TermCoverage::of( $found[ $post_id ], $terms->all(), $compounds, $anywhere );
 		}
 
 		$incomplete = array_keys(
@@ -175,7 +201,7 @@ final class KeywordSearcher {
 		$compounds = array_merge_recursive( $compounds, $this->compounds( $texts, $terms ) );
 
 		foreach ( $texts as $post_id => $text ) {
-			$coverage[ $post_id ] = max( $coverage[ $post_id ], TermCoverage::of( $text, $terms->all(), $compounds ) );
+			$coverage[ $post_id ] = max( $coverage[ $post_id ], TermCoverage::of( $text, $terms->all(), $compounds, $anywhere ) );
 		}
 
 		return $coverage;
@@ -196,14 +222,15 @@ final class KeywordSearcher {
 	 *
 	 * @param array<int, array{id: int, post_id: int, title: string, content: string, score: float}> $rows Matches, best first.
 	 * @param array<string, string[]>                                                                $compounds Compounds that end with a short term.
+	 * @param bool                                                                                   $anywhere Whether a term also counts where it stands inside a word.
 	 * @return array<int, array{id: int, post_id: int, title: string, content: string, coverage: float, proximity: float, in_title: bool, score: float}> Matches, best first.
 	 */
-	private function judge( array $rows, QueryTerms $terms, array $compounds ): array {
+	private function judge( array $rows, QueryTerms $terms, array $compounds, bool $anywhere ): array {
 		$boost  = $this->settings->bool( 'boost_title' ) ? self::TITLE_BOOST : 1.0;
 		$judged = array();
 
 		foreach ( $rows as $row ) {
-			$in_title = TermCoverage::of( $row['title'], $terms->all(), $compounds ) > 0;
+			$in_title = TermCoverage::of( $row['title'], $terms->all(), $compounds, $anywhere ) > 0;
 			// Title and text are two blocks of the page: a word in each does not make them neighbours.
 			$text = $row['title'] . "\n\n" . $row['content'];
 
@@ -212,7 +239,7 @@ final class KeywordSearcher {
 				'post_id'   => $row['post_id'],
 				'title'     => $row['title'],
 				'content'   => $row['content'],
-				'coverage'  => TermCoverage::of( $text, $terms->all(), $compounds ),
+				'coverage'  => TermCoverage::of( $text, $terms->all(), $compounds, $anywhere ),
 				'proximity' => max( Proximity::of( $row['title'], $terms->all(), $compounds ), Proximity::of( $row['content'], $terms->all(), $compounds ) ),
 				'in_title'  => $in_title,
 				'score'     => $in_title ? $row['score'] * $boost : $row['score'],

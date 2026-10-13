@@ -36,14 +36,23 @@ final class TermCoverage {
 	private const BEGINNING_WEIGHT = 0.6;
 
 	/**
+	 * What it counts that the search word stands somewhere inside a word, as "hof" in "Bahnhofstraße".
+	 *
+	 * Only asked for when nothing has the word in any other way. Then it is
+	 * the best there is, and just enough to be shown as relevant.
+	 */
+	private const INSIDE_WEIGHT = 0.55;
+
+	/**
 	 * Returns the covered share of the terms.
 	 *
 	 * @param string                  $text      Text to look in.
 	 * @param string[]                $terms     Lower-case search terms.
 	 * @param array<string, string[]> $compounds Compounds that count as ending with a short term, see CompoundEndings.
+	 * @param bool                    $anywhere  Whether a term also counts where it stands inside a word.
 	 * @return float Between 0 and 1.
 	 */
-	public static function of( string $text, array $terms, array $compounds = array() ): float {
+	public static function of( string $text, array $terms, array $compounds = array(), bool $anywhere = false ): float {
 		if ( array() === $terms ) {
 			return 0.0;
 		}
@@ -52,7 +61,9 @@ final class TermCoverage {
 		$covered = 0.0;
 
 		foreach ( $terms as $term ) {
-			$covered += self::weight( $text, $term, $compounds[ $term ] ?? array() );
+			$weight = self::weight( $text, $term, $compounds[ $term ] ?? array() );
+
+			$covered += 0.0 === $weight && $anywhere && self::has( $text, self::inside_pattern( $term ) ) ? self::INSIDE_WEIGHT : $weight;
 		}
 
 		return $covered / count( $terms );
@@ -86,6 +97,17 @@ final class TermCoverage {
 			},
 			'beginning' => $length >= IndexTerms::MIN_LENGTH ? $no_start . Stemmer::pattern( $stem ) . '[\p{L}\p{N}]*' : null,
 		);
+	}
+
+	/**
+	 * Returns the pattern that finds a term wherever it stands, also inside a word.
+	 *
+	 * What is looked for is what was typed, not its stem: inside a word there are no endings to cut.
+	 *
+	 * @return string|null Regular expression without delimiters. Null for a term so short that it is in every other word.
+	 */
+	public static function inside_pattern( string $term ): ?string {
+		return mb_strlen( $term ) >= IndexTerms::MIN_LENGTH ? Stemmer::pattern( Stemmer::fold( $term ) ) : null;
 	}
 
 	/**

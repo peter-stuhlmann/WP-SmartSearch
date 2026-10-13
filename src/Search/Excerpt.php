@@ -62,7 +62,7 @@ final class Excerpt {
 	 */
 	public static function highlight( string $text, array $terms ): string {
 		$escape  = static fn ( string $piece ): string => htmlspecialchars( $piece, ENT_QUOTES | ENT_SUBSTITUTE, 'UTF-8' );
-		$pattern = self::pattern( $terms );
+		$pattern = self::pattern( $terms, $text );
 
 		if ( null === $pattern ) {
 			return $escape( $text );
@@ -139,7 +139,7 @@ final class Excerpt {
 	 * @param string[] $terms Search terms.
 	 */
 	private static function first_match( string $text, array $terms ): ?int {
-		$pattern = self::pattern( $terms );
+		$pattern = self::pattern( $terms, $text );
 
 		if ( null === $pattern || 1 !== preg_match( '/' . $pattern . '/iu', $text, $match, PREG_OFFSET_CAPTURE ) ) {
 			return null;
@@ -150,12 +150,15 @@ final class Excerpt {
 	}
 
 	/**
-	 * Builds one pattern that finds any of the terms, in any of the forms that count as a match.
+	 * Builds one pattern that finds any of the terms in a text, in any of the forms that count as a match.
+	 *
+	 * If the text has none of them in such a form, the terms are looked for
+	 * wherever they stand: a page found for "hof" by its "Bahnhofstraße" should show where.
 	 *
 	 * @param string[] $terms Search terms.
 	 * @return string|null Regular expression without delimiters, null if there is nothing to look for.
 	 */
-	private static function pattern( array $terms ): ?string {
+	private static function pattern( array $terms, string $text ): ?string {
 		$terms = array_filter( $terms, static fn ( string $term ): bool => mb_strlen( $term ) > 1 );
 
 		if ( array() === $terms ) {
@@ -171,6 +174,14 @@ final class Excerpt {
 			$alternatives = array_merge( $alternatives, array_values( array_filter( TermCoverage::patterns( mb_strtolower( $term ) ) ) ) );
 		}
 
-		return implode( '|', $alternatives );
+		$pattern = implode( '|', $alternatives );
+
+		if ( 1 === preg_match( '/' . $pattern . '/iu', $text ) ) {
+			return $pattern;
+		}
+
+		$inside = array_filter( array_map( static fn ( string $term ): ?string => TermCoverage::inside_pattern( mb_strtolower( $term ) ), $terms ) );
+
+		return array() === $inside ? $pattern : implode( '|', $inside );
 	}
 }

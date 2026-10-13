@@ -71,6 +71,25 @@ $prstsearch_modes = array(
 				)
 			);
 
+			$fields->input_row(
+				'max_results',
+				__( 'Results per search', 'smart-search' ),
+				__( 'How many results a search returns at most, over all pages. Every one of them is read and judged, so a higher number makes searches for common words slower.', 'smart-search' ),
+				array(
+					'type'      => 'number',
+					'min'       => 10,
+					'max'       => 2000,
+					'step'      => 10,
+					'row_class' => 'prstsearch-row--narrow-input',
+				)
+			);
+
+			$fields->switch_row(
+				'match_inside_words',
+				__( 'Find text inside words', 'smart-search' ),
+				__( 'If nothing contains the search words as words, pages are shown that contain them anywhere, as “hof” in “Bahnhofstraße” or “234” in “AB-12345”. This reads the whole index, as the default WordPress search always does.', 'smart-search' )
+			);
+
 			$fields->switch_row(
 				'boost_title',
 				__( 'Give titles more weight', 'smart-search' ),

@@ -109,12 +109,45 @@ final class KeywordSearcherTest extends WordPressTestCase {
 		self::assertSame( array( 10 ), array_keys( $matches ) );
 	}
 
-	public function test_a_word_the_index_does_not_have_is_not_looked_for_by_reading_the_whole_table(): void {
+	public function test_a_word_the_index_does_not_have_is_not_looked_for_by_reading_the_whole_table_if_that_is_switched_off(): void {
+		$this->options[ Settings::OPTION ] = array( 'match_inside_words' => false );
+
 		$this->store->passages = array( self::passage( 1, 10, 'Shipping', 'We ship worldwide.' ) );
 
 		// What a typing error looks like to the index. The spelling correction takes it from here.
 		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'shpping' ), 10 ) );
 		self::assertSame( array( 'fulltext' ), $this->store->calls );
+	}
+
+	public function test_text_inside_words_is_found_when_nothing_has_the_word_itself(): void {
+		$this->store->passages = array(
+			self::passage( 1, 10, 'Anfahrt', 'Wir sind in der Bahnhofstraße 5.' ),
+			self::passage( 2, 20, 'Ersatzteile', 'Bestellnummer AB-12345 für die Pumpe.' ),
+			self::passage( 3, 30, 'Garten', 'Rosen und Tulpen.' ),
+		);
+
+		$matches = $this->searcher()->search( QueryTerms::from_phrase( 'hof' ), 10 );
+
+		self::assertSame( array( 10 ), array_keys( $matches ) );
+		self::assertSame( 0.55, $matches[10]['coverage'], 'Less than any match as a word, and just enough to be shown.' );
+		self::assertSame( array( 20 ), array_keys( $this->searcher()->search( QueryTerms::from_phrase( '234' ), 10 ) ) );
+		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'xyz' ), 10 ) );
+	}
+
+	public function test_text_inside_words_is_not_looked_for_while_a_page_has_the_word(): void {
+		$this->store->passages = array(
+			self::passage( 1, 10, 'Anfahrt', 'Wir sind in der Bahnhofstraße 5.' ),
+			self::passage( 2, 20, 'Gasthaus', 'Der Hof ist abends geöffnet.' ),
+		);
+
+		self::assertSame( array( 20 ), array_keys( $this->searcher()->search( QueryTerms::from_phrase( 'hof' ), 10 ) ) );
+		self::assertNotContains( 'parts', $this->store->calls );
+	}
+
+	public function test_two_letters_are_never_looked_for_inside_words(): void {
+		$this->store->passages = array( self::passage( 1, 10, 'Verein', 'Eine Partei, ein Verein.' ) );
+
+		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'ei' ), 10 ) );
 	}
 
 	public function test_a_row_the_database_returned_without_a_real_match_is_dropped(): void {

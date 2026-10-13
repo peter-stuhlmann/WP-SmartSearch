@@ -112,6 +112,21 @@ final class ChunkRepositoryTest extends DatabaseTestCase {
 		self::assertSame( array( 2 ), array_column( $this->chunks->word_search( array( array( 'ei', 'eier' ), array( 'öl', 'öle' ) ), 10 ), 'post_id' ) );
 	}
 
+	public function test_text_is_found_inside_words_and_wildcards_are_taken_literally(): void {
+		$this->chunks->replace_post_chunks( 1, 'post', 'Anfahrt', array( 'Wir sind in der Bahnhofstraße 5.' ) );
+		$this->chunks->replace_post_chunks( 2, 'post', 'Ersatzteile AB-12345', array( 'Für die Pumpe.' ) );
+		$this->chunks->replace_post_chunks( 3, 'post', 'Rabatt', array( 'Heute 100% günstiger.' ) );
+
+		$found = fn ( string ...$parts ): array => array_column( $this->chunks->part_search( $parts, 10 ), 'post_id' );
+
+		self::assertSame( array( 1 ), $found( 'hof' ) );
+		self::assertSame( array( 2 ), $found( '234' ), 'The title is searched as well.' );
+		self::assertEqualsCanonicalizing( array( 1, 2 ), $found( 'hof', '234' ), 'Any of the parts.' );
+		self::assertSame( array( 3 ), $found( '0%' ), 'A percent sign is a character to find, not a wildcard.' );
+		self::assertSame( array(), $found( 'xyz' ) );
+		self::assertSame( array(), $found() );
+	}
+
 	public function test_the_index_tells_which_stems_are_words_of_the_website(): void {
 		$this->chunks->replace_post_chunks( 1, 'post', 'Unser Haus', array( 'Die Haustür steht offen, am Abend wie am Morgen.' ) );
 

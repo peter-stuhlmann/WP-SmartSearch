@@ -25,9 +25,26 @@ final class CompoundEndingsTest extends SearchTestCase {
 	}
 
 	public function test_the_first_part_has_to_be_a_word_the_website_uses(): void {
+		$this->configure( array( 'match_inside_words' => false ) );
 		$this->add_page( 1, 'Eingang', 'Die Xyloktür klemmt.' );
 
 		self::assertSame( array(), $this->found( 'Tür' ) );
+	}
+
+	public function test_as_a_last_resort_the_word_is_found_inside_any_word_if_that_is_allowed(): void {
+		$this->add_page( 1, 'Eingang', 'Die Xyloktür klemmt.' );
+
+		self::assertSame( array( 1 ), $this->found( 'Tür' ) );
+	}
+
+	public function test_a_search_returns_no_more_results_than_the_setting_allows(): void {
+		foreach ( range( 1, 15 ) as $number ) {
+			$this->add_page( $number, 'Versand ' . $number, 'Text.' );
+		}
+
+		$this->configure( array( 'max_results' => 12 ) );
+
+		self::assertSame( 12, $this->container->get( SearchService::class )->search( 'Versand' )->total );
 	}
 
 	public function test_the_first_part_may_carry_a_linking_letter_or_an_ending(): void {

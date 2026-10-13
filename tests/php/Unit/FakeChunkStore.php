@@ -176,6 +176,22 @@ final class FakeChunkStore implements ChunkStore {
 		return array_slice( $rows, 0, $limit );
 	}
 
+	public function part_search( array $parts, int $limit ): array {
+		$this->calls[] = 'parts';
+
+		$rows = array();
+
+		foreach ( $this->passages as $passage ) {
+			$text = mb_strtolower( $passage['title'] . ' ' . $passage['content'] );
+
+			if ( array() !== array_filter( $parts, static fn ( string $part ): bool => str_contains( $text, $part ) ) ) {
+				$rows[] = self::row( $passage, 1.0 );
+			}
+		}
+
+		return array_slice( $rows, 0, $limit );
+	}
+
 	public function known_terms( array $stems ): array {
 		$this->calls[] = 'known terms';
 

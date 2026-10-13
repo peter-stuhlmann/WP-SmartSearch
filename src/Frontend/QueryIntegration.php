@@ -81,7 +81,7 @@ final class QueryIntegration implements Hookable {
 		$results  = $this->search->search(
 			(string) $query->get( 's' ),
 			max( 1, (int) $query->get( 'paged' ) ),
-			$per_page > 0 ? $per_page : SearchService::MAX_HITS,
+			$per_page > 0 ? $per_page : $this->search->max_hits(),
 			self::requested_post_types( $query )
 		);
 

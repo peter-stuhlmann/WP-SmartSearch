@@ -57,6 +57,8 @@ final class SettingsSchema {
 			'boost_title'              => self::field( self::TYPE_BOOL, true, self::TAB_SEARCH ),
 			'ai_judge'                 => self::field( self::TYPE_BOOL, true, self::TAB_SEARCH ),
 			'results_per_page'         => self::number( self::TYPE_INT, 10, self::TAB_SEARCH, 1, 100 ),
+			'max_results'              => self::number( self::TYPE_INT, 200, self::TAB_SEARCH, 10, 2000 ),
+			'match_inside_words'       => self::field( self::TYPE_BOOL, true, self::TAB_SEARCH ),
 			'hide_weak_results'        => self::field( self::TYPE_BOOL, false, self::TAB_SEARCH ),
 			'suggestions'              => self::field( self::TYPE_BOOL, true, self::TAB_SEARCH ),
 

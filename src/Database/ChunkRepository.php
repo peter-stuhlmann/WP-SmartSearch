@@ -378,6 +378,43 @@ final class ChunkRepository implements ChunkStore {
 	}
 
 	/**
+	 * Finds chunks that contain one of the given pieces of text anywhere, also inside a word.
+	 *
+	 * No index helps with that: every passage is read. The caller decides when that is worth it.
+	 *
+	 * @param string[] $parts Pieces of text.
+	 * @return array<int, array{id: int, post_id: int, title: string, content: string, score: float}>
+	 */
+	public function part_search( array $parts, int $limit ): array {
+		if ( array() === $parts ) {
+			return array();
+		}
+
+		$conditions = array();
+		$values     = array( $this->table );
+
+		foreach ( $parts as $part ) {
+			$like         = '%' . $this->wpdb->esc_like( $part ) . '%';
+			$conditions[] = '(title LIKE %s OR content LIKE %s)';
+			array_push( $values, $like, $like );
+		}
+
+		$values[] = $limit;
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber -- The conditions only contain placeholders.
+		$rows = $this->wpdb->get_results(
+			$this->wpdb->prepare(
+				'SELECT id, post_id, title, content, 1 AS score FROM %i WHERE ' . implode( ' OR ', $conditions ) . ' ORDER BY chunk_index ASC, id ASC LIMIT %d',
+				$values
+			),
+			ARRAY_A
+		);
+		// phpcs:enable
+
+		return self::to_matches( $rows );
+	}
+
+	/**
 	 * Tells which of the given stems the index holds as a word of their own.
 	 *
 	 * @param string[] $stems Stems, letters and digits only.

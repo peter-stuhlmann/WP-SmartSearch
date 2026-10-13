@@ -138,6 +138,16 @@ interface ChunkStore {
 	public function fulltext_search( string $boolean_query, int $limit ): array;
 
 	/**
+	 * Finds chunks that contain one of the given pieces of text anywhere, also inside a word.
+	 *
+	 * No index helps with that: every passage is read. The caller decides when that is worth it.
+	 *
+	 * @param string[] $parts Pieces of text.
+	 * @return array<int, array{id: int, post_id: int, title: string, content: string, score: float}>
+	 */
+	public function part_search( array $parts, int $limit ): array;
+
+	/**
 	 * Tells which of the given stems the index holds as a word of their own.
 	 *
 	 * @param string[] $stems Stems, letters and digits only.

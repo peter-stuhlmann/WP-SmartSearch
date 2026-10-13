@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-12T20:56:10+02:00\n"
-"PO-Revision-Date: 2026-10-13T01:52:33+00:00\n"
+"PO-Revision-Date: 2026-10-13T02:05:00+00:00\n"
 "Language: de_DE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: smart-search\n"
@@ -49,7 +49,7 @@ msgstr "Inhalte"
 #: src/Admin/PostIndicators.php:133
 #: src/Frontend/SearchUi.php:51
 #: src/Frontend/SearchUi.php:53
-#: views/admin/tab-search.php:151
+#: views/admin/tab-search.php:170
 #: assets/src/blocks/search/edit.js:19
 #: assets/src/editor/index.js:39
 #: assets/src/editor/index.js:58
@@ -832,8 +832,8 @@ msgstr "Für Page-Builder, die ihre Inhalte erst auf der fertigen Seite ausgeben
 #: views/admin/tab-content.php:80
 #: views/admin/tab-display.php:130
 #: views/admin/tab-provider.php:192
-#: views/admin/tab-search.php:101
-#: views/admin/tab-search.php:137
+#: views/admin/tab-search.php:120
+#: views/admin/tab-search.php:156
 #: views/admin/tab-stats.php:265
 #: views/admin/tab-tools.php:174
 msgid "Save changes"
@@ -1211,66 +1211,82 @@ msgid "How many results are shown at once."
 msgstr "Wie viele Treffer auf einmal angezeigt werden."
 
 #: views/admin/tab-search.php:76
+msgid "Results per search"
+msgstr "Treffer pro Suche"
+
+#: views/admin/tab-search.php:77
+msgid "How many results a search returns at most, over all pages. Every one of them is read and judged, so a higher number makes searches for common words slower."
+msgstr "Wie viele Treffer eine Suche höchstens liefert, über alle Seiten hinweg. Jeder davon wird gelesen und bewertet, eine höhere Zahl macht Suchen nach häufigen Wörtern also langsamer."
+
+#: views/admin/tab-search.php:89
+msgid "Find text inside words"
+msgstr "Text innerhalb von Wörtern finden"
+
+#: views/admin/tab-search.php:90
+msgid "If nothing contains the search words as words, pages are shown that contain them anywhere, as “hof” in “Bahnhofstraße” or “234” in “AB-12345”. This reads the whole index, as the default WordPress search always does."
+msgstr "Enthält nichts die Suchwörter als Wörter, werden Seiten gezeigt, die sie irgendwo enthalten, etwa „hof“ in „Bahnhofstraße“ oder „234“ in „AB-12345“. Dafür wird der ganze Index gelesen, wie es die Standardsuche von WordPress immer tut."
+
+#: views/admin/tab-search.php:95
 msgid "Give titles more weight"
 msgstr "Titel stärker gewichten"
 
-#: views/admin/tab-search.php:77
+#: views/admin/tab-search.php:96
 msgid "Matches in the title rank higher than matches in the text."
 msgstr "Fundstellen im Titel zählen mehr als Fundstellen im Text."
 
-#: views/admin/tab-search.php:82
+#: views/admin/tab-search.php:101
 msgid "Ask the language model when the search is unsure"
 msgstr "Bei Unsicherheit das Sprachmodell fragen"
 
-#: views/admin/tab-search.php:83
+#: views/admin/tab-search.php:102
 msgid "If no result is a clear match, the model for the AI answer picks the fitting pages from the nearest ones. This finds “poultry” although the page only says “chicken”. Needs the mode “Semantic” or “AI answer” and costs one small request per such search."
 msgstr "Wenn kein Treffer klar passt, wählt das Modell für die KI-Antwort aus den nächstliegenden Seiten die passenden aus. So wird „Geflügel“ gefunden, obwohl auf der Seite nur „Hähnchen“ steht. Braucht den Modus „Semantisch“ oder „KI-Antwort“ und kostet eine kleine Anfrage pro solcher Suche."
 
-#: views/admin/tab-search.php:88
+#: views/admin/tab-search.php:107
 msgid "Hide weak matches"
 msgstr "Schwache Treffer ausblenden"
 
-#: views/admin/tab-search.php:89
+#: views/admin/tab-search.php:108
 msgid "Results with the lowest relevance level are not shown."
 msgstr "Treffer der niedrigsten Relevanzstufe werden nicht angezeigt."
 
-#: views/admin/tab-search.php:94
+#: views/admin/tab-search.php:113
 msgid "Suggestions while typing"
 msgstr "Vorschläge beim Tippen"
 
-#: views/admin/tab-search.php:95
+#: views/admin/tab-search.php:114
 msgid "The search block suggests matching pages below the field."
 msgstr "Der Such-Block schlägt unter dem Feld passende Seiten vor."
 
-#: views/admin/tab-search.php:106
+#: views/admin/tab-search.php:125
 msgid "Recommended results"
 msgstr "Empfohlene Treffer"
 
-#: views/admin/tab-search.php:107
+#: views/admin/tab-search.php:126
 msgid "Name the page that answers a search, even if it does not use the words of the search. It is then listed first. The statistics show which searches found nothing."
 msgstr "Lege fest, welche Seite eine Suche beantwortet, auch wenn sie die Wörter der Suche nicht enthält. Sie steht dann an erster Stelle. Die Statistik zeigt, welche Suchen nichts gefunden haben."
 
-#: views/admin/tab-search.php:117
+#: views/admin/tab-search.php:136
 msgid "Separate several search terms with commas. A term applies in every word form, and to longer searches that contain it. For the page, type part of its title and choose it from the list; the number after “#” identifies it."
 msgstr "Mehrere Suchbegriffe mit Kommas trennen. Ein Begriff gilt in jeder Wortform und auch für längere Suchen, die ihn enthalten. Für die Seite einen Teil des Titels tippen und sie aus der Liste wählen; die Zahl hinter „#“ bezeichnet sie eindeutig."
 
-#: views/admin/tab-search.php:138
+#: views/admin/tab-search.php:157
 msgid "Add a recommendation"
 msgstr "Empfehlung hinzufügen"
 
-#: views/admin/tab-search.php:144
+#: views/admin/tab-search.php:163
 msgid "Try the search"
 msgstr "Suche ausprobieren"
 
-#: views/admin/tab-search.php:145
+#: views/admin/tab-search.php:164
 msgid "Test a query with the saved settings. Below every result you see why it was found."
 msgstr "Teste eine Suchanfrage mit den gespeicherten Einstellungen. Unter jedem Treffer siehst du, warum er gefunden wurde."
 
-#: views/admin/tab-search.php:148
+#: views/admin/tab-search.php:167
 msgid "Test query"
 msgstr "Test-Suchanfrage"
 
-#: views/admin/tab-search.php:150
+#: views/admin/tab-search.php:169
 msgid "For example: shipping costs abroad"
 msgstr "Zum Beispiel: Versandkosten ins Ausland"
 

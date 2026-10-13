@@ -71,6 +71,12 @@ final class RenderingTest extends RenderingTestCase {
 		self::assertStringNotContainsString( 'Na<mark>', $html );
 	}
 
+	public function test_text_found_inside_a_word_is_marked_where_it_stands(): void {
+		$this->add_page( 10, 'Anfahrt', 'Wir sind in der Bahnhofstraße 5.' );
+
+		self::assertStringContainsString( 'Bahn<mark>hof</mark>straße', $this->renderer()->render_results( $this->search( 'hof' ) ) );
+	}
+
 	public function test_a_search_without_results_shows_a_hint_instead_of_a_list(): void {
 		$this->add_page( 10, 'Shipping', 'Text.' );
 

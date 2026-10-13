@@ -22,11 +22,6 @@ use PrstSearch\Stats\SearchLogger;
 final class SearchService {
 
 	/**
-	 * Upper bound for hits per query. Nobody pages further, and it caps the work per request.
-	 */
-	public const MAX_HITS = 200;
-
-	/**
 	 * Longest search phrase, in characters. Whatever is longer is not a search.
 	 */
 	public const MAX_QUERY_LENGTH = 200;
@@ -278,7 +273,7 @@ final class SearchService {
 			return new Ranking( array(), $terms, SearchMode::Keyword, false, new TokenUsage() );
 		}
 
-		$keyword_matches  = $this->keyword->search( $terms, self::MAX_HITS );
+		$keyword_matches  = $this->keyword->search( $terms, $this->max_hits() );
 		$semantic_matches = array();
 		$usage            = new TokenUsage();
 		$mode             = SearchMode::Keyword;
@@ -287,7 +282,7 @@ final class SearchService {
 		if ( $wants_semantic && ! $this->ledger->is_budget_exhausted() ) {
 			try {
 				// The meaning of the phrase is what a person would say, without the notation.
-				$semantic_matches = $this->semantic->search( $terms->has_demands() ? $terms->text() : $query, self::MAX_HITS );
+				$semantic_matches = $this->semantic->search( $terms->has_demands() ? $terms->text() : $query, $this->max_hits() );
 				$usage            = $this->semantic->last_usage();
 				$mode             = SearchMode::tryFrom( $this->settings->string( 'mode' ) ) ?? SearchMode::Semantic;
 
@@ -345,6 +340,15 @@ final class SearchService {
 		}
 
 		// Keyword and semantic search each return up to the limit; together they must not exceed it either.
-		return $this->filter->apply( array_slice( Ranking::by_relevance( $hits ), 0, self::MAX_HITS ) );
+		return $this->filter->apply( array_slice( Ranking::by_relevance( $hits ), 0, $this->max_hits() ) );
+	}
+
+	/**
+	 * Returns how many hits a query has at most.
+	 *
+	 * Every hit is read and judged, so the limit caps the work of a request.
+	 */
+	public function max_hits(): int {
+		return $this->settings->int( 'max_results' );
 	}
 }
