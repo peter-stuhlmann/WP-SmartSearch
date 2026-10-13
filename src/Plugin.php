@@ -42,6 +42,7 @@ use PrstSearch\Security\Capabilities;
 use PrstSearch\Stats\LogCleaner;
 use PrstSearch\Support\Assets;
 use PrstSearch\Support\Container;
+use PrstSearch\Support\Lock;
 use wpdb;
 
 /**
@@ -77,6 +78,13 @@ final class Plugin {
 		PrivacyPolicy::class,
 	);
 
+	private const UPGRADE_LOCK = 'upgrade';
+
+	/**
+	 * Seconds the request that upgrades the tables spends on bringing passages up to date.
+	 */
+	private const UPGRADE_SECONDS = 3;
+
 	/**
 	 * The running plugin.
 	 */
@@ -100,11 +108,7 @@ final class Plugin {
 	public static function boot(): void {
 		$plugin = self::instance();
 
-		// An upgrade can leave the stored passages one step behind. The first part is caught up
-		// with right away, so a small website never notices; the rest follows in the background.
-		if ( $plugin->get( Installer::class )->maybe_install() ) {
-			$plugin->get( BackgroundJobs::class )->complete_passages();
-		}
+		$plugin->upgrade();
 
 		add_action( 'init', array( self::class, 'load_textdomain' ) );
 
@@ -112,6 +116,31 @@ final class Plugin {
 
 		foreach ( $services as $service ) {
 			$plugin->get( $service )->register();
+		}
+	}
+
+	/**
+	 * Creates or upgrades the tables if this version of the plugin needs another schema.
+	 *
+	 * Changing a large table takes a while, and until it is done every request
+	 * finds the old version. A lock makes sure only the first of them does the
+	 * work; the others carry on with what is there.
+	 */
+	private function upgrade(): void {
+		$installer = $this->get( Installer::class );
+
+		if ( ! $installer->is_outdated() || ! $this->get( Lock::class )->acquire( self::UPGRADE_LOCK, 10 * MINUTE_IN_SECONDS ) ) {
+			return;
+		}
+
+		try {
+			$installer->install();
+
+			// An upgrade can leave the stored passages one step behind. A small website is caught up with
+			// right here and never notices; on a large one the background job takes over after a moment.
+			$this->get( BackgroundJobs::class )->complete_passages( self::UPGRADE_SECONDS );
+		} finally {
+			$this->get( Lock::class )->release( self::UPGRADE_LOCK );
 		}
 	}
 

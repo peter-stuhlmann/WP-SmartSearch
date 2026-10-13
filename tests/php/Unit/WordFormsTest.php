@@ -14,6 +14,7 @@ use PrstSearch\Search\Proximity;
 use PrstSearch\Search\QueryTerms;
 use PrstSearch\Search\Stemmer;
 use PrstSearch\Search\TermCoverage;
+use PrstSearch\Search\Unicode;
 
 /**
  * Word forms, compounds and the notation of a search phrase.
@@ -28,13 +29,100 @@ final class WordFormsTest extends TestCase {
 				array( 'Kind', 'Kinder', 'Kindern' ),
 				array( 'Preis', 'Preise', 'Preisen' ),
 				array( 'ship', 'ships', 'shipping', 'shipped' ),
-				array( 'Straße', 'Strassen' ),
+				array( 'Straße', 'Straßen', 'Strasse', 'Strassen' ),
+				array( 'groß', 'große', 'großen', 'großes' ),
+				array( 'Fuß', 'Füße', 'Füßen' ),
+				array( 'Kategorie', 'Kategorien' ),
+				array( 'Familie', 'Familien' ),
+				array( 'Idee', 'Ideen' ),
+				array( 'cookie', 'cookies' ),
+				array( 'Auto', 'Autos' ),
+				array( 'Video', 'Videos' ),
+				array( 'category', 'categories' ),
+				array( 'delivery', 'deliveries' ),
+				array( 'Wasser', 'Wassers' ),
+				array( 'Kasse', 'Kassen' ),
+				array( 'Frau', 'Frauen' ),
+				array( 'Tee', 'Tees' ),
+				array( 'glass', 'glasses' ),
 			) as $forms
 		) {
 			$stems = array_unique( array_map( array( Stemmer::class, 'stem' ), $forms ) );
 
 			self::assertCount( 1, $stems, implode( ', ', $forms ) . ' → ' . implode( ', ', $stems ) );
 		}
+	}
+
+	public function test_every_form_of_a_word_covers_every_other_in_running_text(): void {
+		foreach (
+			array(
+				array( 'Straße', 'Straßen', 'Strasse' ),
+				array( 'groß', 'große', 'großes' ),
+				array( 'Fuß', 'Füße' ),
+				array( 'Kategorie', 'Kategorien' ),
+				array( 'cookie', 'cookies' ),
+				array( 'Auto', 'Autos' ),
+				array( 'category', 'categories' ),
+				array( 'Haus', 'Häuser', 'Hauses' ),
+				array( 'ship', 'shipping', 'shipped' ),
+			) as $forms
+		) {
+			foreach ( $forms as $searched ) {
+				foreach ( $forms as $written ) {
+					self::assertSame( 1.0, TermCoverage::of( 'Das ' . $written . ' hier.', array( mb_strtolower( $searched ) ) ), $searched . ' → ' . $written );
+				}
+			}
+		}
+	}
+
+	public function test_words_with_a_sharp_s_are_marked_and_excluded_like_any_other(): void {
+		self::assertSame(
+			'<mark>Fußball</mark> und <mark>Spaß</mark> in der <mark>Hauptstraße</mark>',
+			Excerpt::highlight( 'Fußball und Spaß in der Hauptstraße', array( 'fußball', 'spaß', 'straße' ) )
+		);
+		self::assertSame( 0.7, TermCoverage::of( 'In der Hauptstraße', array( 'straße' ) ) );
+	}
+
+	public function test_the_last_part_of_a_compound_is_found_for_words_ending_in_a_double_s(): void {
+		foreach ( array(
+			'Wasser' => 'Mineralwasser',
+			'Kasse'  => 'Krankenkasse',
+			'Messe'  => 'Fachmesse',
+			'Pass'   => 'Reisepass',
+			'Straße' => 'Hauptstraße',
+		) as $word => $compound ) {
+			$reversed = explode( ' ', QueryTerms::from_phrase( $word )->to_boolean_query() )[1] ?? 'no reversed form';
+
+			self::assertStringContainsString( ' ' . rtrim( $reversed, '*' ), ' ' . IndexTerms::of( '', $compound ), $word . ' in ' . $compound );
+			self::assertSame( 0.7, TermCoverage::of( $compound, array( mb_strtolower( $word ) ) ), $word . ' in ' . $compound );
+		}
+	}
+
+	public function test_a_stem_the_database_would_ignore_is_stored_so_that_it_is_indexed(): void {
+		// "Foren" becomes "for", which is on the stop word list of the database.
+		$stored = explode( ' ', IndexTerms::of( '', 'Unsere Foren' ) );
+
+		self::assertNotContains( 'for', $stored );
+		self::assertContains( 'forqx', $stored );
+		self::assertSame( 'for*', QueryTerms::from_phrase( 'Foren' )->to_boolean_query(), 'The query still finds it by its beginning.' );
+	}
+
+	public function test_a_passage_without_words_is_told_apart_from_one_that_was_never_processed(): void {
+		self::assertNotSame( '', IndexTerms::of( '', '— 12 % —' ) );
+		self::assertSame( IndexTerms::of( '', '' ), IndexTerms::of( '', '?!' ) );
+	}
+
+	public function test_letters_written_as_two_characters_are_read_as_one(): void {
+		if ( ! class_exists( \Normalizer::class ) ) {
+			self::markTestSkipped( 'Needs the intl extension.' );
+		}
+
+		// "Käse" with the dots as a separate, combining character, as a PDF or a Mac writes it.
+		$decomposed = "Ka\u{0308}se";
+
+		self::assertSame( 'Käse', Unicode::composed( $decomposed ) );
+		self::assertSame( IndexTerms::of( '', 'Käse' ), IndexTerms::of( '', $decomposed ) );
+		self::assertSame( "\xff", Unicode::composed( "\xff" ), 'Text that is not valid UTF-8 is left alone.' );
 	}
 
 	public function test_short_words_are_left_alone(): void {
@@ -138,6 +226,37 @@ final class WordFormsTest extends TestCase {
 		self::assertSame( array( 'vegan' ), $terms->excluded() );
 		self::assertSame( array( 'rezept', 'e', 'mail' ), $terms->all(), 'A hyphen inside a word excludes nothing.' );
 		self::assertSame( 'rezept e-mail', $terms->text() );
+	}
+
+	public function test_a_minus_inside_quotation_marks_is_part_of_the_phrase(): void {
+		$terms = QueryTerms::from_phrase( '"-5 Grad" Wetter' );
+
+		self::assertSame( array( '-5 grad' ), $terms->phrases() );
+		self::assertSame( array(), $terms->excluded() );
+	}
+
+	public function test_a_minus_before_quotation_marks_excludes_the_phrase(): void {
+		$terms = QueryTerms::from_phrase( 'Rezept -"ohne Fleisch" schnell' );
+
+		self::assertSame( array( 'ohne fleisch' ), $terms->excluded_phrases() );
+		self::assertSame( array(), $terms->phrases() );
+		self::assertSame( array( 'rezept', 'schnell' ), $terms->all() );
+		self::assertTrue( $terms->has_demands() );
+	}
+
+	public function test_a_query_cannot_make_demands_without_end(): void {
+		$terms = QueryTerms::from_phrase( 'x ' . implode( ' ', array_map( static fn ( int $number ): string => '-wort' . $number, range( 1, 500 ) ) ) );
+
+		self::assertLessThanOrEqual( 8, count( $terms->excluded() ) );
+	}
+
+	public function test_distance_is_measured_in_letters_not_in_bytes(): void {
+		$terms = array( 'chicken', 'recipe' );
+
+		self::assertSame(
+			Proximity::of( 'chicken ' . str_repeat( 'a', 40 ) . ' recipe', $terms ),
+			Proximity::of( 'chicken ' . str_repeat( 'ä', 40 ) . ' recipe', $terms )
+		);
 	}
 
 	public function test_an_ordinary_phrase_makes_no_demands(): void {

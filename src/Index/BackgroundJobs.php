@@ -84,20 +84,18 @@ final class BackgroundJobs implements Hookable {
 	 */
 	public function backfill(): void {
 		$deadline = time() + self::TIME_BUDGET;
-		$offset   = (int) get_option( self::BACKFILL_CURSOR_OPTION, 0 );
+		$after_id = (int) get_option( self::BACKFILL_CURSOR_OPTION, 0 );
 
 		do {
-			$seen    = $this->indexer->backfill_page( self::BACKFILL_PAGE_SIZE, $offset );
-			$offset += $seen;
-			$is_done = $seen < self::BACKFILL_PAGE_SIZE;
-		} while ( ! $is_done && time() < $deadline );
+			$after_id = $this->indexer->backfill_page( self::BACKFILL_PAGE_SIZE, $after_id );
+		} while ( $after_id > 0 && time() < $deadline );
 
-		if ( $is_done ) {
+		if ( 0 === $after_id ) {
 			delete_option( self::BACKFILL_CURSOR_OPTION );
 			return;
 		}
 
-		update_option( self::BACKFILL_CURSOR_OPTION, $offset, false );
+		update_option( self::BACKFILL_CURSOR_OPTION, $after_id, false );
 		$this->scheduler->backfill();
 	}
 
@@ -107,9 +105,11 @@ final class BackgroundJobs implements Hookable {
 	 * Until a passage is done it is not found by its words. Nothing has to be
 	 * rendered or sent to a provider for this, so even a large index is done
 	 * within a few runs.
+	 *
+	 * @param int $seconds How long this run may work.
 	 */
-	public function complete_passages(): void {
-		$deadline = time() + self::TIME_BUDGET;
+	public function complete_passages( int $seconds = self::TIME_BUDGET ): void {
+		$deadline = time() + $seconds;
 
 		do {
 			$is_done = $this->chunks->complete_passages( self::COMPLETE_PAGE_SIZE ) < self::COMPLETE_PAGE_SIZE;

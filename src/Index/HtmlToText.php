@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace PrstSearch\Index;
 
+use PrstSearch\Search\Unicode;
+
 /**
  * Reduces HTML to the text a visitor reads, keeping paragraph breaks.
  */
@@ -45,6 +47,6 @@ final class HtmlToText {
 			$lines ? $lines : array()
 		);
 
-		return implode( "\n", array_filter( $lines, static fn ( string $line ): bool => '' !== $line ) );
+		return Unicode::composed( implode( "\n", array_filter( $lines, static fn ( string $line ): bool => '' !== $line ) ) );
 	}
 }

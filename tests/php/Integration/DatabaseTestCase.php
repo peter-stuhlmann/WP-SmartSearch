@@ -21,6 +21,8 @@ abstract class DatabaseTestCase extends TestCase {
 
 	private const PREFIX = 'prstsearch_test_';
 
+	private const VERSION_OPTION = 'prstsearch_test_db_version';
+
 	protected wpdb $wpdb;
 
 	protected Installer $installer;
@@ -32,8 +34,9 @@ abstract class DatabaseTestCase extends TestCase {
 			self::markTestSkipped( 'Needs a WordPress installation: set WP_LOAD_PATH to its wp-load.php.' );
 		}
 
-		$this->wpdb      = self::connection();
-		$this->installer = new Installer( $this->wpdb );
+		$this->wpdb = self::connection();
+		// With a version option of its own: the tests must not mark the real tables of the site as up to date.
+		$this->installer = new Installer( $this->wpdb, self::VERSION_OPTION );
 
 		$this->drop_tables();
 		$this->installer->install();
@@ -42,6 +45,7 @@ abstract class DatabaseTestCase extends TestCase {
 	protected function tearDown(): void {
 		if ( isset( $this->installer ) ) {
 			$this->drop_tables();
+			delete_option( self::VERSION_OPTION );
 		}
 
 		parent::tearDown();

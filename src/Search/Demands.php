@@ -60,6 +60,12 @@ final class Demands {
 			}
 		}
 
+		foreach ( $terms->excluded_phrases() as $phrase ) {
+			if ( str_contains( $text, $phrase ) ) {
+				return false;
+			}
+		}
+
 		foreach ( $terms->excluded() as $word ) {
 			// In any of its forms: "-vegan" also excludes "vegane".
 			if ( 1 === preg_match( '/' . TermCoverage::patterns( $word )['word'] . '/u', $text ) ) {

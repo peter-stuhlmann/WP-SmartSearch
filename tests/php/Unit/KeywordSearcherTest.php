@@ -96,13 +96,31 @@ final class KeywordSearcherTest extends WordPressTestCase {
 		self::assertSame( array(), $this->store->calls );
 	}
 
-	public function test_words_the_fulltext_index_does_not_know_are_searched_literally(): void {
-		$this->store->like_rows = array( self::row( 1, 10, 'Shipping', 'We ship worldwide.' ) );
+	public function test_only_a_query_of_very_short_words_makes_the_database_read_every_passage(): void {
+		$this->store->passages = array(
+			self::passage( 1, 10, 'Frühstück', 'Ein Ei und Brot.' ),
+			self::passage( 2, 20, 'Verein', 'Eine Partei, ein Verein.' ),
+		);
 
-		$matches = $this->searcher()->search( QueryTerms::from_phrase( 'shipping' ), 10 );
+		$matches = $this->searcher()->search( QueryTerms::from_phrase( 'Ei' ), 10 );
 
-		self::assertSame( array( 'fulltext', 'like' ), $this->store->calls );
+		self::assertSame( array( 'words' ), $this->store->calls );
 		self::assertSame( array( 10 ), array_keys( $matches ) );
+	}
+
+	public function test_a_word_the_index_does_not_have_is_not_looked_for_by_reading_the_whole_table(): void {
+		$this->store->passages = array( self::passage( 1, 10, 'Shipping', 'We ship worldwide.' ) );
+
+		// What a typing error looks like to the index. The spelling correction takes it from here.
+		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'shpping' ), 10 ) );
+		self::assertSame( array( 'fulltext' ), $this->store->calls );
+	}
+
+	public function test_a_row_the_database_returned_without_a_real_match_is_dropped(): void {
+		// MariaDB takes the "ä" of "Käse" for the end of a word, and so finds the word "se" in it.
+		$this->store->word_rows = array( self::row( 1, 10, 'Käse', 'Ein Stück Käse.' ) );
+
+		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'se' ), 10 ) );
 	}
 
 	public function test_each_post_is_listed_once_with_the_passage_that_covers_most_words(): void {

@@ -42,7 +42,7 @@ final class QueryTextTest extends TestCase {
 	public function test_fulltext_operators_cannot_be_injected(): void {
 		$terms = QueryTerms::from_phrase( '+geheim -"alles" (sonst) ~nichts* @5' );
 
-		self::assertSame( 'geheim* qzmieheg* all* sonst* qztsnos* nicht* qzthcin*', $terms->to_boolean_query() );
+		self::assertSame( 'geheim* qzmieheg* sonst* qztsnos* nicht* qzthcin*', $terms->to_boolean_query() );
 	}
 
 	public function test_phrase_without_words_is_empty(): void {

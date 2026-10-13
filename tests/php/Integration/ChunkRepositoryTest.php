@@ -86,13 +86,34 @@ final class ChunkRepositoryTest extends DatabaseTestCase {
 		self::assertIsInt( $rows[0]['id'] );
 	}
 
-	public function test_the_literal_search_finds_short_words_and_treats_wildcards_as_text(): void {
-		$this->chunks->replace_post_chunks( 1, 'post', 'Frühstück', array( 'Ein Ei und 100% Saft.' ) );
-		$this->chunks->replace_post_chunks( 2, 'post', 'Abendessen', array( 'Suppe und Brot.' ) );
+	public function test_short_words_are_found_as_words_of_their_own(): void {
+		$this->chunks->replace_post_chunks( 1, 'post', 'Frühstück', array( 'Ein Ei, Öl und Brot.' ) );
+		$this->chunks->replace_post_chunks( 2, 'post', 'Verein', array( 'Eine Partei, ein Verein und viel Arbeit.' ) );
+		$this->chunks->replace_post_chunks( 3, 'post', 'Ei', array( 'Nur im Titel.' ) );
+		$this->chunks->replace_post_chunks( 4, 'post', 'Zwei Teile', array( 'Ein Ei hier.', 'Und Öl erst im zweiten Absatz.' ) );
 
-		self::assertSame( array( 1 ), array_column( $this->chunks->like_search( array( 'ei' ), 10 ), 'post_id' ) );
-		self::assertSame( array( 1 ), array_column( $this->chunks->like_search( array( '100%' ), 10 ), 'post_id' ) );
-		self::assertSame( array(), $this->chunks->like_search( array( '%zzz' ), 10 ) );
+		$found = fn ( string ...$terms ): array => array_column( $this->chunks->word_search( $terms, 10 ), 'post_id' );
+
+		self::assertEqualsCanonicalizing( array( 1, 3, 4 ), $found( 'ei' ), 'Not "ein", "Partei" or "Arbeit".' );
+		self::assertSame( array( 1 ), $found( 'ei', 'öl' ), 'Every term, in the same passage.' );
+		self::assertSame( array(), $found( 'zz' ) );
+		self::assertSame( array(), $found() );
+		self::assertCount( 1, $this->chunks->word_search( array( 'ei' ), 1 ) );
+	}
+
+	public function test_a_stem_on_the_stop_word_list_of_the_database_is_found(): void {
+		$this->chunks->replace_post_chunks( 1, 'post', 'Gemeinschaft', array( 'Unsere Foren sind offen.' ) );
+		$this->chunks->replace_post_chunks( 2, 'post', 'Format', array( 'Ein anderes Wort mit demselben Anfang.' ) );
+
+		$rows = $this->chunks->fulltext_search( QueryTerms::from_phrase( 'Foren' )->to_boolean_query(), 10 );
+
+		self::assertContains( 1, array_column( $rows, 'post_id' ) );
+	}
+
+	public function test_a_passage_without_words_does_not_keep_the_upgrade_busy(): void {
+		$this->chunks->replace_post_chunks( 1, 'post', '?', array( '— — —' ) );
+
+		self::assertSame( 0, $this->chunks->complete_passages( 10 ), 'Stored complete, although it has no words.' );
 	}
 
 	public function test_suggestions_list_titles_that_start_with_the_text_first(): void {

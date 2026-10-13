@@ -138,14 +138,17 @@ interface ChunkStore {
 	public function fulltext_search( string $boolean_query, int $limit ): array;
 
 	/**
-	 * Finds chunks containing every term as a substring.
+	 * Finds chunks containing every term as a word of its own.
 	 *
-	 * Fallback for terms FULLTEXT cannot index, such as two-letter words.
+	 * For terms FULLTEXT cannot index, such as two-letter words. It reads
+	 * every passage, so it is only used when there is no other way. What a
+	 * word is, the database judges roughly: letters outside ASCII can count as
+	 * its end. The caller checks the matches.
 	 *
-	 * @param string[] $terms Search terms.
+	 * @param string[] $terms Search terms, letters and digits only.
 	 * @return array<int, array{id: int, post_id: int, title: string, content: string, score: float}>
 	 */
-	public function like_search( array $terms, int $limit ): array;
+	public function word_search( array $terms, int $limit ): array;
 
 	/**
 	 * Iterates over the stored embeddings of a model without loading them at once.

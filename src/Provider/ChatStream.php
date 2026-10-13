@@ -34,6 +34,11 @@ final class ChatStream {
 	private ?TokenUsage $usage = null;
 
 	/**
+	 * Whether the provider reported, inside the stream, that it could not finish the answer.
+	 */
+	private bool $has_failed = false;
+
+	/**
 	 * Takes the next portion of the stream.
 	 *
 	 * @return string[] The pieces of text this portion completed, in order.
@@ -73,6 +78,17 @@ final class ChatStream {
 	}
 
 	/**
+	 * Tells whether the provider gave up on the answer after starting it.
+	 *
+	 * A stream is a successful response as far as HTTP goes, so a failure in
+	 * the middle can only be reported inside it. The text received until then
+	 * is a fragment and must not be taken for the answer.
+	 */
+	public function has_failed(): bool {
+		return $this->has_failed;
+	}
+
+	/**
 	 * Reads one line of the stream and returns the text it carries, if any.
 	 */
 	private function read_line( string $line ): string {
@@ -87,6 +103,11 @@ final class ChatStream {
 
 		if ( ! is_array( $event ) ) {
 			return '';
+		}
+
+		// "length" is not among these: an answer cut at the token limit is short, but it is an answer.
+		if ( isset( $event['error'] ) || in_array( $event['choices'][0]['finish_reason'] ?? null, array( 'error', 'content_filter' ), true ) ) {
+			$this->has_failed = true;
 		}
 
 		if ( is_array( $event['usage'] ?? null ) ) {

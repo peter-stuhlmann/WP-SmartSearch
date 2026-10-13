@@ -76,7 +76,11 @@ final class Recommendations {
 			}
 		}
 
-		$this->store( $rules );
+		// Only pages that are in the index: those are public. Anything else could not be shown as a
+		// result anyway, and the form would display the title of a draft to whoever typed its number.
+		$searchable = $this->chunks->first_passages( array_column( $rules, 'post_id' ) );
+
+		$this->store( array_values( array_filter( $rules, static fn ( array $rule ): bool => isset( $searchable[ $rule['post_id'] ] ) ) ) );
 	}
 
 	/**
@@ -277,6 +281,7 @@ final class Recommendations {
 	 * Reads the page of a form row: "Contact #12", or just the ID.
 	 */
 	private static function page_id( string $text ): int {
-		return 1 === preg_match( '/#?(\d+)\s*$/', trim( $text ), $found ) ? (int) $found[1] : 0;
+		// A number alone, or a number after "#". Not any number at the end: "Preise 2025" is a title.
+		return 1 === preg_match( '/^(\d+)$|#(\d+)$/', trim( $text ), $found ) ? (int) end( $found ) : 0;
 	}
 }

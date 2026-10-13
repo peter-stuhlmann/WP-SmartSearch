@@ -62,18 +62,28 @@ final class KeywordSearcher {
 
 		$boolean_query = $terms->to_boolean_query();
 
-		// Several passages of one post can match, so more rows than posts are needed.
-		$rows = '' === $boolean_query ? array() : $this->chunks->fulltext_search( $boolean_query, $limit * 3 );
-
-		if ( array() === $rows ) {
-			// Short words and stop words are not in the FULLTEXT index.
-			$rows = $this->chunks->like_search( $terms->all(), $limit * 3 );
-		}
+		/*
+		 * Several passages of one post can match, so more rows than posts are needed.
+		 *
+		 * A query of nothing but very short words, such as "ei", has no words the
+		 * index knows, and only then every passage is read for them. Not whenever
+		 * the index finds nothing: that is what a typing error looks like, and
+		 * reading the whole table for each would be the slowest answer to the
+		 * most common mistake. Typing errors are for the spelling correction.
+		 */
+		$rows = '' === $boolean_query
+			? $this->chunks->word_search( $terms->all(), $limit * 3 )
+			: $this->chunks->fulltext_search( $boolean_query, $limit * 3 );
 
 		$matches = array();
 		$found   = array();
 
 		foreach ( $this->judge( $rows, $terms ) as $row ) {
+			// The database decides roughly what a word is. A row without a single real match is none.
+			if ( 0.0 === $row['coverage'] ) {
+				continue;
+			}
+
 			$known = $matches[ $row['post_id'] ] ?? null;
 
 			$found[ $row['post_id'] ] = ( $found[ $row['post_id'] ] ?? $row['title'] ) . "\n" . $row['content'];

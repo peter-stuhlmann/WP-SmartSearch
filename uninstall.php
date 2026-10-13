@@ -70,7 +70,13 @@ function prstsearch_uninstall_site(): void {
 
 if ( is_multisite() ) {
 	// Every site of the network has its own tables, options and settings.
-	foreach ( get_sites( array( 'fields' => 'ids' ) ) as $prstsearch_site_id ) {
+	foreach ( get_sites(
+		array(
+			'fields' => 'ids',
+			// The default is the first hundred.
+			'number' => 0,
+		)
+	) as $prstsearch_site_id ) {
 		switch_to_blog( (int) $prstsearch_site_id );
 		prstsearch_uninstall_site();
 		restore_current_blog();

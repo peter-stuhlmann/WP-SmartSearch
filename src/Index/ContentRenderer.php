@@ -88,18 +88,19 @@ final class ContentRenderer {
 		$GLOBALS['post'] = $post; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restored below; builders read the global.
 		setup_postdata( $post );
 
-		// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core filter.
-		$html = (string) apply_filters( 'the_content', $post->post_content );
+		try {
+			// phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedHooknameFound -- Core filter.
+			return (string) apply_filters( 'the_content', $post->post_content );
+		} finally {
+			// Also if a shortcode or a builder module throws: the rest of the request must not run logged out.
+			$GLOBALS['post'] = $previous; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restoring the original.
 
-		$GLOBALS['post'] = $previous; // phpcs:ignore WordPress.WP.GlobalVariablesOverride.Prohibited -- Restoring the original.
+			if ( $previous instanceof WP_Post ) {
+				setup_postdata( $previous );
+			}
 
-		if ( $previous instanceof WP_Post ) {
-			setup_postdata( $previous );
+			wp_set_current_user( $previous_user );
 		}
-
-		wp_set_current_user( $previous_user );
-
-		return $html;
 	}
 
 	/**

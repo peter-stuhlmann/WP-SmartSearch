@@ -67,6 +67,8 @@ final class SemanticSearcher {
 	private const REMEMBERED_POSTS = 300;
 	private const RESULT_CACHE_TTL = 10 * MINUTE_IN_SECONDS;
 
+	private const COUNT_CACHE_TTL = 5 * MINUTE_IN_SECONDS;
+
 	/**
 	 * Tokens used by the most recent search. Zero if the query embedding was cached.
 	 */
@@ -213,9 +215,21 @@ final class SemanticSearcher {
 	 * Returns the number of passages that have an embedding of the model.
 	 */
 	private function embedded_count( string $model ): int {
-		$counts = $this->chunks->counts( $model );
+		// Counting reads the whole table. The number only decides how the search goes about its work,
+		// so one that is a few minutes old serves as well.
+		$key    = $this->cache->index_key( 'embedded', $model );
+		$cached = $this->cache->get( $key );
 
-		return $counts['chunks'] - $counts['missing'];
+		if ( is_numeric( $cached ) ) {
+			return (int) $cached;
+		}
+
+		$counts   = $this->chunks->counts( $model );
+		$embedded = $counts['chunks'] - $counts['missing'];
+
+		$this->cache->set( $key, (string) $embedded, self::COUNT_CACHE_TTL );
+
+		return $embedded;
 	}
 
 	/**
@@ -258,12 +272,14 @@ final class SemanticSearcher {
 
 		$step = max( 1, intdiv( $embedded, self::MEAN_SAMPLE ) );
 
-		// New embeddings change the mean without changing the text, so their number makes it outdated as well.
+		// New embeddings change the mean without changing the text. A few more hardly move it, so it
+		// only counts as outdated when their number has grown by about a quarter: otherwise it would
+		// be calculated again and again while a large index is being built.
 		$packed = $this->cache->for_index(
 			'mean',
 			$model,
 			fn (): string => self::encode( CenteredSimilarity::mean( $this->vectors( $model, $step ) ) ),
-			(string) $embedded
+			(string) (int) floor( log( $embedded, 1.25 ) )
 		);
 
 		return self::decode( is_string( $packed ) ? $packed : '' );

@@ -287,8 +287,7 @@ final class ChunkRepository implements ChunkStore {
 
 			$this->wpdb->update(
 				$this->table,
-				// A passage without a single word must not stay "incomplete" for ever.
-				array( 'terms' => '' === $terms ? ' ' : $terms ) + self::signature_values( $row['embedding'] ),
+				array( 'terms' => $terms ) + self::signature_values( $row['embedding'] ),
 				array( 'id' => (int) $row['id'] )
 			);
 		}
@@ -379,14 +378,17 @@ final class ChunkRepository implements ChunkStore {
 	}
 
 	/**
-	 * Finds chunks containing every term as a substring.
+	 * Finds chunks containing every term as a word of its own.
 	 *
-	 * Fallback for terms FULLTEXT cannot index, such as two-letter words.
+	 * For terms FULLTEXT cannot index, such as two-letter words. It reads
+	 * every passage, so it is only used when there is no other way. What a
+	 * word is, the database judges roughly: letters outside ASCII can count as
+	 * its end. The caller checks the matches.
 	 *
-	 * @param string[] $terms Search terms.
+	 * @param string[] $terms Search terms, letters and digits only.
 	 * @return array<int, array{id: int, post_id: int, title: string, content: string, score: float}>
 	 */
-	public function like_search( array $terms, int $limit ): array {
+	public function word_search( array $terms, int $limit ): array {
 		if ( array() === $terms ) {
 			return array();
 		}
@@ -395,9 +397,10 @@ final class ChunkRepository implements ChunkStore {
 		$values     = array( $this->table );
 
 		foreach ( $terms as $term ) {
-			$like         = '%' . $this->wpdb->esc_like( $term ) . '%';
-			$conditions[] = '(title LIKE %s OR content LIKE %s)';
-			array_push( $values, $like, $like );
+			// POSIX classes, which MySQL and MariaDB both understand; their own word boundaries differ.
+			$word         = '(^|[^[:alnum:]])' . preg_quote( $term, '/' ) . '([^[:alnum:]]|$)';
+			$conditions[] = '(title REGEXP %s OR content REGEXP %s)';
+			array_push( $values, $word, $word );
 		}
 
 		$values[] = $limit;

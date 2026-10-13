@@ -28,6 +28,58 @@ final class IndexTerms {
 	private const REVERSED = 'qz';
 
 	/**
+	 * Words the database never indexes, whatever is done: its built-in list of English stop words.
+	 *
+	 * A stem can be one of them by accident: "Foren" becomes "for". Such a
+	 * stem is stored with a few letters added, so it is indexed after all.
+	 * A query looks for beginnings of words and finds it as before.
+	 */
+	private const DATABASE_STOP_WORDS = array(
+		'a',
+		'about',
+		'an',
+		'are',
+		'as',
+		'at',
+		'be',
+		'by',
+		'com',
+		'de',
+		'en',
+		'for',
+		'from',
+		'how',
+		'i',
+		'in',
+		'is',
+		'it',
+		'la',
+		'of',
+		'on',
+		'or',
+		'that',
+		'the',
+		'this',
+		'to',
+		'was',
+		'what',
+		'when',
+		'where',
+		'who',
+		'will',
+		'with',
+		'und',
+		'www',
+	);
+
+	private const KEPT_ANYWAY = 'qx';
+
+	/**
+	 * Stored for a passage without a single word, so it can be told from one that was never processed.
+	 */
+	private const NO_WORDS = 'qznone';
+
+	/**
 	 * The database does not index shorter words.
 	 */
 	public const MIN_LENGTH = 3;
@@ -43,17 +95,20 @@ final class IndexTerms {
 	 * Returns what is stored for a passage.
 	 */
 	public static function of( string $title, string $content ): string {
-		$words = preg_split( '/[^\p{L}\p{N}]+/u', $title . ' ' . $content, -1, PREG_SPLIT_NO_EMPTY );
+		$words = preg_split( '/[^\p{L}\p{N}]+/u', Unicode::composed( $title . ' ' . $content ), -1, PREG_SPLIT_NO_EMPTY );
 		$terms = array();
+		$seen  = array();
 
 		foreach ( $words ? $words : array() as $word ) {
 			$stem = Stemmer::stem( $word );
 
-			if ( mb_strlen( $stem ) < self::MIN_LENGTH || isset( $terms[ $stem ] ) ) {
+			if ( mb_strlen( $stem ) < self::MIN_LENGTH || isset( $seen[ $stem ] ) ) {
 				continue;
 			}
 
-			$terms[ $stem ] = true;
+			$seen[ $stem ] = true;
+
+			$terms[ in_array( $stem, self::DATABASE_STOP_WORDS, true ) ? $stem . self::KEPT_ANYWAY : $stem ] = true;
 
 			// Only a word longer than the shortest ending can end with one.
 			if ( mb_strlen( $stem ) > self::MIN_ENDING_LENGTH ) {
@@ -61,7 +116,7 @@ final class IndexTerms {
 			}
 		}
 
-		return implode( ' ', array_map( 'strval', array_keys( $terms ) ) );
+		return array() === $terms ? self::NO_WORDS : implode( ' ', array_map( 'strval', array_keys( $terms ) ) );
 	}
 
 	/**

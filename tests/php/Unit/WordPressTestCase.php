@@ -75,6 +75,14 @@ abstract class WordPressTestCase extends TestCase {
 			}
 		);
 
+		Functions\when( 'delete_transient' )->alias(
+			function ( string $name ): bool {
+				unset( $this->transients[ $name ] );
+
+				return true;
+			}
+		);
+
 		Functions\when( 'wp_hash' )->alias( static fn ( string $data ): string => hash_hmac( 'sha256', $data, 'test-salt' ) );
 	}
 

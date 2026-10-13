@@ -179,12 +179,8 @@ final class ResultRenderer {
 			'count'      => $count,
 			// The address of the ordinary search page, so the filter works without JavaScript too.
 			'url'        => add_query_arg(
-				array_filter(
-					array(
-						's'         => rawurlencode( $query ),
-						'post_type' => $post_type,
-					)
-				),
+				// Not array_filter(): a search for "0" is a search.
+				array( 's' => rawurlencode( $query ) ) + ( '' === $post_type ? array() : array( 'post_type' => $post_type ) ),
 				home_url( '/' )
 			),
 			'is_current' => $post_type === $current,

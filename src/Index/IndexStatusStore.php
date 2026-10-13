@@ -188,6 +188,36 @@ final class IndexStatusStore {
 	}
 
 	/**
+	 * Returns published posts of the given types that were never indexed.
+	 *
+	 * @param string[] $post_types Post types to look at.
+	 * @param int      $after_id   Return posts with a higher ID than this.
+	 * @return int[] Post IDs in ascending order.
+	 */
+	public function posts_without_state( array $post_types, int $after_id, int $limit ): array {
+		if ( array() === $post_types ) {
+			return array();
+		}
+
+		$placeholders = implode( ', ', array_fill( 0, count( $post_types ), '%s' ) );
+
+		// phpcs:disable WordPress.DB.PreparedSQL.InterpolatedNotPrepared, WordPress.DB.PreparedSQLPlaceholders.ReplacementsWrongNumber, WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- The interpolated string only contains placeholders.
+		$ids = $this->wpdb->get_col(
+			$this->wpdb->prepare(
+				"SELECT posts.ID FROM %i AS posts
+				LEFT JOIN %i AS state ON state.post_id = posts.ID AND state.meta_key = %s
+				WHERE posts.ID > %d AND posts.post_status = 'publish' AND posts.post_password = ''
+					AND posts.post_type IN ({$placeholders}) AND state.meta_id IS NULL
+				ORDER BY posts.ID ASC LIMIT %d",
+				array_merge( array( $this->wpdb->posts, $this->wpdb->postmeta, self::STATE_META, $after_id ), array_values( $post_types ), array( $limit ) )
+			)
+		);
+		// phpcs:enable
+
+		return array_map( 'intval', $ids );
+	}
+
+	/**
 	 * Returns posts an editor excluded from the search by hand.
 	 *
 	 * @return int[] Post IDs.

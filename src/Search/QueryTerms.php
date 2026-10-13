@@ -14,12 +14,17 @@ namespace PrstSearch\Search;
  *
  * Words are searched for; the more of them a page has, the better. Two
  * notations known from the large search engines are demands instead:
- * a phrase in quotation marks must appear exactly like that, and a word with
- * a minus in front must not appear at all.
+ * a phrase in quotation marks must appear exactly like that, and a word or
+ * a quoted phrase with a minus in front must not appear at all.
  */
 final class QueryTerms {
 
 	private const MAX_TERMS = 12;
+
+	/**
+	 * How many phrases and exclusions a query can make. Each is checked against the whole text of every hit.
+	 */
+	private const MAX_DEMANDS = 8;
 
 	/**
 	 * Function words that say nothing about what is searched for.
@@ -46,12 +51,14 @@ final class QueryTerms {
 	 * @param string[] $terms    Lower-case words to search for.
 	 * @param string[] $phrases  Lower-case phrases that must appear.
 	 * @param string[] $excluded Lower-case words that must not appear.
+	 * @param string[] $excluded_phrases Lower-case phrases that must not appear.
 	 * @param string   $text     The phrase without its notation, as a person would say it.
 	 */
 	private function __construct(
 		private readonly array $terms,
 		private readonly array $phrases,
 		private readonly array $excluded,
+		private readonly array $excluded_phrases,
 		private readonly string $text
 	) {}
 
@@ -62,21 +69,48 @@ final class QueryTerms {
 		// Whatever kind of quotation mark the keyboard produced.
 		$phrase = (string) preg_replace( '/[„“”«»]/u', '"', mb_strtolower( $phrase ) );
 
+		$excluded_phrases = array();
+		$excluded         = array();
+
+		// First the phrases that must not appear, so their quotation marks are not read as a demand for them.
+		$phrase = (string) preg_replace_callback(
+			'/(?<![\p{L}\p{N}])-"([^"]+)"/u',
+			static function ( array $found ) use ( &$excluded_phrases ): string {
+				$excluded_phrases[] = self::spaced( $found[1] );
+
+				return ' ';
+			},
+			$phrase
+		);
+
 		preg_match_all( '/"([^"]+)"/u', $phrase, $quoted );
 
-		// A minus only excludes at the beginning of a word: "e-mail" is one word.
-		preg_match_all( '/(?<![\p{L}\p{N}])-([\p{L}\p{N}]+)/u', $phrase, $minus );
+		// A minus only excludes at the beginning of a word: "e-mail" is one word. And not inside
+		// quotation marks, where it is part of the phrase: "-5 Grad".
+		$searched = (string) preg_replace_callback(
+			'/"[^"]*"|(?<![\p{L}\p{N}])-([\p{L}\p{N}]+)/u',
+			static function ( array $found ) use ( &$excluded ): string {
+				if ( ! isset( $found[1] ) ) {
+					return $found[0];
+				}
 
-		$searched = (string) preg_replace( '/(?<![\p{L}\p{N}])-[\p{L}\p{N}]+/u', ' ', $phrase );
-		$words    = preg_split( '/[^\p{L}\p{N}]+/u', $searched, -1, PREG_SPLIT_NO_EMPTY );
-		$words    = array_values( array_unique( $words ? $words : array() ) );
-		$terms    = array_values( array_diff( $words, explode( ' ', implode( ' ', self::STOP_WORDS ) ) ) );
+				$excluded[] = $found[1];
+
+				return ' ';
+			},
+			$phrase
+		);
+
+		$words = preg_split( '/[^\p{L}\p{N}]+/u', $searched, -1, PREG_SPLIT_NO_EMPTY );
+		$words = array_values( array_unique( $words ? $words : array() ) );
+		$terms = array_values( array_diff( $words, explode( ' ', implode( ' ', self::STOP_WORDS ) ) ) );
 
 		return new self(
 			// "wer sind wir" has no other words; then the function words are all there is to search for.
 			array_slice( array() === $terms ? $words : $terms, 0, self::MAX_TERMS ),
-			array_values( array_filter( array_map( array( self::class, 'spaced' ), $quoted[1] ) ) ),
-			array_values( array_unique( $minus[1] ) ),
+			array_slice( array_values( array_filter( array_map( array( self::class, 'spaced' ), $quoted[1] ) ) ), 0, self::MAX_DEMANDS ),
+			array_slice( array_values( array_unique( $excluded ) ), 0, self::MAX_DEMANDS ),
+			array_slice( array_values( array_filter( $excluded_phrases ) ), 0, self::MAX_DEMANDS ),
 			self::spaced( str_replace( '"', ' ', $searched ) )
 		);
 	}
@@ -109,10 +143,19 @@ final class QueryTerms {
 	}
 
 	/**
+	 * Returns the phrases a result must not contain.
+	 *
+	 * @return string[]
+	 */
+	public function excluded_phrases(): array {
+		return $this->excluded_phrases;
+	}
+
+	/**
 	 * Tells whether the phrase makes demands a result has to meet.
 	 */
 	public function has_demands(): bool {
-		return array() !== $this->phrases || array() !== $this->excluded;
+		return array() !== $this->phrases || array() !== $this->excluded || array() !== $this->excluded_phrases;
 	}
 
 	/**

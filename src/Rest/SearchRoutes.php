@@ -33,7 +33,6 @@ final class SearchRoutes implements Hookable {
 
 	public const ROUTE_NAMESPACE = 'prstsearch/v1';
 
-	private const MAX_QUERY_LENGTH = 200;
 
 	private const SUGGESTION_LIMIT = 6;
 
@@ -68,7 +67,7 @@ final class SearchRoutes implements Hookable {
 			'type'              => 'string',
 			'required'          => true,
 			'minLength'         => 1,
-			'maxLength'         => self::MAX_QUERY_LENGTH,
+			'maxLength'         => SearchService::MAX_QUERY_LENGTH,
 			'sanitize_callback' => 'sanitize_text_field',
 			// Named explicitly: with a custom sanitize callback WordPress would otherwise skip
 			// the checks declared above, and the length limit would not hold.
@@ -209,7 +208,9 @@ final class SearchRoutes implements Hookable {
 		};
 
 		$is_first_page = 1 === $results->page;
-		$has_answer    = $is_first_page && $results->total > 0 && $this->answers->is_enabled();
+		// Not with provisional results: the answer is written from the final list, which the next
+		// request returns. Asking for it now would have the language model consulted twice.
+		$has_answer = $is_first_page && $results->total > 0 && ! $results->is_provisional && $this->answers->is_enabled();
 
 		return new WP_REST_Response(
 			array(
@@ -280,7 +281,11 @@ final class SearchRoutes implements Hookable {
 		// A few more than needed, because some may not be shown to this visitor.
 		$post_ids = $this->chunks->suggest( $text, self::SUGGESTION_LIMIT * 2 );
 
-		$this->cache->set( $key, $post_ids, self::SUGGESTION_CACHE_TTL );
+		// Only what was found: text that matches nothing is cheap to look up again, and
+		// remembering it would let anybody fill the cache by sending random letters.
+		if ( array() !== $post_ids ) {
+			$this->cache->set( $key, $post_ids, self::SUGGESTION_CACHE_TTL );
+		}
 
 		return $post_ids;
 	}

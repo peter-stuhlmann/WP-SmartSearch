@@ -11,6 +11,7 @@ namespace PrstSearch\Stats;
 
 use PrstSearch\Database\SearchLog;
 use PrstSearch\Provider\ProviderConfig;
+use PrstSearch\Provider\RequestThrottle;
 use PrstSearch\Provider\TokenUsage;
 use PrstSearch\Search\Ranking;
 use PrstSearch\Settings\Settings;
@@ -28,7 +29,8 @@ final class SearchLogger {
 	public function __construct(
 		private readonly SearchLog $log,
 		private readonly Settings $settings,
-		private readonly ProviderConfig $config
+		private readonly ProviderConfig $config,
+		private readonly RequestThrottle $throttle
 	) {}
 
 	/**
@@ -40,7 +42,8 @@ final class SearchLogger {
 	 * @return string Token referring to the entry, empty if nothing was logged.
 	 */
 	public function log_search( string $query, Ranking $ranking, int $duration_ms ): string {
-		if ( ! $this->settings->bool( 'tracking_enabled' ) ) {
+		// A visitor who searches faster than a person can is not what the statistics are for.
+		if ( ! $this->settings->bool( 'tracking_enabled' ) || ! $this->throttle->allow( RequestThrottle::LOG ) ) {
 			return '';
 		}
 

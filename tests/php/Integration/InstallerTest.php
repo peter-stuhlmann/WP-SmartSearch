@@ -12,6 +12,18 @@ namespace PrstSearch\Tests\Integration;
  */
 final class InstallerTest extends DatabaseTestCase {
 
+	public function test_the_tables_count_as_up_to_date_once_they_are_installed(): void {
+		self::assertFalse( $this->installer->is_outdated() );
+
+		delete_option( 'prstsearch_test_db_version' );
+
+		self::assertTrue( $this->installer->is_outdated() );
+
+		$this->installer->install();
+
+		self::assertFalse( $this->installer->is_outdated() );
+	}
+
 	public function test_installing_twice_changes_nothing(): void {
 		$columns = $this->columns();
 

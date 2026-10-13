@@ -67,7 +67,7 @@ final class Proximity {
 	/**
 	 * Finds where a term occurs, in any of the forms that count as a match.
 	 *
-	 * @return array<int, int> End positions keyed by start position, in bytes.
+	 * @return array<int, int> End positions keyed by start position, in characters.
 	 */
 	private static function occurrences( string $text, string $term ): array {
 		$pattern = implode( '|', array_filter( TermCoverage::patterns( $term ) ) );
@@ -79,7 +79,10 @@ final class Proximity {
 		$occurrences = array();
 
 		foreach ( $matches[0] as $match ) {
-			$occurrences[ $match[1] ] = $match[1] + strlen( $match[0] );
+			// The offset is in bytes. An umlaut has two of them and must not count as a wider gap.
+			$start = mb_strlen( substr( $text, 0, $match[1] ) );
+
+			$occurrences[ $start ] = $start + mb_strlen( $match[0] );
 		}
 
 		return $occurrences;

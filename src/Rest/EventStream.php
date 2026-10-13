@@ -34,7 +34,8 @@ final class EventStream {
 		// phpcs:ignore WordPress.PHP.IniSet.Risky -- Compression collects the output this response exists to send early.
 		ini_set( 'zlib.output_compression', '0' );
 
-		while ( ob_get_level() > 0 ) {
+		// Counted, not "while there are buffers": one that refuses to be removed would keep the loop running for ever.
+		for ( $level = ob_get_level(); $level > 0; $level-- ) {
 			ob_end_clean();
 		}
 

@@ -29,8 +29,14 @@ final class Installer {
 
 	/**
 	 * Creates the installer.
+	 *
+	 * @param wpdb   $wpdb           Database connection. Its prefix decides which tables are meant.
+	 * @param string $version_option Option the schema version of those tables is noted in.
 	 */
-	public function __construct( private readonly wpdb $wpdb ) {}
+	public function __construct(
+		private readonly wpdb $wpdb,
+		private readonly string $version_option = self::VERSION_OPTION
+	) {}
 
 	/**
 	 * Returns the name of the index table.
@@ -47,18 +53,10 @@ final class Installer {
 	}
 
 	/**
-	 * Creates or upgrades the tables if the stored schema version is outdated.
-	 *
-	 * @return bool Whether the tables were created or upgraded.
+	 * Tells whether the tables have to be created or upgraded.
 	 */
-	public function maybe_install(): bool {
-		if ( self::SCHEMA_VERSION === get_option( self::VERSION_OPTION ) ) {
-			return false;
-		}
-
-		$this->install();
-
-		return true;
+	public function is_outdated(): bool {
+		return self::SCHEMA_VERSION !== get_option( $this->version_option );
 	}
 
 	/**
@@ -114,7 +112,7 @@ final class Installer {
 
 		$this->remove_total_cost_column();
 
-		update_option( self::VERSION_OPTION, self::SCHEMA_VERSION );
+		update_option( $this->version_option, self::SCHEMA_VERSION );
 	}
 
 	/**
@@ -177,6 +175,6 @@ final class Installer {
 	public function drop(): void {
 		$this->wpdb->query( $this->wpdb->prepare( 'DROP TABLE IF EXISTS %i', $this->chunks_table() ) );
 		$this->wpdb->query( $this->wpdb->prepare( 'DROP TABLE IF EXISTS %i', $this->log_table() ) );
-		delete_option( self::VERSION_OPTION );
+		delete_option( $this->version_option );
 	}
 }

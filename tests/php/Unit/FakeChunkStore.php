@@ -35,11 +35,11 @@ final class FakeChunkStore implements ChunkStore {
 	public array $fulltext_rows = array();
 
 	/**
-	 * If set, what like_search() returns whatever the terms.
+	 * If set, what word_search() returns whatever the terms.
 	 *
 	 * @var array<int, array{id: int, post_id: int, title: string, content: string, score: float}>
 	 */
-	public array $like_rows = array();
+	public array $word_rows = array();
 
 	/**
 	 * Names of the search methods that were called, in order.
@@ -122,13 +122,32 @@ final class FakeChunkStore implements ChunkStore {
 
 		usort( $rows, static fn ( array $a, array $b ): int => $b['score'] <=> $a['score'] );
 
-		return $rows;
+		return array_slice( $rows, 0, $limit );
 	}
 
-	public function like_search( array $terms, int $limit ): array {
-		$this->calls[] = 'like';
+	public function word_search( array $terms, int $limit ): array {
+		$this->calls[] = 'words';
 
-		return array() !== $this->like_rows ? $this->like_rows : $this->containing( $terms );
+		if ( array() !== $this->word_rows ) {
+			return $this->word_rows;
+		}
+
+		// The way the database does it: every term, each as a word of its own, in one passage.
+		$rows = array();
+
+		foreach ( $this->passages as $passage ) {
+			$text = mb_strtolower( $passage['title'] . ' ' . $passage['content'] );
+
+			foreach ( $terms as $term ) {
+				if ( 1 !== preg_match( '/(^|[^a-z0-9])' . preg_quote( $term, '/' ) . '([^a-z0-9]|$)/', $text ) ) {
+					continue 2;
+				}
+			}
+
+			$rows[] = self::row( $passage, 1.0 );
+		}
+
+		return array_slice( $rows, 0, $limit );
 	}
 
 	public function embeddings( string $embedding_model, int $step = 1 ): Generator {
@@ -230,29 +249,6 @@ final class FakeChunkStore implements ChunkStore {
 
 	public function suggest( string $text, int $limit ): array {
 		return array();
-	}
-
-	/**
-	 * Returns the passages that contain at least one of the words, those with more of them first.
-	 *
-	 * @param string[] $words Words to look for.
-	 * @return array<int, array{id: int, post_id: int, title: string, content: string, score: float}>
-	 */
-	private function containing( array $words ): array {
-		$rows = array();
-
-		foreach ( $this->passages as $passage ) {
-			$text  = mb_strtolower( $passage['title'] . ' ' . $passage['content'] );
-			$score = count( array_filter( $words, static fn ( string $word ): bool => str_contains( $text, mb_strtolower( $word ) ) ) );
-
-			if ( $score > 0 ) {
-				$rows[] = self::row( $passage, (float) $score );
-			}
-		}
-
-		usort( $rows, static fn ( array $a, array $b ): int => $b['score'] <=> $a['score'] );
-
-		return $rows;
 	}
 
 	/**

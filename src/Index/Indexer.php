@@ -40,7 +40,7 @@ final class Indexer {
 	/**
 	 * Indexes a post, or removes it from the index if it is not searchable.
 	 */
-	public function index_post( int $post_id ): void {
+	public function index_post( int $post_id, bool $is_content_change = true ): void {
 		$post = get_post( $post_id );
 
 		if ( ! $post instanceof WP_Post || ! $this->eligibility->is_indexable( $post ) ) {
@@ -49,7 +49,7 @@ final class Indexer {
 		}
 
 		try {
-			$this->store( $post );
+			$this->store( $post, $is_content_change );
 		} catch ( Throwable $error ) {
 			// A broken shortcode or builder module must not take the editor down with it.
 			$this->status->mark_error( $post_id, $error->getMessage() );
@@ -120,27 +120,21 @@ final class Indexer {
 	}
 
 	/**
-	 * Walks one page of all searchable posts and indexes those never indexed before.
+	 * Indexes the next searchable posts that were never indexed before.
 	 *
 	 * Used after activation and whenever settings changed what has to be indexed.
 	 *
-	 * @return int Number of posts looked at. Fewer than $limit means the end was reached.
+	 * @param int $limit    Number of posts to index.
+	 * @param int $after_id Continue after this post ID. Posts are told apart by ID, not by position:
+	 *                      a position shifts when a post is deleted in the meantime, and one would be skipped.
+	 * @return int The last post ID worked on, or 0 when none is left.
 	 */
-	public function backfill_page( int $limit, int $offset ): int {
-		$post_ids = $this->query_ids(
-			array(
-				'posts_per_page' => $limit,
-				'offset'         => $offset,
-			)
-		);
+	public function backfill_page( int $limit, int $after_id ): int {
+		$post_ids = $this->status->posts_without_state( $this->eligibility->enabled_post_types(), $after_id, $limit );
 
-		foreach ( $post_ids as $post_id ) {
-			if ( ! $this->status->has_state( $post_id ) ) {
-				$this->index_post( $post_id );
-			}
-		}
+		array_map( array( $this, 'index_post' ), $post_ids );
 
-		return count( $post_ids );
+		return array() === $post_ids ? 0 : max( $post_ids );
 	}
 
 	/**
@@ -180,7 +174,7 @@ final class Indexer {
 	/**
 	 * Renders, chunks and stores one post.
 	 */
-	private function store( WP_Post $post ): void {
+	private function store( WP_Post $post, bool $is_content_change ): void {
 		$title  = wp_strip_all_tags( get_the_title( $post ) );
 		$chunks = $this->chunker->split( $this->renderer->render( $post ) );
 
@@ -190,7 +184,9 @@ final class Indexer {
 		}
 
 		// Unchanged text leaves the version alone, so caches survive saves that did not touch the content.
-		if ( $this->chunks->replace_post_chunks( $post->ID, $post->post_type, $title, $chunks ) ) {
+		// So does a new comment: the version is what every cached AI answer depends on, and visitors
+		// writing comments must not be able to make the website pay for all of them again.
+		if ( $this->chunks->replace_post_chunks( $post->ID, $post->post_type, $title, $chunks ) && $is_content_change ) {
 			$this->version->bump();
 		}
 

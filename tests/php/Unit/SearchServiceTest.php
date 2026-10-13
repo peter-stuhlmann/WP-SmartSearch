@@ -276,6 +276,18 @@ final class SearchServiceTest extends SearchTestCase {
 		self::assertSame( 1, $again->total );
 	}
 
+	public function test_a_phrase_with_a_minus_before_its_quotation_marks_is_excluded(): void {
+		$this->add_page( 10, 'Dinner', 'A chicken recipe.' );
+		$this->add_page( 20, 'Lunch', 'A recipe without meat.' );
+
+		self::assertSame( array( 10 ), $this->service()->search( 'recipe -"without meat"' )->post_ids() );
+	}
+
+	public function test_a_search_phrase_is_cut_to_a_length_a_person_would_type(): void {
+		self::assertSame( 200, mb_strlen( SearchService::normalize( str_repeat( 'ä ', 500 ) ) ) );
+		self::assertSame( 'a b', SearchService::normalize( "  a \t\n b  " ) );
+	}
+
 	public function test_pages_are_found_by_their_meaning(): void {
 		$this->use_ai();
 		$this->add_page( 10, 'Chicken with asparagus', 'A recipe for the pan.', self::ABOUT_FOOD );

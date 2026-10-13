@@ -28,7 +28,7 @@ final class Vocabulary {
 	/**
 	 * Keeps the cached dictionary of very large sites at a reasonable size. Rare words go first.
 	 */
-	private const MAX_WORDS = 50000;
+	private const MAX_WORDS = 20000;
 
 	/**
 	 * Creates the vocabulary.

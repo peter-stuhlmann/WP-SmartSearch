@@ -250,7 +250,7 @@ final class IndexHooks implements Hookable {
 		$post = get_post( (int) $comment->comment_post_ID );
 
 		if ( $post instanceof WP_Post && $this->eligibility->is_enabled_post_type( $post->post_type ) ) {
-			$this->indexer->index_post( $post->ID );
+			$this->indexer->index_post( $post->ID, false );
 		}
 	}
 

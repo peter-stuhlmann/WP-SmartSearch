@@ -18,7 +18,9 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 
 	private const EMBEDDING_TIMEOUT = 30;
 	private const CHAT_TIMEOUT      = 45;
-	private const MODELS_TIMEOUT    = 15;
+	// For a stream the timeout is the time the whole answer may take to arrive, not the wait for its beginning.
+	private const STREAM_TIMEOUT = 120;
+	private const MODELS_TIMEOUT = 15;
 
 	/**
 	 * Creates the client.
@@ -85,21 +87,7 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 	 * @throws ProviderException If the provider call fails.
 	 */
 	public function chat( string $instructions, string $message ): ChatResult {
-		$data = $this->request( '/chat/completions', $this->chat_payload( $instructions, $message ), self::CHAT_TIMEOUT );
-
-		$text = $data['choices'][0]['message']['content'] ?? null;
-
-		if ( ! is_string( $text ) || '' === trim( $text ) ) {
-			throw new ProviderException( 'The provider returned an empty answer.' );
-		}
-
-		return new ChatResult(
-			trim( $text ),
-			new TokenUsage(
-				input: (int) ( $data['usage']['prompt_tokens'] ?? 0 ),
-				output: (int) ( $data['usage']['completion_tokens'] ?? 0 )
-			)
-		);
+		return $this->chat_result( $this->request( '/chat/completions', $this->chat_payload( $instructions, $message ), self::CHAT_TIMEOUT ) );
 	}
 
 	/**
@@ -121,7 +109,7 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 				// Without this the stream carries no token counts.
 				'stream_options' => array( 'include_usage' => true ),
 			),
-			self::CHAT_TIMEOUT,
+			self::STREAM_TIMEOUT,
 			static function ( string $data ) use ( $stream, $on_text ): void {
 				foreach ( $stream->feed( $data ) as $piece ) {
 					$on_text( $piece );
@@ -131,17 +119,26 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 
 		$text = trim( $stream->text() );
 
-		/*
-		 * Not every compatible API knows the streaming options, and some answer
-		 * a streaming request with a plain response. As long as nothing was
-		 * handed over, asking again the ordinary way is safe.
-		 */
-		if ( '' === $text ) {
+		// An API that does not know the streaming options says so with "400 Bad Request". Only then
+		// is it asked again the ordinary way: repeating any other failure would just double the load.
+		if ( 400 === $response['status'] && '' === $text ) {
 			return $this->chat_at_once( $instructions, $message, $on_text );
 		}
 
-		if ( $response['status'] < 200 || $response['status'] >= 300 ) {
-			throw new ProviderException( 'The provider ended the answer with an error.', $response['status'] ); // phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Integer.
+		$data = $this->decoded( $response );
+
+		// Some APIs answer a streaming request with a plain response. That answer is there already.
+		if ( '' === $text && is_array( $data ) ) {
+			$result = $this->chat_result( $data );
+
+			$on_text( $result->text );
+
+			return $result;
+		}
+
+		// A stream can break off, or report a failure, after it began. What arrived until then is no answer.
+		if ( '' === $text || $stream->has_failed() ) {
+			throw new ProviderException( 'The provider did not finish the answer.' );
 		}
 
 		// A provider that reports no tokens for a stream is estimated, so the costs are not lost.
@@ -170,6 +167,29 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 		}
 
 		return $models;
+	}
+
+	/**
+	 * Reads the answer from a complete chat response.
+	 *
+	 * @param array<string, mixed> $data Decoded response.
+	 *
+	 * @throws ProviderException If the response holds no text.
+	 */
+	private function chat_result( array $data ): ChatResult {
+		$text = $data['choices'][0]['message']['content'] ?? null;
+
+		if ( ! is_string( $text ) || '' === trim( $text ) ) {
+			throw new ProviderException( 'The provider returned an empty answer.' );
+		}
+
+		return new ChatResult(
+			trim( $text ),
+			new TokenUsage(
+				input: (int) ( $data['usage']['prompt_tokens'] ?? 0 ),
+				output: (int) ( $data['usage']['completion_tokens'] ?? 0 )
+			)
+		);
 	}
 
 	/**
@@ -238,7 +258,25 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 		$response = null === $payload
 			? $this->transport->get( $this->base_url . $path, $headers, $timeout )
 			: $this->transport->post_json( $this->base_url . $path, $headers, $payload, $timeout );
-		$data     = json_decode( $response['body'], true );
+		$data     = $this->decoded( $response );
+
+		if ( ! is_array( $data ) ) {
+			throw new ProviderException( 'The provider returned an invalid response.' );
+		}
+
+		return $data;
+	}
+
+	/**
+	 * Decodes a response, and turns an error status into an exception.
+	 *
+	 * @param array{status: int, body: string} $response Response of the transport.
+	 * @return array<string, mixed>|null Null if the body is not a JSON object, as that of a stream is not.
+	 *
+	 * @throws ProviderException If the provider answered with an error.
+	 */
+	private function decoded( array $response ): ?array {
+		$data = json_decode( $response['body'], true );
 
 		if ( $response['status'] < 200 || $response['status'] >= 300 ) {
 			throw new ProviderException(
@@ -248,11 +286,7 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 			);
 		}
 
-		if ( ! is_array( $data ) ) {
-			throw new ProviderException( 'The provider returned an invalid response.' );
-		}
-
-		return $data;
+		return is_array( $data ) ? $data : null;
 	}
 
 	/**

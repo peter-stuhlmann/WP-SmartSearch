@@ -27,6 +27,11 @@ final class SearchService {
 	public const MAX_HITS = 200;
 
 	/**
+	 * Longest search phrase, in characters. Whatever is longer is not a search.
+	 */
+	public const MAX_QUERY_LENGTH = 200;
+
+	/**
 	 * Log tokens of the searches of this request, keyed by query.
 	 *
 	 * @var array<string, string>
@@ -166,7 +171,8 @@ final class SearchService {
 	 * Brings a search phrase into the form it is searched and logged in.
 	 */
 	public static function normalize( string $query ): string {
-		return trim( (string) preg_replace( '/\s+/u', ' ', $query ) );
+		// Cut here, so the limit holds for every way a query can come in, not only for the REST API.
+		return mb_substr( trim( (string) preg_replace( '/\s+/u', ' ', Unicode::composed( $query ) ) ), 0, self::MAX_QUERY_LENGTH );
 	}
 
 	/**
@@ -338,6 +344,7 @@ final class SearchService {
 			$hits = array_filter( $hits, static fn ( SearchHit $hit ): bool => Relevance::Low !== $hit->relevance );
 		}
 
-		return $this->filter->apply( Ranking::by_relevance( $hits ) );
+		// Keyword and semantic search each return up to the limit; together they must not exceed it either.
+		return $this->filter->apply( array_slice( Ranking::by_relevance( $hits ), 0, self::MAX_HITS ) );
 	}
 }
