@@ -10,6 +10,7 @@ namespace PrstSearch\Tests\Unit;
 use Generator;
 use PrstSearch\Database\ChunkStore;
 use PrstSearch\Search\IndexTerms;
+use PrstSearch\Search\Stemmer;
 use PrstSearch\Search\Vector;
 
 /**
@@ -178,19 +179,28 @@ final class FakeChunkStore implements ChunkStore {
 
 	public function part_search( array $parts, int $limit ): array {
 		$this->calls[] = 'parts';
+		$this->parts   = $parts;
 
 		$rows = array();
 
 		foreach ( $this->passages as $passage ) {
-			$text = mb_strtolower( $passage['title'] . ' ' . $passage['content'] );
+			// The way the database compares: neither case nor umlauts make a difference.
+			$text = Stemmer::fold( $passage['title'] . ' ' . $passage['content'] );
 
-			if ( array() !== array_filter( $parts, static fn ( string $part ): bool => str_contains( $text, $part ) ) ) {
+			if ( array() !== array_filter( $parts, static fn ( string $part ): bool => str_contains( $text, Stemmer::fold( $part ) ) ) ) {
 				$rows[] = self::row( $passage, 1.0 );
 			}
 		}
 
 		return array_slice( $rows, 0, $limit );
 	}
+
+	/**
+	 * What part_search() was last asked for.
+	 *
+	 * @var string[]
+	 */
+	public array $parts = array();
 
 	public function known_terms( array $stems ): array {
 		$this->calls[] = 'known terms';
@@ -218,7 +228,7 @@ final class FakeChunkStore implements ChunkStore {
 			$text = mb_strtolower( $passage['title'] . ' ' . $passage['content'] );
 
 			foreach ( $words as $spellings ) {
-				if ( 1 !== preg_match( '/(?<![\p{L}\p{N}])(' . implode( '|', $spellings ) . ')(?![\p{L}\p{N}])/u', $text ) ) {
+				if ( 1 !== preg_match( '/(?<![\p{L}\p{N}])(' . implode( '|', array_map( static fn ( string $spelling ): string => preg_quote( $spelling, '/' ), $spellings ) ) . ')(?![\p{L}\p{N}])/u', $text ) ) {
 					continue 2;
 				}
 			}

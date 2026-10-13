@@ -8,10 +8,15 @@ declare( strict_types=1 );
 namespace PrstSearch\Tests\Unit;
 
 use Brain\Monkey\Functions;
+use PrstSearch\Index\IndexVersion;
 use PrstSearch\Search\CompoundEndings;
 use PrstSearch\Search\KeywordSearcher;
 use PrstSearch\Search\QueryTerms;
+use PrstSearch\Search\Vocabulary;
 use PrstSearch\Settings\Settings;
+use PrstSearch\Support\Cache;
+use PrstSearch\Support\Lock;
+use wpdb;
 
 /**
  * What the keyword search makes of the rows the database returns.
@@ -112,10 +117,10 @@ final class KeywordSearcherTest extends WordPressTestCase {
 	public function test_a_word_the_index_does_not_have_is_not_looked_for_by_reading_the_whole_table_if_that_is_switched_off(): void {
 		$this->options[ Settings::OPTION ] = array( 'match_inside_words' => false );
 
-		$this->store->passages = array( self::passage( 1, 10, 'Shipping', 'We ship worldwide.' ) );
+		$this->store->passages = array( self::passage( 1, 10, 'Delivery', 'We deliver worldwide.' ) );
 
 		// What a typing error looks like to the index. The spelling correction takes it from here.
-		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'shpping' ), 10 ) );
+		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'delivry' ), 10 ) );
 		self::assertSame( array( 'fulltext' ), $this->store->calls );
 	}
 
@@ -129,7 +134,7 @@ final class KeywordSearcherTest extends WordPressTestCase {
 		$matches = $this->searcher()->search( QueryTerms::from_phrase( 'hof' ), 10 );
 
 		self::assertSame( array( 10 ), array_keys( $matches ) );
-		self::assertSame( 0.55, $matches[10]['coverage'], 'Less than any match as a word, and just enough to be shown.' );
+		self::assertSame( 0.56, $matches[10]['coverage'], 'Less than any match as a word, and just enough to be shown.' );
 		self::assertSame( array( 20 ), array_keys( $this->searcher()->search( QueryTerms::from_phrase( '234' ), 10 ) ) );
 		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'xyz' ), 10 ) );
 	}
@@ -142,6 +147,38 @@ final class KeywordSearcherTest extends WordPressTestCase {
 
 		self::assertSame( array( 20 ), array_keys( $this->searcher()->search( QueryTerms::from_phrase( 'hof' ), 10 ) ) );
 		self::assertNotContains( 'parts', $this->store->calls );
+	}
+
+	public function test_a_fruitless_search_inside_words_is_not_repeated(): void {
+		$this->store->passages = array( self::passage( 1, 10, 'Garten', 'Rosen und Tulpen.' ) );
+
+		$this->searcher()->search( QueryTerms::from_phrase( 'qwertz' ), 10 );
+		$this->searcher()->search( QueryTerms::from_phrase( 'qwertz' ), 10 );
+
+		self::assertSame( array( 'fulltext', 'parts', 'fulltext' ), $this->store->calls );
+	}
+
+	public function test_only_the_longest_words_are_looked_for_inside_words(): void {
+		$this->store->passages = array( self::passage( 1, 10, 'Garten', 'Rosen und Tulpen.' ) );
+
+		$this->searcher()->search( QueryTerms::from_phrase( 'abcdefg abcdef abcde abcd' ), 10 );
+
+		self::assertSame( array( 'abcdefg', 'abcdef', 'abcde' ), $this->store->parts );
+	}
+
+	public function test_a_short_word_that_only_ends_other_words_stays_unfound_inside_words(): void {
+		$this->store->passages = array( self::passage( 1, 10, 'Umwelt', 'Natur und Kultur. Naturen.' ) );
+
+		self::assertSame( array(), $this->searcher()->search( QueryTerms::from_phrase( 'Tür' ), 10 ), 'What the rule for compounds rejected does not come back this way.' );
+	}
+
+	public function test_many_matches_inside_words_average_to_a_relevant_result(): void {
+		$this->store->passages = array( self::passage( 1, 10, 'Codes', 'xaaaay xbbbby xccccy xddddy xeeeey xffffy' ) );
+
+		// Six words, each found inside a word only.
+		$matches = $this->searcher()->search( QueryTerms::from_phrase( 'aaaa bbbb cccc dddd eeee ffff' ), 10 );
+
+		self::assertGreaterThanOrEqual( 0.55, $matches[10]['coverage'] );
 	}
 
 	public function test_two_letters_are_never_looked_for_inside_words(): void {
@@ -238,7 +275,11 @@ final class KeywordSearcherTest extends WordPressTestCase {
 	}
 
 	private function searcher(): KeywordSearcher {
-		return new KeywordSearcher( $this->store, new Settings(), new CompoundEndings( $this->store ) );
+		return new KeywordSearcher( $this->store, new Settings(), new CompoundEndings( $this->store, new Vocabulary( $this->store, $this->cache() ) ), $this->cache() );
+	}
+
+	private function cache(): Cache {
+		return new Cache( new IndexVersion(), new Lock( new wpdb() ) );
 	}
 
 	/**

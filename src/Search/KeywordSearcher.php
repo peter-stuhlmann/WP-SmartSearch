@@ -11,6 +11,7 @@ namespace PrstSearch\Search;
 
 use PrstSearch\Database\ChunkStore;
 use PrstSearch\Settings\Settings;
+use PrstSearch\Support\Cache;
 
 /**
  * Finds posts by the words they contain.
@@ -46,12 +47,28 @@ final class KeywordSearcher {
 	private const POSTS_READ_IN_FULL = 50;
 
 	/**
+	 * How many compounds that end with a short search word are searched for, the most frequent ones.
+	 */
+	private const MAX_COMPOUNDS = 50;
+
+	/**
+	 * How many of the search words are looked for inside words, the longest ones.
+	 */
+	private const MAX_PARTS = 3;
+
+	/**
+	 * For how long it is remembered that a search found nothing inside words either.
+	 */
+	private const NOTHING_TTL = 10 * MINUTE_IN_SECONDS;
+
+	/**
 	 * Creates the searcher.
 	 */
 	public function __construct(
 		private readonly ChunkStore $chunks,
 		private readonly Settings $settings,
-		private readonly CompoundEndings $endings
+		private readonly CompoundEndings $endings,
+		private readonly Cache $cache
 	) {}
 
 	/**
@@ -65,7 +82,9 @@ final class KeywordSearcher {
 			return array();
 		}
 
-		$boolean_query = $terms->to_boolean_query();
+		// A short word is also searched for in the compounds the website makes with it: "Haustür" for "Tür".
+		$compounds     = array_slice( $this->endings->of_website( $terms->all() ), 0, self::MAX_COMPOUNDS );
+		$boolean_query = trim( $terms->to_boolean_query() . ' ' . IndexTerms::beginning_query( $compounds ) );
 
 		/*
 		 * Several passages of one post can match, so more rows than posts are needed.
@@ -90,7 +109,23 @@ final class KeywordSearcher {
 		 */
 		$parts = array_values( array_filter( $terms->all(), static fn ( string $term ): bool => null !== TermCoverage::inside_pattern( $term ) ) );
 
-		return $this->ranked( $this->chunks->part_search( $parts, $limit * 3 ), $terms, $limit, true );
+		usort( $parts, static fn ( string $a, string $b ): int => mb_strlen( $b ) <=> mb_strlen( $a ) );
+
+		$parts = array_slice( $parts, 0, self::MAX_PARTS );
+		// The same fruitless search, by the next visitor or the next step of this one, does not read the table again.
+		$nothing = $this->cache->index_key( 'nothing_inside', implode( ' ', $parts ) );
+
+		if ( array() === $parts || null !== $this->cache->get( $nothing ) ) {
+			return array();
+		}
+
+		$matches = $this->ranked( $this->chunks->part_search( $parts, $limit * 3 ), $terms, $limit, true );
+
+		if ( array() === $matches ) {
+			$this->cache->set( $nothing, 1, self::NOTHING_TTL );
+		}
+
+		return $matches;
 	}
 
 	/**
@@ -198,7 +233,9 @@ final class KeywordSearcher {
 
 		$texts = $this->chunks->post_texts( $incomplete );
 		// The rest of a page can hold compounds its matching passages do not.
-		$compounds = array_merge_recursive( $compounds, $this->compounds( $texts, $terms ) );
+		foreach ( $this->compounds( $texts, $terms ) as $term => $words ) {
+			$compounds[ $term ] = array_values( array_unique( array_merge( $compounds[ $term ] ?? array(), $words ) ) );
+		}
 
 		foreach ( $texts as $post_id => $text ) {
 			$coverage[ $post_id ] = max( $coverage[ $post_id ], TermCoverage::of( $text, $terms->all(), $compounds, $anywhere ) );

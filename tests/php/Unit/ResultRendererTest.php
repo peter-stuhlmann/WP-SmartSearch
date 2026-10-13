@@ -100,7 +100,7 @@ final class ResultRendererTest extends SearchTestCase {
 
 	public function test_a_value_of_the_whole_index_is_not_rebuilt_while_a_visitor_waits(): void {
 		$version = new IndexVersion();
-		$cache   = new Cache( $version );
+		$cache   = new Cache( $version, new \PrstSearch\Support\Lock( new \wpdb() ) );
 		$builds  = 0;
 		$build   = static function () use ( &$builds ): string {
 			return 'built ' . ( ++$builds );

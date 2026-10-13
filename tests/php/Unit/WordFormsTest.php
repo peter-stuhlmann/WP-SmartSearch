@@ -108,7 +108,7 @@ final class WordFormsTest extends TestCase {
 
 		self::assertNotContains( 'for', $stored );
 		self::assertContains( 'forqx', $stored );
-		self::assertStringStartsWith( 'for* ', QueryTerms::from_phrase( 'Foren' )->to_boolean_query(), 'The query still finds it by its beginning.' );
+		self::assertSame( 'for*', QueryTerms::from_phrase( 'Foren' )->to_boolean_query(), 'The query still finds it by its beginning.' );
 	}
 
 	public function test_a_passage_without_words_is_told_apart_from_one_that_was_never_processed(): void {
@@ -134,6 +134,9 @@ final class WordFormsTest extends TestCase {
 		self::assertSame( 'eis', Stemmer::stem( 'Eis' ), 'Ice is no egg.' );
 		self::assertSame( 'reisebus', Stemmer::stem( 'Reisebusse' ), 'A compound ends in the stem of its last part.' );
 		self::assertSame( 'fluss', Stemmer::stem( 'Flüsse' ), 'Only where the singular has one "s".' );
+		self::assertSame( 'buss', Stemmer::stem( 'Buße' ), 'Penance is no bus.' );
+		self::assertSame( 'ole', Stemmer::stem( 'Ole' ), 'A name is no oil.' );
+		self::assertSame( 1.0, TermCoverage::of( 'Ole Einar gewinnt.', array( 'ole' ) ) );
 		self::assertSame( 'tee', Stemmer::stem( 'Tee' ) );
 		self::assertSame( 'bus', Stemmer::stem( 'Bus' ) );
 		self::assertSame( 'haus', Stemmer::stem( 'Haus' ), 'Without its "s" it would no longer meet "Häuser".' );
@@ -172,7 +175,7 @@ final class WordFormsTest extends TestCase {
 
 	public function test_the_query_looks_for_stems_at_the_beginning_and_at_the_end_of_words(): void {
 		self::assertSame( 'kost* qztsok*', QueryTerms::from_phrase( 'Kosten' )->to_boolean_query() );
-		self::assertSame( 'tee* qzeet*', QueryTerms::from_phrase( 'Tee' )->to_boolean_query(), 'Whether "Komitee" counts is decided when the matches are judged.' );
+		self::assertSame( 'tee*', QueryTerms::from_phrase( 'Tee' )->to_boolean_query() );
 		self::assertNull( TermCoverage::patterns( 'tee' )['ending'], 'Not the end of just any word.' );
 		self::assertSame( 0.7, TermCoverage::of( 'Ein Kräutertee.', array( 'tee' ), array( 'tee' => array( 'kräutertee' ) ) ) );
 		self::assertSame( 0.0, TermCoverage::of( 'Das Komitee.', array( 'tee' ), array( 'tee' => array( 'kräutertee' ) ) ) );
@@ -213,6 +216,14 @@ final class WordFormsTest extends TestCase {
 			1.0,
 			Proximity::of( 'Chicken soup. ' . str_repeat( 'x ', 80 ) . 'A recipe. ' . str_repeat( 'x ', 80 ) . 'The chicken recipe.', array( 'chicken', 'recipe' ) )
 		);
+	}
+
+	public function test_the_link_to_a_passage_prefers_the_word_and_never_starts_inside_one(): void {
+		$text = "Zur Startseite und mehr davon hier\nUnsere Art zu arbeiten ist gut";
+
+		self::assertSame( 'Unsere Art zu arbeiten ist gut', Excerpt::fragment( $text, array( 'art' ) ), 'The line with the word, not the one with "Startseite".' );
+		self::assertSame( 'in der Bahnhofstraße 5.', Excerpt::fragment( 'Wir sind in der Bahnhofstraße 5.', array( 'hof' ) ), 'A browser looks for whole words.' );
+		self::assertSame( '', Excerpt::fragment( 'Nichts davon steht hier.', array( 'hof' ) ) );
 	}
 
 	public function test_a_single_word_is_no_group(): void {

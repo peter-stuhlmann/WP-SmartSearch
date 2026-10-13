@@ -458,6 +458,37 @@ describe( 'enhanceLiveSearch', () => {
 		} );
 	} );
 
+	describe( 'after further results were added', () => {
+		it( 'lets the link lead to the page that comes next', async () => {
+			const requests = holdRequests();
+			const search = renderSearch();
+
+			submit( search, 'shipping' );
+			requests[ 0 ].resolve( { ...response( 'shipping' ), pages: 3 } );
+			await settle();
+
+			const more = search.output.querySelector(
+				'[data-prstsearch-more]'
+			);
+
+			more.click();
+			requests[ 1 ].resolve( {
+				...response( 'shipping' ),
+				page: 2,
+				pages: 3,
+			} );
+			await settle();
+
+			expect( more.dataset.page ).toBe( '3' );
+			expect( new URL( more.href ).searchParams.get( 'paged' ) ).toBe(
+				'3'
+			);
+			expect( new URL( more.href ).searchParams.get( 's' ) ).toBe(
+				'shipping'
+			);
+		} );
+	} );
+
 	describe( 'while a new search is on its way', () => {
 		it( 'does not let a control of the old list cancel it', async () => {
 			const requests = holdRequests();

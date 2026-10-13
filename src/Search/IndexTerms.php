@@ -141,11 +141,25 @@ final class IndexTerms {
 			}
 
 			$parts[] = $stem . '*';
-			// Every stem the index holds can be the end of a word. Whether a short one counts is decided later.
-			$parts[] = self::reversed( $stem ) . '*';
+
+			if ( mb_strlen( $stem ) >= self::MIN_ENDING_LENGTH ) {
+				$parts[] = self::reversed( $stem ) . '*';
+			}
 		}
 
 		return implode( ' ', $parts );
+	}
+
+	/**
+	 * Builds the boolean query that finds the given words by their beginning, and nothing else.
+	 *
+	 * @param string[] $words Words.
+	 */
+	public static function beginning_query( array $words ): string {
+		$stems = array_unique( array_map( array( Stemmer::class, 'stem' ), $words ) );
+		$stems = array_filter( $stems, static fn ( string $stem ): bool => mb_strlen( $stem ) >= self::MIN_LENGTH && 1 === preg_match( '/^[\p{L}\p{N}]+$/u', $stem ) );
+
+		return implode( ' ', array_map( static fn ( string $stem ): string => $stem . '*', $stems ) );
 	}
 
 	/**

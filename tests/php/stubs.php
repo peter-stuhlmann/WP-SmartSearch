@@ -79,6 +79,13 @@ if ( ! class_exists( 'wpdb' ) ) {
 		 */
 		public int $affected = 1;
 
+		/**
+		 * What the next calls of get_var() return, in order. Null once they are used up.
+		 *
+		 * @var array<int, mixed>
+		 */
+		public array $vars = array();
+
 		public function prepare( string $query, mixed ...$args ): string {
 			return $query;
 		}
@@ -92,7 +99,7 @@ if ( ! class_exists( 'wpdb' ) ) {
 		}
 
 		public function get_var( string $query ): mixed {
-			return null;
+			return array_shift( $this->vars );
 		}
 
 		public function get_results( string $query, string $output = '' ): array {

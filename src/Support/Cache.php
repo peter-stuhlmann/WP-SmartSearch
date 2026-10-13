@@ -35,6 +35,11 @@ final class Cache {
 	private const FIRST_BUILD_WAIT = 10;
 
 	/**
+	 * After how many seconds a first build counts as abandoned.
+	 */
+	private const FIRST_BUILD_LOCK = MINUTE_IN_SECONDS;
+
+	/**
 	 * How often it looks whether the value is there, in milliseconds.
 	 */
 	private const WAIT_STEP = 250;
@@ -49,7 +54,10 @@ final class Cache {
 	/**
 	 * Creates the cache.
 	 */
-	public function __construct( private readonly IndexVersion $version ) {}
+	public function __construct(
+		private readonly IndexVersion $version,
+		private readonly Lock $lock
+	) {}
 
 	/**
 	 * Builds a key from a name and the values the entry depends on.
@@ -113,17 +121,23 @@ final class Cache {
 	public function for_index( string $name, string $variant, callable $build, string $state = '' ): mixed {
 		$key   = self::PREFIX . 'index_' . $name;
 		$stamp = $this->version->current() . '|' . $state;
-		$entry = self::usable( get_transient( $key ), $variant ) ?? $this->awaited( $key, $variant );
+		$entry = self::usable( get_transient( $key ), $variant );
 
 		if ( null === $entry ) {
-			$lock = $key . '_rebuilding';
+			// Of several requests arriving together, exactly one gets the lock and builds.
+			if ( $this->lock->acquire( $key, self::FIRST_BUILD_LOCK ) ) {
+				try {
+					return $this->rebuild( $key, $variant, $stamp, $build );
+				} finally {
+					$this->lock->release( $key );
+				}
+			}
 
-			set_transient( $lock, 1, self::REBUILD_LOCK );
+			// The others wait for it. If it does not come in time, they build it without storing a lock of their own.
+			$entry = $this->awaited( $key, $variant );
 
-			try {
+			if ( null === $entry ) {
 				return $this->rebuild( $key, $variant, $stamp, $build );
-			} finally {
-				delete_transient( $lock );
 			}
 		}
 
@@ -144,28 +158,28 @@ final class Cache {
 	}
 
 	/**
-	 * Waits for a value another request is building, if one is.
+	 * Waits for the value another request is building.
 	 *
-	 * @return array<string, mixed>|null The entry once it is there. Null if nobody builds it, or not in time.
+	 * @return array<string, mixed>|null The entry once it is there. Null if it did not come in time.
 	 */
 	private function awaited( string $key, string $variant ): ?array {
-		$lock = $key . '_rebuilding';
-
 		for ( $waited = 0; $waited < self::FIRST_BUILD_WAIT * 1000; $waited += self::WAIT_STEP ) {
-			if ( false === get_transient( $lock ) ) {
+			// The lock is asked in the database: what this request has read once, WordPress would not read again.
+			if ( ! $this->lock->is_held( $key, self::FIRST_BUILD_LOCK ) ) {
 				break;
 			}
 
 			usleep( self::WAIT_STEP * 1000 );
-
-			$entry = self::usable( get_transient( $key ), $variant );
-
-			if ( null !== $entry ) {
-				return $entry;
-			}
 		}
 
-		return null;
+		// For the same reason WordPress has to forget that the value was missing a moment ago.
+		if ( ! wp_using_ext_object_cache() ) {
+			wp_cache_delete( '_transient_' . $key, 'options' );
+			wp_cache_delete( '_transient_timeout_' . $key, 'options' );
+			wp_cache_delete( 'notoptions', 'options' );
+		}
+
+		return self::usable( get_transient( $key ), $variant );
 	}
 
 	/**

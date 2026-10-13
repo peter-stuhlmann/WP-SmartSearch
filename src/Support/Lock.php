@@ -76,6 +76,20 @@ final class Lock {
 	}
 
 	/**
+	 * Tells whether somebody holds the lock, asking the database and no cache.
+	 *
+	 * @param string $name     Name of the job.
+	 * @param int    $lifetime Seconds after which an unreleased lock counts as abandoned.
+	 */
+	public function is_held( string $name, int $lifetime ): bool {
+		$taken_at = $this->wpdb->get_var(
+			$this->wpdb->prepare( 'SELECT option_value FROM %i WHERE option_name = %s', $this->wpdb->options, self::PREFIX . $name )
+		);
+
+		return null !== $taken_at && time() - (int) $taken_at < $lifetime;
+	}
+
+	/**
 	 * Releases the lock.
 	 */
 	public function release( string $name ): void {

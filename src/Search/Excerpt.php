@@ -105,13 +105,7 @@ final class Excerpt {
 		$lines = preg_split( '/\R/u', trim( $text ), -1, PREG_SPLIT_NO_EMPTY );
 		$lines = $lines ? $lines : array();
 
-		foreach ( $lines as $line ) {
-			$position = self::first_match( $line, $terms );
-
-			if ( null === $position ) {
-				continue;
-			}
-
+		foreach ( self::lines_with_a_term( $lines, $terms ) as $line => $position ) {
 			$before = preg_split( '/\s+/u', mb_substr( $line, 0, $position ), -1, PREG_SPLIT_NO_EMPTY );
 			$after  = preg_split( '/\s+/u', mb_substr( $line, $position ), -1, PREG_SPLIT_NO_EMPTY );
 
@@ -139,14 +133,44 @@ final class Excerpt {
 	 * @param string[] $terms Search terms.
 	 */
 	private static function first_match( string $text, array $terms ): ?int {
-		$pattern = self::pattern( $terms, $text );
+		return self::position( $text, self::pattern( $terms, $text ) );
+	}
 
+	/**
+	 * Finds where a pattern first matches in a text, in characters.
+	 */
+	private static function position( string $text, ?string $pattern ): ?int {
 		if ( null === $pattern || 1 !== preg_match( '/' . $pattern . '/iu', $text, $match, PREG_OFFSET_CAPTURE ) ) {
 			return null;
 		}
 
 		// The offset is in bytes.
 		return mb_strlen( substr( $text, 0, $match[0][1] ) );
+	}
+
+	/**
+	 * Returns the lines that hold a term, each with the position of the word to begin with.
+	 *
+	 * A line with a term as a word comes before any line that only has it
+	 * inside a word. There the position is that of the whole word: a browser
+	 * looks for whole words, so the fragment must not start in the middle of one.
+	 *
+	 * @param string[] $lines Lines of a passage.
+	 * @param string[] $terms Search terms.
+	 * @return iterable<string, int> Position in characters, keyed by line.
+	 */
+	private static function lines_with_a_term( array $lines, array $terms ): iterable {
+		$inside = array_filter( array_map( static fn ( string $term ): ?string => TermCoverage::inside_pattern( mb_strtolower( $term ) ), $terms ) );
+
+		foreach ( array( self::word_pattern( $terms ), array() === $inside ? null : '[\p{L}\p{N}]*(?:' . implode( '|', $inside ) . ')' ) as $pattern ) {
+			foreach ( $lines as $line ) {
+				$position = self::position( $line, $pattern );
+
+				if ( null !== $position ) {
+					yield $line => $position;
+				}
+			}
+		}
 	}
 
 	/**
@@ -159,6 +183,24 @@ final class Excerpt {
 	 * @return string|null Regular expression without delimiters, null if there is nothing to look for.
 	 */
 	private static function pattern( array $terms, string $text ): ?string {
+		$pattern = self::word_pattern( $terms );
+
+		if ( null === $pattern || 1 === preg_match( '/' . $pattern . '/iu', $text ) ) {
+			return $pattern;
+		}
+
+		$inside = array_filter( array_map( static fn ( string $term ): ?string => TermCoverage::inside_pattern( mb_strtolower( $term ) ), $terms ) );
+
+		return array() === $inside ? $pattern : implode( '|', $inside );
+	}
+
+	/**
+	 * Builds one pattern that finds any of the terms as a word, in any of the forms that count as a match.
+	 *
+	 * @param string[] $terms Search terms.
+	 * @return string|null Regular expression without delimiters, null if there is nothing to look for.
+	 */
+	private static function word_pattern( array $terms ): ?string {
 		$terms = array_filter( $terms, static fn ( string $term ): bool => mb_strlen( $term ) > 1 );
 
 		if ( array() === $terms ) {
@@ -174,14 +216,6 @@ final class Excerpt {
 			$alternatives = array_merge( $alternatives, array_values( array_filter( TermCoverage::patterns( mb_strtolower( $term ) ) ) ) );
 		}
 
-		$pattern = implode( '|', $alternatives );
-
-		if ( 1 === preg_match( '/' . $pattern . '/iu', $text ) ) {
-			return $pattern;
-		}
-
-		$inside = array_filter( array_map( static fn ( string $term ): ?string => TermCoverage::inside_pattern( mb_strtolower( $term ) ), $terms ) );
-
-		return array() === $inside ? $pattern : implode( '|', $inside );
+		return implode( '|', $alternatives );
 	}
 }

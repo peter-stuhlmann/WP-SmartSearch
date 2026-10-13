@@ -172,15 +172,19 @@
 		}
 	}
 
+	// A column may shrink below what it holds: a wide table then scrolls
+	// inside its panel instead of making the whole page wider than the window.
 	&__main,
 	&__sidebar {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--prstsearch-space-6);
 		min-width: 0;
 	}
 
 	&__main > form {
 		display: grid;
+		grid-template-columns: minmax(0, 1fr);
 		gap: var(--prstsearch-space-6);
 	}
 }
@@ -189,4 +193,8 @@
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(min(100%, 420px), 1fr));
 	gap: var(--prstsearch-space-6);
+
+	> * {
+		min-width: 0;
+	}
 }

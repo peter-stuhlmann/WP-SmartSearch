@@ -36,7 +36,7 @@ final class QueryTextTest extends TestCase {
 	public function test_boolean_query_matches_word_beginnings_and_skips_short_words(): void {
 		$terms = QueryTerms::from_phrase( 'Versand USA EU' );
 
-		self::assertSame( 'versand* qzdnasrev* usa* qzasu*', $terms->to_boolean_query() );
+		self::assertSame( 'versand* qzdnasrev* usa*', $terms->to_boolean_query() );
 	}
 
 	public function test_fulltext_operators_cannot_be_injected(): void {

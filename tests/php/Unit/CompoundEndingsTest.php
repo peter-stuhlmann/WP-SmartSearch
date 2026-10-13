@@ -24,17 +24,57 @@ final class CompoundEndingsTest extends SearchTestCase {
 		self::assertSame( array( 1 ), $this->found( 'Türen' ) );
 	}
 
-	public function test_the_first_part_has_to_be_a_word_the_website_uses(): void {
-		$this->configure( array( 'match_inside_words' => false ) );
-		$this->add_page( 1, 'Eingang', 'Die Xyloktür klemmt.' );
+	public function test_a_first_part_the_website_does_not_use_makes_a_likely_compound_that_counts_less(): void {
+		$this->add_page( 1, 'Fuhrpark', 'Ein Mietwagen steht bereit.' );
+		$this->add_page( 2, 'Garage', 'Der Wagenheber fehlt.' );
+		$this->add_page( 3, 'Hof', 'Der Hofwagen und der Hof.' );
+		$this->add_page( 4, 'Werkstatt', 'Ein Wagen wird repariert.' );
 
-		self::assertSame( array(), $this->found( 'Tür' ) );
+		// Sure matches first: the word, then the compound whose first part is a word of the website.
+		self::assertSame( array( 4, 3, 2, 1 ), $this->found( 'Wagen' ) );
+
+		$found = $this->container->get( CompoundEndings::class )->in( 'Ein Mietwagen und ein Hofwagen.', array( 'wagen' ) );
+
+		self::assertSame( array( 'hofwagen' ), $found['wagen'] );
+		self::assertSame( array( 'mietwagen' ), $found[ CompoundEndings::LIKELY . 'wagen' ] );
 	}
 
-	public function test_as_a_last_resort_the_word_is_found_inside_any_word_if_that_is_allowed(): void {
-		$this->add_page( 1, 'Eingang', 'Die Xyloktür klemmt.' );
+	public function test_a_word_that_merely_ends_alike_is_no_compound(): void {
+		$this->add_page( 1, 'Umwelt', 'Natur und Kultur, Struktur und Architektur.' );
+		$this->add_page( 2, 'Kontakt', 'Der Prozess der Anmeldung und alle Adressen.' );
 
-		self::assertSame( array( 1 ), $this->found( 'Tür' ) );
+		self::assertSame( array(), $this->found( 'Tür' ), 'None of them is written with "ü". Searching inside words does not bring them back either.' );
+		self::assertSame( array(), $this->found( 'Essen' ), '"Adr" is too short for a word, and "Prozess" does not end in what was typed.' );
+	}
+
+	public function test_every_compound_is_judged_however_many_there_are(): void {
+		foreach ( range( 1, 45 ) as $number ) {
+			$name = 'Zimak' . chr( 97 + intdiv( $number, 26 ) ) . chr( 97 + $number % 26 );
+
+			$this->add_page( $number, 'Raum ' . $number, 'Der ' . $name . ' und die ' . $name . 'tür.' );
+		}
+
+		$this->configure( array( 'match_inside_words' => false ) );
+
+		self::assertSame( 45, $this->container->get( SearchService::class )->search( 'Tür' )->total );
+	}
+
+	public function test_compounds_are_found_among_many_words_that_merely_end_alike(): void {
+		foreach ( range( 1, 320 ) as $number ) {
+			$this->add_page( $number, 'Umwelt ' . $number, 'Natur und Kultur, Struktur und Architektur.' );
+		}
+
+		$this->add_page( 400, 'Keller', 'Die Kellertür im Keller klemmt.' );
+		$this->add_page( 401, 'Eingang', 'Eine Tür aus Holz.' );
+
+		self::assertSame( array( 401, 400 ), $this->found( 'Tür' ), 'Not crowded out by the 320 pages the index returns for the ending.' );
+	}
+
+	public function test_a_number_is_no_last_part_of_a_compound(): void {
+		$this->configure( array( 'match_inside_words' => false ) );
+		$this->add_page( 1, 'Teile', 'Nummer 456123 und Nummer 456.' );
+
+		self::assertSame( array(), $this->found( '123' ) );
 	}
 
 	public function test_a_search_returns_no_more_results_than_the_setting_allows(): void {
@@ -68,7 +108,7 @@ final class CompoundEndingsTest extends SearchTestCase {
 	public function test_the_index_is_asked_once_for_the_same_first_part(): void {
 		$this->add_page( 1, 'Eingang', 'Die Haustür am Haus. Noch eine Haustür.' );
 
-		$endings = new CompoundEndings( $this->store );
+		$endings = $this->container->get( CompoundEndings::class );
 
 		self::assertSame( array( 'tür' => array( 'haustür' ) ), $endings->in( 'Die Haustür. Noch eine Haustür.', array( 'tür' ) ) );
 

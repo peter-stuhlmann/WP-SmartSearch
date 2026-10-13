@@ -57,11 +57,12 @@ final class Stemmer {
 	 *
 	 * The rules leave them alone, because nothing of the word would remain,
 	 * and no rule makes "Eier" from "Ei". They are few enough to be listed.
-	 * "Eis" is not among them: that is another word.
+	 * "Eis" is not among them: that is another word. Nor is "Ole", which is a
+	 * name: the forms are compared as they are written, with their umlauts.
 	 */
 	private const SHORT_WORDS = array(
 		'ei' => array( 'eiern', 'eier', 'ei' ),
-		'ol' => array( 'ölen', 'öle', 'öls', 'öl' ),
+		'öl' => array( 'ölen', 'öle', 'öls', 'öl' ),
 	);
 
 	private const FOLDED = array(
@@ -75,13 +76,15 @@ final class Stemmer {
 	 * Returns the stem of a word.
 	 */
 	public static function stem( string $word ): string {
-		$stem = self::fold( $word );
+		$lower = mb_strtolower( $word );
 
 		foreach ( self::SHORT_WORDS as $short => $forms ) {
-			if ( in_array( $stem, array_map( array( self::class, 'fold' ), $forms ), true ) ) {
+			if ( in_array( $lower, $forms, true ) ) {
 				return $short;
 			}
 		}
+
+		$stem = self::fold( $word );
 
 		for ( $cut = 0; $cut < self::MAX_ENDINGS; $cut++ ) {
 			$shorter = self::without_ending( $stem );
@@ -94,7 +97,10 @@ final class Stemmer {
 		}
 
 		// "Ergebnis" and "Bus" double their "s" before an ending: "Ergebnisse", "Busse".
-		$stem = (string) preg_replace( '/(ni|bu)ss$/', '$1s', $stem );
+		// Only where the word is written with "ss": "Buße" is another word.
+		if ( 1 === preg_match( '/(?:ni|bu)ss(?:e[ns]?)?$/', $lower ) ) {
+			$stem = (string) preg_replace( '/(ni|bu)ss$/', '$1s', $stem );
+		}
 
 		// One spelling for the German and the English ending, so "Kategorie" meets "category".
 		return str_ends_with( $stem, 'ie' ) && strlen( $stem ) > self::MIN_STEM ? substr( $stem, 0, -2 ) . 'y' : $stem;
@@ -157,7 +163,14 @@ final class Stemmer {
 		// "ship" is also the stem of "shipping", with its doubled consonant.
 		$doubled = 1 === preg_match( '/[' . self::DOUBLED . ']$/', $stem ) ? '(?:' . substr( $stem, -1 ) . ')?' : '';
 
-		return self::pattern( $stem ) . $doubled . '(?:' . self::FORM_ENDINGS . '){0,' . self::MAX_ENDINGS . '}';
+		return self::pattern( $stem ) . $doubled . self::endings_pattern();
+	}
+
+	/**
+	 * Returns a regular expression fragment that matches the endings a word can carry, or none.
+	 */
+	public static function endings_pattern(): string {
+		return '(?:' . self::FORM_ENDINGS . '){0,' . self::MAX_ENDINGS . '}';
 	}
 
 	/**

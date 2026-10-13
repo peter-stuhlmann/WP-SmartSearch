@@ -36,12 +36,32 @@ final class TermCoverage {
 	private const BEGINNING_WEIGHT = 0.6;
 
 	/**
+	 * What a word counts that is only likely a compound ending with a short search word, see CompoundEndings.
+	 *
+	 * Just enough to be shown as relevant, after everything that is sure.
+	 */
+	private const LIKELY_ENDING_WEIGHT = 0.56;
+
+	/**
 	 * What it counts that the search word stands somewhere inside a word, as "hof" in "Bahnhofstraße".
 	 *
 	 * Only asked for when nothing has the word in any other way. Then it is
-	 * the best there is, and just enough to be shown as relevant.
+	 * the best there is, and just enough to be shown as relevant: a little
+	 * above the threshold, so that rounding cannot push an average of it below.
 	 */
-	private const INSIDE_WEIGHT = 0.55;
+	private const INSIDE_WEIGHT = 0.56;
+
+	/**
+	 * How many sets of patterns are kept.
+	 */
+	private const REMEMBERED = 200;
+
+	/**
+	 * The patterns built in this request, by term and compounds.
+	 *
+	 * @var array<string, array{word: string, ending: string|null, beginning: string|null}>
+	 */
+	private static array $built = array();
 
 	/**
 	 * Returns the covered share of the terms.
@@ -61,7 +81,7 @@ final class TermCoverage {
 		$covered = 0.0;
 
 		foreach ( $terms as $term ) {
-			$weight = self::weight( $text, $term, $compounds[ $term ] ?? array() );
+			$weight = self::weight( $text, $term, $compounds[ $term ] ?? array(), $compounds[ CompoundEndings::LIKELY . $term ] ?? array() );
 
 			$covered += 0.0 === $weight && $anywhere && self::has( $text, self::inside_pattern( $term ) ) ? self::INSIDE_WEIGHT : $weight;
 		}
@@ -81,6 +101,24 @@ final class TermCoverage {
 	 * @return array{word: string, ending: string|null, beginning: string|null} Regular expressions without delimiters.
 	 */
 	public static function patterns( string $term, array $compounds = array() ): array {
+		// A search judges hundreds of rows by the same few terms.
+		$key = $term . '|' . implode( '|', $compounds );
+
+		if ( ! isset( self::$built[ $key ] ) ) {
+			self::$built         = count( self::$built ) < self::REMEMBERED ? self::$built : array();
+			self::$built[ $key ] = self::build( $term, $compounds );
+		}
+
+		return self::$built[ $key ];
+	}
+
+	/**
+	 * Builds the patterns of a term.
+	 *
+	 * @param string[] $compounds Lower-case words that count as ending with the term.
+	 * @return array{word: string, ending: string|null, beginning: string|null}
+	 */
+	private static function build( string $term, array $compounds ): array {
 		$stem     = Stemmer::stem( $term );
 		$length   = mb_strlen( $stem );
 		$form     = $length >= IndexTerms::MIN_LENGTH ? Stemmer::forms_pattern( $stem ) : Stemmer::short_word_pattern( $stem );
@@ -104,25 +142,38 @@ final class TermCoverage {
 	 *
 	 * What is looked for is what was typed, not its stem: inside a word there are no endings to cut.
 	 *
+	 * A short term does not count at the end of a word. There it was judged
+	 * already, see CompoundEndings: "Tür" must not find "Natur" by this way either.
+	 *
 	 * @return string|null Regular expression without delimiters. Null for a term so short that it is in every other word.
 	 */
 	public static function inside_pattern( string $term ): ?string {
-		return mb_strlen( $term ) >= IndexTerms::MIN_LENGTH ? Stemmer::pattern( Stemmer::fold( $term ) ) : null;
+		if ( mb_strlen( $term ) < IndexTerms::MIN_LENGTH ) {
+			return null;
+		}
+
+		$pattern = Stemmer::pattern( Stemmer::fold( $term ) );
+
+		return IndexTerms::is_short_ending( Stemmer::stem( $term ) )
+			? $pattern . '(?!' . Stemmer::endings_pattern() . '(?![\p{L}\p{N}]))'
+			: $pattern;
 	}
 
 	/**
 	 * Returns what one term counts in a text.
 	 *
 	 * @param string[] $compounds Words that count as ending with the term.
+	 * @param string[] $likely    Words that are likely to.
 	 */
-	private static function weight( string $text, string $term, array $compounds ): float {
+	private static function weight( string $text, string $term, array $compounds, array $likely ): float {
 		$patterns = self::patterns( $term, $compounds );
 
 		return match ( true ) {
-			self::has( $text, $patterns['word'] )      => 1.0,
-			self::has( $text, $patterns['ending'] )    => self::ENDING_WEIGHT,
-			self::has( $text, $patterns['beginning'] ) => self::BEGINNING_WEIGHT,
-			default                                    => 0.0,
+			self::has( $text, $patterns['word'] )                       => 1.0,
+			self::has( $text, $patterns['ending'] )                     => self::ENDING_WEIGHT,
+			self::has( $text, $patterns['beginning'] )                  => self::BEGINNING_WEIGHT,
+			self::has( $text, self::patterns( $term, $likely )['ending'] ) => self::LIKELY_ENDING_WEIGHT,
+			default                                                     => 0.0,
 		};
 	}
 

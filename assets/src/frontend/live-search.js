@@ -303,6 +303,12 @@ function appendResults( output, link, data ) {
 	if ( data.page < data.pages ) {
 		link.dataset.page = String( data.page + 1 );
 		link.removeAttribute( 'aria-disabled' );
+
+		// Opened in a new tab, the link has to lead to the page that comes next, too.
+		const address = new URL( link.href, window.location.href );
+
+		address.searchParams.set( 'paged', link.dataset.page );
+		link.href = address.toString();
 	} else {
 		link.remove();
 	}

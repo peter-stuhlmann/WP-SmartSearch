@@ -35,8 +35,9 @@ final class HitFilter {
 	 * @return SearchHit[]
 	 */
 	public function apply( array $hits ): array {
-		// One query for all posts and their meta instead of one per hit.
-		_prime_post_caches( array_map( static fn ( SearchHit $hit ): int => $hit->post_id, $hits ), false, true );
+		// One query each for all posts, their meta and their terms instead of one per hit. The terms are
+		// what a multilingual plugin reads the language of a post from, and it does so for every single hit.
+		_prime_post_caches( array_map( static fn ( SearchHit $hit ): int => $hit->post_id, $hits ), true, true );
 
 		$searchable = array_values(
 			array_filter(

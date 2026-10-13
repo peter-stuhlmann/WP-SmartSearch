@@ -19,7 +19,7 @@ $prstsearch_has_sidebar = ! in_array( $data['current'], array( SettingsSchema::T
 <div class="wrap prstsearch-admin">
 	<hr class="wp-header-end" />
 
-	<header class="prstsearch-hero">
+	<div class="prstsearch-hero">
 		<div class="prstsearch-hero__intro">
 			<p class="prstsearch-pill prstsearch-pill--<?php echo esc_attr( $prstsearch_hero['status'] ); ?>">
 				<span class="prstsearch-pill__dot" aria-hidden="true"></span>
@@ -43,7 +43,7 @@ $prstsearch_has_sidebar = ! in_array( $data['current'], array( SettingsSchema::T
 				<dd><?php echo esc_html( $prstsearch_hero['updated'] ); ?></dd>
 			</div>
 		</dl>
-	</header>
+	</div>
 
 	<?php if ( null !== $data['notice'] ) : ?>
 		<?php
