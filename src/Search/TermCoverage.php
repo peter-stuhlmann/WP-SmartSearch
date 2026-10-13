@@ -38,11 +38,12 @@ final class TermCoverage {
 	/**
 	 * Returns the covered share of the terms.
 	 *
-	 * @param string   $text  Text to look in.
-	 * @param string[] $terms Lower-case search terms.
+	 * @param string                  $text      Text to look in.
+	 * @param string[]                $terms     Lower-case search terms.
+	 * @param array<string, string[]> $compounds Compounds that count as ending with a short term, see CompoundEndings.
 	 * @return float Between 0 and 1.
 	 */
-	public static function of( string $text, array $terms ): float {
+	public static function of( string $text, array $terms, array $compounds = array() ): float {
 		if ( array() === $terms ) {
 			return 0.0;
 		}
@@ -51,7 +52,7 @@ final class TermCoverage {
 		$covered = 0.0;
 
 		foreach ( $terms as $term ) {
-			$covered += self::weight( $text, $term );
+			$covered += self::weight( $text, $term, $compounds[ $term ] ?? array() );
 		}
 
 		return $covered / count( $terms );
@@ -63,28 +64,37 @@ final class TermCoverage {
 	 * Short terms only count as a word of their own. As a part of other
 	 * words they are everywhere: "ei" (egg) begins "ein" and ends "Partei".
 	 *
-	 * @param string $term Lower-case search term.
+	 * @param string   $term      Lower-case search term.
+	 * @param string[] $compounds Lower-case words that count as ending with the term, if it is too short
+	 *                            to be the ending of just any word.
 	 * @return array{word: string, ending: string|null, beginning: string|null} Regular expressions without delimiters.
 	 */
-	public static function patterns( string $term ): array {
+	public static function patterns( string $term, array $compounds = array() ): array {
 		$stem     = Stemmer::stem( $term );
 		$length   = mb_strlen( $stem );
-		$form     = $length >= IndexTerms::MIN_LENGTH ? Stemmer::forms_pattern( $stem ) : Stemmer::pattern( $stem );
+		$form     = $length >= IndexTerms::MIN_LENGTH ? Stemmer::forms_pattern( $stem ) : Stemmer::short_word_pattern( $stem );
 		$no_start = '(?<![\p{L}\p{N}])';
 		$no_end   = '(?![\p{L}\p{N}])';
+		$quoted   = array_map( static fn ( string $word ): string => preg_quote( $word, '/' ), $compounds );
 
 		return array(
 			'word'      => $no_start . $form . $no_end,
-			'ending'    => $length >= IndexTerms::MIN_ENDING_LENGTH ? '[\p{L}\p{N}]+' . $form . $no_end : null,
+			'ending'    => match ( true ) {
+				$length >= IndexTerms::MIN_ENDING_LENGTH => '[\p{L}\p{N}]+' . $form . $no_end,
+				array() !== $quoted                      => $no_start . '(?:' . implode( '|', $quoted ) . ')' . $no_end,
+				default                                  => null,
+			},
 			'beginning' => $length >= IndexTerms::MIN_LENGTH ? $no_start . Stemmer::pattern( $stem ) . '[\p{L}\p{N}]*' : null,
 		);
 	}
 
 	/**
 	 * Returns what one term counts in a text.
+	 *
+	 * @param string[] $compounds Words that count as ending with the term.
 	 */
-	private static function weight( string $text, string $term ): float {
-		$patterns = self::patterns( $term );
+	private static function weight( string $text, string $term, array $compounds ): float {
+		$patterns = self::patterns( $term, $compounds );
 
 		return match ( true ) {
 			self::has( $text, $patterns['word'] )      => 1.0,

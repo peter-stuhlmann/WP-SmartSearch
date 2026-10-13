@@ -92,13 +92,32 @@ final class ChunkRepositoryTest extends DatabaseTestCase {
 		$this->chunks->replace_post_chunks( 3, 'post', 'Ei', array( 'Nur im Titel.' ) );
 		$this->chunks->replace_post_chunks( 4, 'post', 'Zwei Teile', array( 'Ein Ei hier.', 'Und Öl erst im zweiten Absatz.' ) );
 
-		$found = fn ( string ...$terms ): array => array_column( $this->chunks->word_search( $terms, 10 ), 'post_id' );
+		$found = fn ( string ...$terms ): array => array_column( $this->chunks->word_search( array_map( static fn ( string $term ): array => array( $term ), $terms ), 10 ), 'post_id' );
 
 		self::assertEqualsCanonicalizing( array( 1, 3, 4 ), $found( 'ei' ), 'Not "ein", "Partei" or "Arbeit".' );
 		self::assertSame( array( 1 ), $found( 'ei', 'öl' ), 'Every term, in the same passage.' );
 		self::assertSame( array(), $found( 'zz' ) );
 		self::assertSame( array(), $found() );
-		self::assertCount( 1, $this->chunks->word_search( array( 'ei' ), 1 ) );
+		self::assertCount( 1, $this->chunks->word_search( array( array( 'ei' ) ), 1 ) );
+	}
+
+	public function test_a_short_word_is_found_in_each_of_its_spellings(): void {
+		$this->chunks->replace_post_chunks( 1, 'post', 'Frühstück', array( 'Ein Ei zum Brot.' ) );
+		$this->chunks->replace_post_chunks( 2, 'post', 'Omelett', array( 'Drei Eier und etwas Öl.' ) );
+		$this->chunks->replace_post_chunks( 3, 'post', 'Verein', array( 'Eine Feier im Verein.' ) );
+
+		$found = array_column( $this->chunks->word_search( array( array( 'eiern', 'eier', 'ei' ) ), 10 ), 'post_id' );
+
+		self::assertEqualsCanonicalizing( array( 1, 2 ), $found, 'Not "Feier".' );
+		self::assertSame( array( 2 ), array_column( $this->chunks->word_search( array( array( 'ei', 'eier' ), array( 'öl', 'öle' ) ), 10 ), 'post_id' ) );
+	}
+
+	public function test_the_index_tells_which_stems_are_words_of_the_website(): void {
+		$this->chunks->replace_post_chunks( 1, 'post', 'Unser Haus', array( 'Die Haustür steht offen, am Abend wie am Morgen.' ) );
+
+		self::assertEqualsCanonicalizing( array( 'haus', 'abend' ), $this->chunks->known_terms( array( 'haus', 'kul', 'abend', 'haust' ) ) );
+		self::assertSame( array(), $this->chunks->known_terms( array( 'kul' ) ) );
+		self::assertSame( array(), $this->chunks->known_terms( array() ) );
 	}
 
 	public function test_a_stem_on_the_stop_word_list_of_the_database_is_found(): void {

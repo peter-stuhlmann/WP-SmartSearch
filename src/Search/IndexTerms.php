@@ -85,9 +85,11 @@ final class IndexTerms {
 	public const MIN_LENGTH = 3;
 
 	/**
-	 * From this length on a stem is also looked for at the end of words.
+	 * From this length on a stem counts as the last part of any word that ends with it.
 	 *
-	 * Shorter ones end too many unrelated words: "ei" ends "Partei".
+	 * A shorter one ends too many unrelated words: "tur" ends "Natur". It is
+	 * still looked for, but only counts where the rest of the word is a word
+	 * too, see CompoundEndings. Two letters are never looked for: "ei" ends "Partei".
 	 */
 	public const MIN_ENDING_LENGTH = 4;
 
@@ -139,13 +141,20 @@ final class IndexTerms {
 			}
 
 			$parts[] = $stem . '*';
-
-			if ( mb_strlen( $stem ) >= self::MIN_ENDING_LENGTH ) {
-				$parts[] = self::reversed( $stem ) . '*';
-			}
+			// Every stem the index holds can be the end of a word. Whether a short one counts is decided later.
+			$parts[] = self::reversed( $stem ) . '*';
 		}
 
 		return implode( ' ', $parts );
+	}
+
+	/**
+	 * Tells whether a stem is long enough for the index, but too short to count as the end of just any word.
+	 */
+	public static function is_short_ending( string $stem ): bool {
+		$length = mb_strlen( $stem );
+
+		return $length >= self::MIN_LENGTH && $length < self::MIN_ENDING_LENGTH;
 	}
 
 	/**

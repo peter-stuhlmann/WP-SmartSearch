@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-13T03:30:06+02:00\n"
+"POT-Creation-Date: 2026-10-13T03:52:32+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: smart-search\n"
@@ -437,29 +437,29 @@ msgid "Looking for further matching pages …"
 msgstr ""
 
 #. translators: %s: search phrase.
-#: src/Frontend/ResultRenderer.php:69
+#: src/Frontend/ResultRenderer.php:71
 #, php-format
 msgid "No results for “%s”."
 msgstr ""
 
 #. translators: 1: number of results, 2: search phrase.
-#: src/Frontend/ResultRenderer.php:74
+#: src/Frontend/ResultRenderer.php:76
 #, php-format
 msgid "%1$s result for “%2$s”"
 msgid_plural "%1$s results for “%2$s”"
 msgstr[0] ""
 msgstr[1] ""
 
-#: src/Frontend/ResultRenderer.php:111
+#: src/Frontend/ResultRenderer.php:115
 msgid "Recommended"
 msgstr ""
 
-#: src/Frontend/ResultRenderer.php:161
+#: src/Frontend/ResultRenderer.php:165
 msgid "All"
 msgstr ""
 
 #. translators: 1: citation number, 2: page title.
-#: src/Frontend/ResultRenderer.php:320
+#: src/Frontend/ResultRenderer.php:324
 #, php-format
 msgid "Source %1$d: %2$s"
 msgstr ""

@@ -93,29 +93,44 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 	/**
 	 * {@inheritDoc}
 	 *
-	 * @throws ProviderException If the provider call fails.
+	 * @throws ProviderException If the provider call fails. It carries what was used up, if the answer had begun.
 	 */
 	public function chat_stream( string $instructions, string $message, callable $on_text ): ChatResult {
 		if ( ! $this->transport instanceof StreamingTransport ) {
 			return $this->chat_at_once( $instructions, $message, $on_text );
 		}
 
-		$stream   = new ChatStream();
-		$response = $this->transport->post_json_stream(
-			$this->base_url . '/chat/completions',
-			$this->headers(),
-			$this->chat_payload( $instructions, $message ) + array(
-				'stream'         => true,
-				// Without this the stream carries no token counts.
-				'stream_options' => array( 'include_usage' => true ),
-			),
-			self::STREAM_TIMEOUT,
-			static function ( string $data ) use ( $stream, $on_text ): void {
-				foreach ( $stream->feed( $data ) as $piece ) {
-					$on_text( $piece );
-				}
-			}
+		$stream = new ChatStream();
+
+		// A provider that reports no tokens for a stream is estimated, so the costs are not lost.
+		$used = static fn (): TokenUsage => $stream->usage() ?? new TokenUsage(
+			input: self::estimated_tokens( $instructions . $message ),
+			output: self::estimated_tokens( $stream->text() )
 		);
+
+		try {
+			$response = $this->transport->post_json_stream(
+				$this->base_url . '/chat/completions',
+				$this->headers(),
+				$this->chat_payload( $instructions, $message ) + array(
+					'stream'         => true,
+					// Without this the stream carries no token counts.
+					'stream_options' => array( 'include_usage' => true ),
+				),
+				self::STREAM_TIMEOUT,
+				static function ( string $data ) use ( $stream, $on_text ): void {
+					foreach ( $stream->feed( $data ) as $piece ) {
+						$on_text( $piece );
+					}
+				}
+			);
+		} catch ( ProviderException $lost ) {
+			// A connection lost while the answer was written: the provider bills what it wrote until then.
+			$usage = '' === trim( $stream->text() ) ? new TokenUsage() : $used();
+
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Escaped where it is displayed.
+			throw ProviderException::after( $lost->getMessage(), $usage );
+		}
 
 		$text = trim( $stream->text() );
 
@@ -136,18 +151,17 @@ final class OpenAiCompatibleClient implements StreamingAiClient {
 			return $result;
 		}
 
-		// A stream can break off, or report a failure, after it began. What arrived until then is no answer.
-		if ( '' === $text || $stream->has_failed() ) {
+		if ( '' === $text ) {
 			throw new ProviderException( 'The provider did not finish the answer.' );
 		}
 
-		// A provider that reports no tokens for a stream is estimated, so the costs are not lost.
-		$usage = $stream->usage() ?? new TokenUsage(
-			input: self::estimated_tokens( $instructions . $message ),
-			output: self::estimated_tokens( $text )
-		);
+		// A stream can report a failure after it began. What arrived until then is no answer, but it was written and is billed.
+		if ( $stream->has_failed() ) {
+			// phpcs:ignore WordPress.Security.EscapeOutput.ExceptionNotEscaped -- Token counts, no output.
+			throw ProviderException::after( 'The provider did not finish the answer.', $used() );
+		}
 
-		return new ChatResult( $text, $usage );
+		return new ChatResult( $text, $used() );
 	}
 
 	/**

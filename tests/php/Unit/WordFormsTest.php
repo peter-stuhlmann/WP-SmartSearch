@@ -45,6 +45,10 @@ final class WordFormsTest extends TestCase {
 				array( 'Frau', 'Frauen' ),
 				array( 'Tee', 'Tees' ),
 				array( 'glass', 'glasses' ),
+				array( 'Ergebnis', 'Ergebnisse', 'Ergebnissen', 'Ergebnisses' ),
+				array( 'Bus', 'Busse', 'Bussen' ),
+				array( 'Ei', 'Eier', 'Eiern' ),
+				array( 'Öl', 'Öle', 'Ölen', 'Öls' ),
 			) as $forms
 		) {
 			$stems = array_unique( array_map( array( Stemmer::class, 'stem' ), $forms ) );
@@ -104,7 +108,7 @@ final class WordFormsTest extends TestCase {
 
 		self::assertNotContains( 'for', $stored );
 		self::assertContains( 'forqx', $stored );
-		self::assertSame( 'for*', QueryTerms::from_phrase( 'Foren' )->to_boolean_query(), 'The query still finds it by its beginning.' );
+		self::assertStringStartsWith( 'for* ', QueryTerms::from_phrase( 'Foren' )->to_boolean_query(), 'The query still finds it by its beginning.' );
 	}
 
 	public function test_a_passage_without_words_is_told_apart_from_one_that_was_never_processed(): void {
@@ -127,6 +131,9 @@ final class WordFormsTest extends TestCase {
 
 	public function test_short_words_are_left_alone(): void {
 		self::assertSame( 'ei', Stemmer::stem( 'Ei' ) );
+		self::assertSame( 'eis', Stemmer::stem( 'Eis' ), 'Ice is no egg.' );
+		self::assertSame( 'reisebus', Stemmer::stem( 'Reisebusse' ), 'A compound ends in the stem of its last part.' );
+		self::assertSame( 'fluss', Stemmer::stem( 'Flüsse' ), 'Only where the singular has one "s".' );
 		self::assertSame( 'tee', Stemmer::stem( 'Tee' ) );
 		self::assertSame( 'bus', Stemmer::stem( 'Bus' ) );
 		self::assertSame( 'haus', Stemmer::stem( 'Haus' ), 'Without its "s" it would no longer meet "Häuser".' );
@@ -165,7 +172,10 @@ final class WordFormsTest extends TestCase {
 
 	public function test_the_query_looks_for_stems_at_the_beginning_and_at_the_end_of_words(): void {
 		self::assertSame( 'kost* qztsok*', QueryTerms::from_phrase( 'Kosten' )->to_boolean_query() );
-		self::assertSame( 'tee*', QueryTerms::from_phrase( 'Tee' )->to_boolean_query(), 'Too short to be the end of a compound.' );
+		self::assertSame( 'tee* qzeet*', QueryTerms::from_phrase( 'Tee' )->to_boolean_query(), 'Whether "Komitee" counts is decided when the matches are judged.' );
+		self::assertNull( TermCoverage::patterns( 'tee' )['ending'], 'Not the end of just any word.' );
+		self::assertSame( 0.7, TermCoverage::of( 'Ein Kräutertee.', array( 'tee' ), array( 'tee' => array( 'kräutertee' ) ) ) );
+		self::assertSame( 0.0, TermCoverage::of( 'Das Komitee.', array( 'tee' ), array( 'tee' => array( 'kräutertee' ) ) ) );
 		self::assertSame( '', QueryTerms::from_phrase( 'Ei' )->to_boolean_query() );
 	}
 

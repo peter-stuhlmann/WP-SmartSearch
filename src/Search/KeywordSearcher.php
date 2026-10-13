@@ -46,7 +46,8 @@ final class KeywordSearcher {
 	 */
 	public function __construct(
 		private readonly ChunkStore $chunks,
-		private readonly Settings $settings
+		private readonly Settings $settings,
+		private readonly CompoundEndings $endings
 	) {}
 
 	/**
@@ -72,13 +73,15 @@ final class KeywordSearcher {
 		 * most common mistake. Typing errors are for the spelling correction.
 		 */
 		$rows = '' === $boolean_query
-			? $this->chunks->word_search( $terms->all(), $limit * 3 )
+			? $this->chunks->word_search( array_map( array( Stemmer::class, 'spellings' ), $terms->all() ), $limit * 3 )
 			: $this->chunks->fulltext_search( $boolean_query, $limit * 3 );
+
+		$compounds = $this->compounds( array_merge( array_column( $rows, 'title' ), array_column( $rows, 'content' ) ), $terms );
 
 		$matches = array();
 		$found   = array();
 
-		foreach ( $this->judge( $rows, $terms ) as $row ) {
+		foreach ( $this->judge( $rows, $terms, $compounds ) as $row ) {
 			// The database decides roughly what a word is. A row without a single real match is none.
 			if ( 0.0 === $row['coverage'] ) {
 				continue;
@@ -106,7 +109,7 @@ final class KeywordSearcher {
 
 		$matches = array_slice( $matches, 0, $limit, true );
 
-		foreach ( $this->post_coverage( $matches, $found, $terms ) as $post_id => $coverage ) {
+		foreach ( $this->post_coverage( $matches, $found, $terms, $compounds ) as $post_id => $coverage ) {
 			$matches[ $post_id ]['coverage'] = $coverage;
 		}
 
@@ -148,15 +151,16 @@ final class KeywordSearcher {
 	 * they happen to share a passage with a longer word. So for the best
 	 * matches that still lack a word, the whole text of the post is read.
 	 *
-	 * @param array<int, array<string, mixed>> $matches Matches by post ID, best first.
-	 * @param array<int, string>               $found   Title and matching passages by post ID.
+	 * @param array<int, array<string, mixed>> $matches   Matches by post ID, best first.
+	 * @param array<int, string>               $found     Title and matching passages by post ID.
+	 * @param array<string, string[]>          $compounds Compounds of the matching passages that end with a short term.
 	 * @return array<int, float> Coverage by post ID.
 	 */
-	private function post_coverage( array $matches, array $found, QueryTerms $terms ): array {
+	private function post_coverage( array $matches, array $found, QueryTerms $terms, array $compounds ): array {
 		$coverage = array();
 
 		foreach ( array_keys( $matches ) as $post_id ) {
-			$coverage[ $post_id ] = TermCoverage::of( $found[ $post_id ], $terms->all() );
+			$coverage[ $post_id ] = TermCoverage::of( $found[ $post_id ], $terms->all(), $compounds );
 		}
 
 		$incomplete = array_keys(
@@ -166,25 +170,40 @@ final class KeywordSearcher {
 			)
 		);
 
-		foreach ( $this->chunks->post_texts( $incomplete ) as $post_id => $text ) {
-			$coverage[ $post_id ] = max( $coverage[ $post_id ], TermCoverage::of( $text, $terms->all() ) );
+		$texts = $this->chunks->post_texts( $incomplete );
+		// The rest of a page can hold compounds its matching passages do not.
+		$compounds = array_merge_recursive( $compounds, $this->compounds( $texts, $terms ) );
+
+		foreach ( $texts as $post_id => $text ) {
+			$coverage[ $post_id ] = max( $coverage[ $post_id ], TermCoverage::of( $text, $terms->all(), $compounds ) );
 		}
 
 		return $coverage;
 	}
 
 	/**
+	 * Finds the compounds in the given texts that count for a short search word, as "Haustür" does for "Tür".
+	 *
+	 * @param string[] $texts Texts of the candidates.
+	 * @return array<string, string[]> Compounds by term.
+	 */
+	private function compounds( array $texts, QueryTerms $terms ): array {
+		return array() === $texts ? array() : $this->endings->in( implode( "\n", $texts ), $terms->all() );
+	}
+
+	/**
 	 * Adds coverage, proximity and title information to the rows and ranks titles higher, if configured.
 	 *
 	 * @param array<int, array{id: int, post_id: int, title: string, content: string, score: float}> $rows Matches, best first.
+	 * @param array<string, string[]>                                                                $compounds Compounds that end with a short term.
 	 * @return array<int, array{id: int, post_id: int, title: string, content: string, coverage: float, proximity: float, in_title: bool, score: float}> Matches, best first.
 	 */
-	private function judge( array $rows, QueryTerms $terms ): array {
+	private function judge( array $rows, QueryTerms $terms, array $compounds ): array {
 		$boost  = $this->settings->bool( 'boost_title' ) ? self::TITLE_BOOST : 1.0;
 		$judged = array();
 
 		foreach ( $rows as $row ) {
-			$in_title = TermCoverage::of( $row['title'], $terms->all() ) > 0;
+			$in_title = TermCoverage::of( $row['title'], $terms->all(), $compounds ) > 0;
 			// Title and text are two blocks of the page: a word in each does not make them neighbours.
 			$text = $row['title'] . "\n\n" . $row['content'];
 
@@ -193,8 +212,8 @@ final class KeywordSearcher {
 				'post_id'   => $row['post_id'],
 				'title'     => $row['title'],
 				'content'   => $row['content'],
-				'coverage'  => TermCoverage::of( $text, $terms->all() ),
-				'proximity' => max( Proximity::of( $row['title'], $terms->all() ), Proximity::of( $row['content'], $terms->all() ) ),
+				'coverage'  => TermCoverage::of( $text, $terms->all(), $compounds ),
+				'proximity' => max( Proximity::of( $row['title'], $terms->all(), $compounds ), Proximity::of( $row['content'], $terms->all(), $compounds ) ),
 				'in_title'  => $in_title,
 				'score'     => $in_title ? $row['score'] * $boost : $row['score'],
 			);

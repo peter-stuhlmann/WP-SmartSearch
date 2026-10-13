@@ -33,19 +33,20 @@ final class Proximity {
 	/**
 	 * Returns how close together the terms stand.
 	 *
-	 * @param string   $text  Text to look in.
-	 * @param string[] $terms Lower-case search terms.
+	 * @param string                  $text      Text to look in.
+	 * @param string[]                $terms     Lower-case search terms.
+	 * @param array<string, string[]> $compounds Compounds that count as ending with a short term, see CompoundEndings.
 	 * @return float 1 if the terms found stand next to each other, in whatever order, falling to 0 the further
 	 *               they are apart. 0 if fewer than two of the terms occur: one word alone is not a group.
 	 */
-	public static function of( string $text, array $terms ): float {
+	public static function of( string $text, array $terms, array $compounds = array() ): float {
 		$occurrences = array();
 		$text        = mb_strtolower( $text );
 
 		$found = 0;
 
 		foreach ( $terms as $term ) {
-			$places = self::occurrences( $text, $term );
+			$places = self::occurrences( $text, $term, $compounds[ $term ] ?? array() );
 
 			// The terms that occur are numbered without gaps, whichever of the query they are.
 			foreach ( $places as $start => $end ) {
@@ -67,10 +68,11 @@ final class Proximity {
 	/**
 	 * Finds where a term occurs, in any of the forms that count as a match.
 	 *
+	 * @param string[] $compounds Words that count as ending with the term.
 	 * @return array<int, int> End positions keyed by start position, in characters.
 	 */
-	private static function occurrences( string $text, string $term ): array {
-		$pattern = implode( '|', array_filter( TermCoverage::patterns( $term ) ) );
+	private static function occurrences( string $text, string $term, array $compounds ): array {
+		$pattern = implode( '|', array_filter( TermCoverage::patterns( $term, $compounds ) ) );
 
 		if ( false === preg_match_all( '/' . $pattern . '/u', $text, $matches, PREG_OFFSET_CAPTURE ) ) {
 			return array();

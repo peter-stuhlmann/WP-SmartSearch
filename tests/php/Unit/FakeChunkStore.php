@@ -176,7 +176,19 @@ final class FakeChunkStore implements ChunkStore {
 		return array_slice( $rows, 0, $limit );
 	}
 
-	public function word_search( array $terms, int $limit ): array {
+	public function known_terms( array $stems ): array {
+		$this->calls[] = 'known terms';
+
+		$stored = array();
+
+		foreach ( $this->passages as $passage ) {
+			$stored += array_flip( explode( ' ', IndexTerms::of( $passage['title'], $passage['content'] ) ) );
+		}
+
+		return array_values( array_filter( $stems, static fn ( string $stem ): bool => isset( $stored[ $stem ] ) ) );
+	}
+
+	public function word_search( array $words, int $limit ): array {
 		$this->calls[] = 'words';
 
 		if ( array() !== $this->word_rows ) {
@@ -189,8 +201,8 @@ final class FakeChunkStore implements ChunkStore {
 		foreach ( $this->passages as $passage ) {
 			$text = mb_strtolower( $passage['title'] . ' ' . $passage['content'] );
 
-			foreach ( $terms as $term ) {
-				if ( 1 !== preg_match( '/(^|[^a-z0-9])' . preg_quote( $term, '/' ) . '([^a-z0-9]|$)/', $text ) ) {
+			foreach ( $words as $spellings ) {
+				if ( 1 !== preg_match( '/(?<![\p{L}\p{N}])(' . implode( '|', $spellings ) . ')(?![\p{L}\p{N}])/u', $text ) ) {
 					continue 2;
 				}
 			}

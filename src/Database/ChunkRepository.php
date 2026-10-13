@@ -378,6 +378,32 @@ final class ChunkRepository implements ChunkStore {
 	}
 
 	/**
+	 * Tells which of the given stems the index holds as a word of their own.
+	 *
+	 * @param string[] $stems Stems, letters and digits only.
+	 * @return string[] Those that some passage contains.
+	 */
+	public function known_terms( array $stems ): array {
+		if ( array() === $stems ) {
+			return array();
+		}
+
+		$queries = array();
+		$values  = array();
+
+		// Each is one look into the index, and all of them are one round trip.
+		foreach ( $stems as $stem ) {
+			$queries[] = '(SELECT %s AS stem FROM %i WHERE MATCH(terms) AGAINST (%s IN BOOLEAN MODE) LIMIT 1)';
+			array_push( $values, $stem, $this->table, $stem );
+		}
+
+		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare -- The queries only contain placeholders.
+		$found = $this->wpdb->get_col( $this->wpdb->prepare( implode( ' UNION ALL ', $queries ), $values ) );
+
+		return array_map( 'strval', $found );
+	}
+
+	/**
 	 * Finds chunks containing every term as a word of its own.
 	 *
 	 * For terms FULLTEXT cannot index, such as two-letter words. It reads
@@ -385,20 +411,24 @@ final class ChunkRepository implements ChunkStore {
 	 * word is, the database judges roughly: letters outside ASCII can count as
 	 * its end. The caller checks the matches.
 	 *
-	 * @param string[] $terms Search terms, letters and digits only.
+	 * @param array<int, string[]> $words The words to find, each in the spellings that count as that
+	 *                                    word. Letters and digits only.
 	 * @return array<int, array{id: int, post_id: int, title: string, content: string, score: float}>
 	 */
-	public function word_search( array $terms, int $limit ): array {
-		if ( array() === $terms ) {
+	public function word_search( array $words, int $limit ): array {
+		$words = array_filter( $words );
+
+		if ( array() === $words ) {
 			return array();
 		}
 
 		$conditions = array();
 		$values     = array( $this->table );
 
-		foreach ( $terms as $term ) {
+		foreach ( $words as $spellings ) {
+			$quoted = array_map( static fn ( string $spelling ): string => preg_quote( $spelling, '/' ), $spellings );
 			// POSIX classes, which MySQL and MariaDB both understand; their own word boundaries differ.
-			$word         = '(^|[^[:alnum:]])' . preg_quote( $term, '/' ) . '([^[:alnum:]]|$)';
+			$word         = '(^|[^[:alnum:]])(' . implode( '|', $quoted ) . ')([^[:alnum:]]|$)';
 			$conditions[] = '(title REGEXP %s OR content REGEXP %s)';
 			array_push( $values, $word, $word );
 		}

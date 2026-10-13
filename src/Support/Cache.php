@@ -29,6 +29,17 @@ final class Cache {
 	private const REBUILD_LOCK = 5 * MINUTE_IN_SECONDS;
 
 	/**
+	 * How long a request waits for a value another one is building for the first time, in seconds.
+	 * After that it builds the value itself, in case the other request died.
+	 */
+	private const FIRST_BUILD_WAIT = 10;
+
+	/**
+	 * How often it looks whether the value is there, in milliseconds.
+	 */
+	private const WAIT_STEP = 250;
+
+	/**
 	 * Names of the index values this request has already arranged to rebuild.
 	 *
 	 * @var array<string, true>
@@ -90,7 +101,8 @@ final class Cache {
 	 * to be read. So a visitor never waits for it twice. After the index
 	 * changed, the previous value keeps being used, and the new one is built
 	 * once the response of this request has been sent. Only the very first
-	 * request, and one after the variant changed, builds it on the spot.
+	 * request, and one after the variant changed, builds it on the spot. Others
+	 * arriving in that moment wait for it instead of all doing the same work.
 	 *
 	 * @param string            $name    Name of the value. One entry exists per name.
 	 * @param string            $variant What the value is built for, e.g. the embedding model. A value for
@@ -101,12 +113,18 @@ final class Cache {
 	public function for_index( string $name, string $variant, callable $build, string $state = '' ): mixed {
 		$key   = self::PREFIX . 'index_' . $name;
 		$stamp = $this->version->current() . '|' . $state;
-		$entry = get_transient( $key );
+		$entry = self::usable( get_transient( $key ), $variant ) ?? $this->awaited( $key, $variant );
 
-		$is_usable = is_array( $entry ) && ( $entry['variant'] ?? null ) === $variant && array_key_exists( 'value', $entry );
+		if ( null === $entry ) {
+			$lock = $key . '_rebuilding';
 
-		if ( ! $is_usable ) {
-			return $this->rebuild( $key, $variant, $stamp, $build );
+			set_transient( $lock, 1, self::REBUILD_LOCK );
+
+			try {
+				return $this->rebuild( $key, $variant, $stamp, $build );
+			} finally {
+				delete_transient( $lock );
+			}
 		}
 
 		if ( ( $entry['stamp'] ?? null ) !== $stamp ) {
@@ -114,6 +132,40 @@ final class Cache {
 		}
 
 		return $entry['value'];
+	}
+
+	/**
+	 * Returns a stored entry if it holds a value for the given variant.
+	 *
+	 * @return array<string, mixed>|null
+	 */
+	private static function usable( mixed $entry, string $variant ): ?array {
+		return is_array( $entry ) && ( $entry['variant'] ?? null ) === $variant && array_key_exists( 'value', $entry ) ? $entry : null;
+	}
+
+	/**
+	 * Waits for a value another request is building, if one is.
+	 *
+	 * @return array<string, mixed>|null The entry once it is there. Null if nobody builds it, or not in time.
+	 */
+	private function awaited( string $key, string $variant ): ?array {
+		$lock = $key . '_rebuilding';
+
+		for ( $waited = 0; $waited < self::FIRST_BUILD_WAIT * 1000; $waited += self::WAIT_STEP ) {
+			if ( false === get_transient( $lock ) ) {
+				break;
+			}
+
+			usleep( self::WAIT_STEP * 1000 );
+
+			$entry = self::usable( get_transient( $key ), $variant );
+
+			if ( null !== $entry ) {
+				return $entry;
+			}
+		}
+
+		return null;
 	}
 
 	/**

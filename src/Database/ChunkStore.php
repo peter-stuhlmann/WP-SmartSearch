@@ -138,6 +138,14 @@ interface ChunkStore {
 	public function fulltext_search( string $boolean_query, int $limit ): array;
 
 	/**
+	 * Tells which of the given stems the index holds as a word of their own.
+	 *
+	 * @param string[] $stems Stems, letters and digits only.
+	 * @return string[] Those that some passage contains.
+	 */
+	public function known_terms( array $stems ): array;
+
+	/**
 	 * Finds chunks containing every term as a word of its own.
 	 *
 	 * For terms FULLTEXT cannot index, such as two-letter words. It reads
@@ -145,10 +153,11 @@ interface ChunkStore {
 	 * word is, the database judges roughly: letters outside ASCII can count as
 	 * its end. The caller checks the matches.
 	 *
-	 * @param string[] $terms Search terms, letters and digits only.
+	 * @param array<int, string[]> $words The words to find, each in the spellings that count as that
+	 *                                    word. Letters and digits only.
 	 * @return array<int, array{id: int, post_id: int, title: string, content: string, score: float}>
 	 */
-	public function word_search( array $terms, int $limit ): array;
+	public function word_search( array $words, int $limit ): array;
 
 	/**
 	 * Iterates over the stored embeddings of a model without loading them at once.

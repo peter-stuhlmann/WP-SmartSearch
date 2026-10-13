@@ -61,6 +61,16 @@ final class RenderingTest extends RenderingTestCase {
 		self::assertMatchesRegularExpression( '/<a href="[^"]+">\(no title\)<\/a>/', $html );
 	}
 
+	public function test_a_compound_found_for_a_short_word_is_marked_as_a_whole(): void {
+		$this->add_page( 10, 'Eingang', 'Die Haustür am Haus klemmt, sagt die Natur.' );
+
+		$html = $this->renderer()->render_results( $this->search( 'Tür' ) );
+
+		self::assertStringContainsString( '<mark>Haustür</mark>', $html );
+		self::assertStringNotContainsString( '<mark>Natur</mark>', $html );
+		self::assertStringNotContainsString( 'Na<mark>', $html );
+	}
+
 	public function test_a_search_without_results_shows_a_hint_instead_of_a_list(): void {
 		$this->add_page( 10, 'Shipping', 'Text.' );
 

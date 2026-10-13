@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-12T20:56:10+02:00\n"
-"PO-Revision-Date: 2026-10-13T01:30:07+00:00\n"
+"PO-Revision-Date: 2026-10-13T01:52:33+00:00\n"
 "Language: de_DE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: smart-search\n"
@@ -437,29 +437,29 @@ msgid "Looking for further matching pages …"
 msgstr "Suche nach weiteren passenden Seiten …"
 
 #. translators: %s: search phrase.
-#: src/Frontend/ResultRenderer.php:69
+#: src/Frontend/ResultRenderer.php:71
 #, php-format
 msgid "No results for “%s”."
 msgstr "Keine Treffer für „%s“."
 
 #. translators: 1: number of results, 2: search phrase.
-#: src/Frontend/ResultRenderer.php:74
+#: src/Frontend/ResultRenderer.php:76
 #, php-format
 msgid "%1$s result for “%2$s”"
 msgid_plural "%1$s results for “%2$s”"
 msgstr[0] "%1$s Treffer für „%2$s“"
 msgstr[1] "%1$s Treffer für „%2$s“"
 
-#: src/Frontend/ResultRenderer.php:111
+#: src/Frontend/ResultRenderer.php:115
 msgid "Recommended"
 msgstr "Empfohlen"
 
-#: src/Frontend/ResultRenderer.php:161
+#: src/Frontend/ResultRenderer.php:165
 msgid "All"
 msgstr "Alle"
 
 #. translators: 1: citation number, 2: page title.
-#: src/Frontend/ResultRenderer.php:320
+#: src/Frontend/ResultRenderer.php:324
 #, php-format
 msgid "Source %1$d: %2$s"
 msgstr "Quelle %1$d: %2$s"

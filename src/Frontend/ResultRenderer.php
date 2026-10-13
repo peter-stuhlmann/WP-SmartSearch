@@ -11,6 +11,7 @@ namespace PrstSearch\Frontend;
 
 use PrstSearch\Database\ChunkStore;
 use PrstSearch\Search\Answer;
+use PrstSearch\Search\CompoundEndings;
 use PrstSearch\Search\Excerpt;
 use PrstSearch\Search\SearchHit;
 use PrstSearch\Search\SearchResults;
@@ -32,7 +33,8 @@ final class ResultRenderer {
 	public function __construct(
 		private readonly TemplateLoader $templates,
 		private readonly ChunkStore $chunks,
-		private readonly Settings $settings
+		private readonly Settings $settings,
+		private readonly CompoundEndings $endings
 	) {
 		$this->items = new WeakMap();
 	}
@@ -83,9 +85,9 @@ final class ResultRenderer {
 	 * @return array<int, array{id: int, title: string, url: string, type: string, excerpt: string, relevance: string, relevance_label: string, score: float, explanation: string}>
 	 */
 	private function build_items( SearchResults $results ): array {
-		$terms  = $results->ranking->terms->all();
-		$chunks = $this->chunks->find( array_map( static fn ( SearchHit $hit ): int => $hit->chunk_id, $results->hits ) );
-		$items  = array();
+		$searched = $results->ranking->terms->all();
+		$chunks   = $this->chunks->find( array_map( static fn ( SearchHit $hit ): int => $hit->chunk_id, $results->hits ) );
+		$items    = array();
 
 		_prime_post_caches( $results->post_ids(), false, false );
 
@@ -98,6 +100,8 @@ final class ResultRenderer {
 
 			$type    = get_post_type_object( $post->post_type );
 			$content = $chunks[ $hit->chunk_id ]['content'] ?? '';
+			// What was found for a short word as part of a compound is marked as that compound: "Haustür" for "Tür".
+			$terms   = array_merge( $searched, ...array_values( $this->endings->in( $content, $searched ) ) );
 			$passage = Excerpt::around( $content, $terms );
 
 			$items[] = array(

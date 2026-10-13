@@ -8,6 +8,7 @@ declare( strict_types=1 );
 namespace PrstSearch\Tests\Unit;
 
 use Brain\Monkey\Functions;
+use PrstSearch\Search\CompoundEndings;
 use PrstSearch\Search\KeywordSearcher;
 use PrstSearch\Search\QueryTerms;
 use PrstSearch\Settings\Settings;
@@ -204,7 +205,7 @@ final class KeywordSearcherTest extends WordPressTestCase {
 	}
 
 	private function searcher(): KeywordSearcher {
-		return new KeywordSearcher( $this->store, new Settings() );
+		return new KeywordSearcher( $this->store, new Settings(), new CompoundEndings( $this->store ) );
 	}
 
 	/**

@@ -24,10 +24,10 @@ final class Installer {
 	 * decimals, because the embedding of a search phrase costs less than a millionth of a dollar,
 	 * and removes the single cost column of version 1. Version 4 searches word stems instead
 	 * of the text itself and stores a signature of every embedding, see IndexTerms and Vector.
-	 * Version 5 changed nothing in the tables, but how words are reduced to their stems, so the
-	 * stems stored for every passage have to be built again.
+	 * Versions 5 and 6 changed nothing in the tables, but how words are reduced to their stems, so
+	 * the stems stored for every passage have to be built again.
 	 */
-	private const SCHEMA_VERSION = '5';
+	private const SCHEMA_VERSION = '6';
 
 	/**
 	 * Creates the installer.

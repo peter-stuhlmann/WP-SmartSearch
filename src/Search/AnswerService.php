@@ -15,6 +15,7 @@ use PrstSearch\Provider\ProviderConfig;
 use PrstSearch\Provider\ProviderException;
 use PrstSearch\Provider\RequestThrottle;
 use PrstSearch\Provider\StreamingAiClient;
+use PrstSearch\Provider\TokenUsage;
 use PrstSearch\Provider\UsageLedger;
 use PrstSearch\Settings\Settings;
 use PrstSearch\Stats\SearchLogger;
@@ -93,18 +94,32 @@ final class AnswerService {
 			$result = null !== $on_text && $client instanceof StreamingAiClient
 				? $client->chat_stream( $this->instructions(), $this->message( $query, $sources ), $on_text )
 				: $client->chat( $this->instructions(), $this->message( $query, $sources ) );
-		} catch ( ProviderException ) {
+		} catch ( ProviderException $failure ) {
+			// An answer that broke off is none, but what was written of it has to be paid for.
+			$this->record( $failure->usage(), $log_token );
+
 			return null;
 		}
 
-		$this->ledger->record( UsageLedger::PURPOSE_SEARCH, $result->usage );
-		$this->logger->log_answer_usage( $log_token, $result->usage );
+		$this->record( $result->usage, $log_token );
 
 		if ( $use_cache ) {
 			$this->cache->set( $cache_key, $result->text, self::CACHE_TTL );
 		}
 
 		return new Answer( $result->text, $source_ids );
+	}
+
+	/**
+	 * Counts what a call used up towards the budget and adds it to the search it belongs to.
+	 */
+	private function record( TokenUsage $usage, string $log_token ): void {
+		if ( $usage->is_empty() ) {
+			return;
+		}
+
+		$this->ledger->record( UsageLedger::PURPOSE_SEARCH, $usage );
+		$this->logger->log_answer_usage( $log_token, $usage );
 	}
 
 	/**

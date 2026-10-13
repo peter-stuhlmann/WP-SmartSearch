@@ -52,6 +52,18 @@ final class Stemmer {
 	 */
 	private const FORM_ENDINGS = 'ern|ing|em|en|er|es|ed|e|n|s';
 
+	/**
+	 * The words of two letters, with their forms as they are written.
+	 *
+	 * The rules leave them alone, because nothing of the word would remain,
+	 * and no rule makes "Eier" from "Ei". They are few enough to be listed.
+	 * "Eis" is not among them: that is another word.
+	 */
+	private const SHORT_WORDS = array(
+		'ei' => array( 'eiern', 'eier', 'ei' ),
+		'ol' => array( 'ölen', 'öle', 'öls', 'öl' ),
+	);
+
 	private const FOLDED = array(
 		'ä' => 'a',
 		'ö' => 'o',
@@ -65,6 +77,12 @@ final class Stemmer {
 	public static function stem( string $word ): string {
 		$stem = self::fold( $word );
 
+		foreach ( self::SHORT_WORDS as $short => $forms ) {
+			if ( in_array( $stem, array_map( array( self::class, 'fold' ), $forms ), true ) ) {
+				return $short;
+			}
+		}
+
 		for ( $cut = 0; $cut < self::MAX_ENDINGS; $cut++ ) {
 			$shorter = self::without_ending( $stem );
 
@@ -74,6 +92,9 @@ final class Stemmer {
 
 			$stem = $shorter;
 		}
+
+		// "Ergebnis" and "Bus" double their "s" before an ending: "Ergebnisse", "Busse".
+		$stem = (string) preg_replace( '/(ni|bu)ss$/', '$1s', $stem );
 
 		// One spelling for the German and the English ending, so "Kategorie" meets "category".
 		return str_ends_with( $stem, 'ie' ) && strlen( $stem ) > self::MIN_STEM ? substr( $stem, 0, -2 ) . 'y' : $stem;
@@ -109,6 +130,24 @@ final class Stemmer {
 		}
 
 		return $pattern;
+	}
+
+	/**
+	 * Returns a regular expression fragment that matches a word too short for forms_pattern().
+	 *
+	 * For most of them that is the word as it stands: with endings added, "ei" would be "ein" and "eine".
+	 */
+	public static function short_word_pattern( string $stem ): string {
+		return isset( self::SHORT_WORDS[ $stem ] ) ? '(?:' . implode( '|', self::SHORT_WORDS[ $stem ] ) . ')' : self::pattern( $stem );
+	}
+
+	/**
+	 * Returns the spellings to look for when a word has to be found in the text itself, not by its stem.
+	 *
+	 * @return string[] The forms of a listed short word, otherwise the word alone.
+	 */
+	public static function spellings( string $word ): array {
+		return self::SHORT_WORDS[ self::stem( $word ) ] ?? array( $word );
 	}
 
 	/**

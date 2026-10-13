@@ -174,6 +174,41 @@ final class AnswerServiceTest extends SearchTestCase {
 		self::assertNull( $this->answers()->answer( 'shipping', '', static fn ( string $piece ) => null ) );
 	}
 
+	public function test_what_was_written_of_an_answer_that_broke_off_is_counted_as_cost(): void {
+		$streaming                = new StreamingTransportFake();
+		$streaming->breaks_off_at = 1;
+
+		$this->container->set( HttpTransport::class, static fn (): HttpTransport => $streaming );
+		$this->configure(
+			array(
+				'price_input'  => 1.0,
+				'price_output' => 2.0,
+			)
+		);
+
+		$results = $this->container->get( SearchService::class )->search( 'shipping' );
+		$before  = $this->container->get( UsageLedger::class )->month_cost();
+
+		self::assertNull( $this->answers()->answer( 'shipping', $results->log_token, static fn ( string $piece ) => null ) );
+
+		// The connection was lost before the provider could report its tokens, so they are estimated from the text.
+		self::assertSame( 2, $this->log->entries[1]['output_tokens'], '"We ship " is two tokens by the rule of thumb.' );
+		self::assertGreaterThan( 0, $this->log->entries[1]['input_tokens'] );
+		self::assertGreaterThan( $before, $this->container->get( UsageLedger::class )->month_cost(), 'It counts towards the monthly budget.' );
+	}
+
+	public function test_a_call_that_never_got_an_answer_started_costs_nothing(): void {
+		$streaming                = new StreamingTransportFake();
+		$streaming->breaks_off_at = 0;
+
+		$this->container->set( HttpTransport::class, static fn (): HttpTransport => $streaming );
+
+		$results = $this->container->get( SearchService::class )->search( 'shipping' );
+
+		self::assertNull( $this->answers()->answer( 'shipping', $results->log_token, static fn ( string $piece ) => null ) );
+		self::assertSame( 0, $this->log->entries[1]['output_tokens'] );
+	}
+
 	public function test_a_provider_that_answers_a_streaming_request_in_one_piece_is_not_asked_twice(): void {
 		$streaming                 = new StreamingTransportFake();
 		$streaming->ignores_stream = true;
