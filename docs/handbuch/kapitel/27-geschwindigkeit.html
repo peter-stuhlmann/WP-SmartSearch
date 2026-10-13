@@ -1,0 +1,117 @@
+<!-- kapitel: Geschwindigkeit, Messwerte und der Vergleich mit WordPress -->
+
+<p class="einleitung">Wie schnell ist die Suche, wie gut ist sie, und woher weiß man das? Dieses Kapitel nennt gemessene Zahlen – und sagt dazu, unter welchen Bedingungen sie entstanden sind und was sie nicht belegen.</p>
+
+<h2>Die Testumgebung</h2>
+
+<p>Gemessen wurde auf einem Entwicklungsrechner mit einer lokalen WordPress-Installation und einem künstlichen Bestand: <strong>3.000 Reiseangebote</strong> in deutscher Sprache, die das Plugin selbst erzeugen kann. Zusammen mit den übrigen Seiten ergibt das 3.020 Inhalte in 3.516 Textabschnitten; die Index-Tabelle ist dabei rund 11 MB groß.</p>
+
+<p>Jedes Angebot bewirbt eine Reise: eine von zehn Reisearten in eines von 57 Ländern, etwa jede dritte Rundreise durch mehrere Länder. Weil der Bestand erzeugt ist, steht für jede Suche fest, welche Reisen gemeint sind – das macht einen fairen Vergleich möglich.</p>
+
+<h2>Geschwindigkeit</h2>
+
+<table>
+	<thead>
+		<tr><th>Vorgang</th><th class="zahl">Zeit</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Einen Inhalt beim Speichern in den Index aufnehmen</td><td class="zahl">rund 90 ms</td></tr>
+		<tr><td>Suche nach einem Wort mit wenigen Treffern („Italien“, 34 Treffer)</td><td class="zahl">10–20 ms</td></tr>
+		<tr><td>Suche nach zwei oder drei Wörtern</td><td class="zahl">40–130 ms</td></tr>
+		<tr><td>Suche nach einem Wort, das in fast jedem Inhalt steht („Reise“, „Tag“)</td><td class="zahl">100–250 ms</td></tr>
+		<tr><td>Eine Frage aus zehn Wörtern</td><td class="zahl">rund 400 ms</td></tr>
+		<tr><td>Suche mit Tippfehler, einschließlich Korrektur</td><td class="zahl">10–50 ms</td></tr>
+		<tr><td>Suche, die nichts findet, beim ersten Mal</td><td class="zahl">30–90 ms</td></tr>
+		<tr><td>Dieselbe ergebnislose Suche innerhalb von zehn Minuten</td><td class="zahl">unter 5 ms</td></tr>
+	</tbody>
+</table>
+
+<p>Das sind die Zeiten der Suche selbst, im Modus „Keyword“. Dazu kommt, was WordPress für jeden Seitenaufruf ohnehin braucht, um zu starten – auf dem Testrechner rund 600 ms, auf einem ordentlichen Server deutlich weniger.</p>
+
+<table>
+	<thead>
+		<tr><th>Weitere Werte</th><th class="zahl"></th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Datenbankabfragen pro Suche</td><td class="zahl">7 bis 11, unabhängig von der Trefferzahl</td></tr>
+		<tr><td>Arbeitsspeicher für den gesamten Testlauf</td><td class="zahl">66 MB</td></tr>
+	</tbody>
+</table>
+
+<div class="kasten kasten--grenze">
+	<span class="kasten__titel">Was diese Zahlen nicht sagen</span>
+	<ul>
+		<li>Sie stammen von <strong>einem</strong> Rechner und <strong>einem</strong> Bestand. Auf deinem Server können sie besser oder schlechter sein.</li>
+		<li>Für Websites mit deutlich mehr als 3.000 Inhalten gibt es keine Messung. Bei sehr häufigen Wörtern wächst die Zeit mit der Größe weiter.</li>
+		<li>Die semantische Suche wurde in dieser Größe nicht gemessen. Bei ihr kommt die Antwortzeit des KI-Anbieters hinzu, typischerweise einige Zehntelsekunden pro neuer Anfrage.</li>
+	</ul>
+</div>
+
+<h2>Was die Suche schnell hält</h2>
+
+<ul>
+	<li>Die Datenbank sucht im Volltextindex, statt Texte zu lesen. Nur der letzte Ausweg „im Wortinneren suchen“ liest alle Abschnitte.</li>
+	<li>Bewertet werden höchstens dreimal so viele Abschnitte, wie Treffer verlangt sind – bei der Voreinstellung 600.</li>
+	<li>Beiträge, ihre Zusatzfelder und ihre Begriffe werden für alle Treffer zusammen geladen, nicht einzeln.</li>
+	<li>Aufwendige Hilfswerte wie das Vokabular werden nie berechnet, während ein Besucher wartet.</li>
+	<li>Wiederholte Anfragen werden aus dem Zwischenspeicher beantwortet.</li>
+</ul>
+
+<h2>Stellschrauben für große Websites</h2>
+
+<table>
+	<thead>
+		<tr><th>Wenn …</th><th>dann …</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Suchen nach häufigen Wörtern zu langsam sind</td><td>„Treffer pro Suche“ senken, etwa auf 100.</td></tr>
+		<tr><td>ergebnislose Suchen zu langsam sind</td><td>„Text innerhalb von Wörtern finden“ ausschalten.</td></tr>
+		<tr><td>der Server über einen Objekt-Cache verfügt (Redis, Memcached)</td><td>ihn einschalten – das Plugin nutzt ihn automatisch für seine Zwischenspeicher.</td></tr>
+		<tr><td>Hintergrundläufe zu selten starten</td><td>WP-Cron über einen echten Cronjob des Servers auslösen lassen.</td></tr>
+	</tbody>
+</table>
+
+<h2>Der Vergleich mit der Suche von WordPress</h2>
+
+<p>Für 41 Suchanfragen wurde festgelegt, welche Reisen ein Besucher damit meint. Dann liefen dieselben Anfragen durch die Keyword-Suche des Plugins und durch die eingebaute Suche von WordPress. Gemessen wurde zweierlei:</p>
+
+<ul>
+	<li><strong>Erste zehn richtig:</strong> Wie viele der ersten zehn Treffer sind gesuchte Reisen?</li>
+	<li><strong>Gefunden:</strong> Wie viele der gesuchten Reisen stehen unter den ersten 200 Treffern?</li>
+</ul>
+
+<table>
+	<thead>
+		<tr><th>Art der Suche</th><th>Beispiele</th><th class="zahl">Plugin</th><th class="zahl">WordPress</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Das Wort, wie es dasteht</td><td>Italien, Safari, Halbpension</td><td class="zahl">100 % / 100 %</td><td class="zahl">100 % / 100 %</td></tr>
+		<tr><td>Mehrere Wörter</td><td>Rundreise Italien, Familienreise Kuba</td><td class="zahl">100 % / 100 %</td><td class="zahl">100 % / 100 %</td></tr>
+		<tr><td>Eine andere Wortform</td><td>Rundreisen, Strände, Weingüter</td><td class="zahl">100 % / 100 %</td><td class="zahl">30 % / 30 %</td></tr>
+		<tr><td>Der hintere Teil einer Zusammensetzung</td><td>Bus, Essen, Wagen, Führung</td><td class="zahl">100 % / 97 %</td><td class="zahl">89 % / 95 %</td></tr>
+		<tr><td>Der vordere Teil einer Zusammensetzung</td><td>Wein, Bahn, Stadt</td><td class="zahl">100 % / 100 %</td><td class="zahl">80 % / 99 %</td></tr>
+		<tr><td>Ein Tippfehler</td><td>Itallien, Portugall, Rundriese</td><td class="zahl">100 % / 100 %</td><td class="zahl">0 % / 0 %</td></tr>
+		<tr><td>Ohne Umlaut</td><td>Osterreich, Turkei</td><td class="zahl">100 % / 100 %</td><td class="zahl">100 % / 100 %</td></tr>
+		<tr><td><strong>Alle 41 Anfragen</strong></td><td></td><td class="zahl"><strong>100 % / 100 %</strong></td><td class="zahl"><strong>65 % / 67 %</strong></td></tr>
+	</tbody>
+</table>
+
+<p class="klein">Jeweils „Erste zehn richtig / Gefunden“, gemittelt über die Anfragen der Gruppe und gerundet.</p>
+
+<h3>Wie die Zahlen zu lesen sind</h3>
+
+<ul>
+	<li>Wo das Suchwort genau so im Text steht, sind beide Suchen gleich gut. Hier gibt es nichts zu gewinnen.</li>
+	<li>WordPress findet <strong>nichts</strong>, sobald die Wortform abweicht oder ein Buchstabe falsch ist. Das ist der große Unterschied.</li>
+	<li>Bei Wortteilen findet WordPress zwar viel, mischt aber Unpassendes darunter: Die Suche nach „Bus“ bringt dort unter den ersten zehn vor allem Reisen nach „<strong>Bus</strong>an“.</li>
+	<li>Die kleine Lücke des Plugins bei Zusammensetzungen (97 %) liegt an der Obergrenze von 200 Treffern.</li>
+</ul>
+
+<div class="kasten kasten--grenze">
+	<span class="kasten__titel">Die ehrliche Einschränkung</span>
+	<p>Die 41 Anfragen hat der Entwickler des Plugins geschrieben, und der Bestand ist künstlich. Bevor die letzten Schwächen behoben waren, lag das Plugin bei 98 % – die 100 % sind auch das Ergebnis davon, dass an genau diesen Fällen gearbeitet wurde. Der Vergleich zeigt, <em>wofür</em> die Regeln gebaut sind. Er beweist nicht, dass Besucher deiner Website genau so suchen.</p>
+</div>
+
+<h2>Selbst nachmessen</h2>
+
+<p>Bestand, Zeitmessung und Vergleich liegen dem Plugin als Skripte bei. Wie man sie ausführt, steht im Kapitel <a href="#entwicklung">„Entwicklung, Tests und Messungen“</a>.</p>

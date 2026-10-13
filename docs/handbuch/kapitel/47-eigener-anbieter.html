@@ -1,0 +1,161 @@
+<!-- kapitel: Einen eigenen KI-Anbieter anbinden -->
+
+<span id="eigener-anbieter"></span>
+
+<p class="einleitung">Viele Dienste sprechen dieselbe Schnittstelle wie OpenAI. Für sie brauchst du keinen Code – nur die Adresse. Erst wenn ein Dienst eine andere Schnittstelle hat, schreibst du einen eigenen Client.</p>
+
+<h2>Weg 1: OpenAI-kompatibel – ohne Code</h2>
+
+<p>Wähle im Tab <em>KI-Anbieter</em> „Eigener Endpoint“ und trage die Basisadresse ein. Das Plugin ruft dann diese drei Pfade auf:</p>
+
+<table>
+	<thead>
+		<tr><th>Pfad</th><th>Wozu</th><th>Erwartet</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>POST {Adresse}/embeddings</code></td><td>Einbettungen</td><td><code>{ "model": "…", "input": ["Text", …] }</code> → <code>data[].embedding</code> und <code>usage</code></td></tr>
+		<tr><td><code>POST {Adresse}/chat/completions</code></td><td>KI-Antwort, Zweitmeinung</td><td><code>{ "model": "…", "messages": […] }</code> → <code>choices[0].message.content</code> und <code>usage</code></td></tr>
+		<tr><td><code>GET {Adresse}/models</code></td><td>Auswahlliste der Modelle</td><td><code>data[].id</code></td></tr>
+	</tbody>
+</table>
+
+<p>Ein API-Schlüssel wird, falls eingetragen, als <code>Authorization: Bearer …</code> mitgeschickt. Fehlt die Route <code>/models</code>, bleibt nur die Auswahlliste leer; die Modellnamen trägst du dann von Hand ein.</p>
+
+<h3>Beispiel: Ollama auf dem eigenen Server</h3>
+
+<ol class="schritte">
+	<li>Installiere Ollama und lade ein Modell für Einbettungen und ein Sprachmodell, zum Beispiel <code>ollama pull nomic-embed-text</code> und <code>ollama pull llama3.2</code>.</li>
+	<li>Trage als Adresse <code>http://localhost:11434/v1</code> ein. Das Feld für den API-Schlüssel bleibt leer.</li>
+	<li>Trage die beiden Modellnamen ein und klicke auf <em>Verbindung testen</em>.</li>
+	<li>Trage bei den Preisen jeweils 0 ein, wenn dir keine Kosten pro Token entstehen.</li>
+</ol>
+
+<p>Damit verlässt keine Suchanfrage und kein Inhalt deinen Server.</p>
+
+<div class="kasten">
+	<span class="kasten__titel">Für das Einlaufen der Antwort</span>
+	<p>Soll die Antwort Wort für Wort erscheinen, muss der Dienst <code>"stream": true</code> unterstützen und Server-Sent Events im Format von OpenAI liefern. Lehnt er die Option mit „400 Bad Request“ ab oder antwortet er trotzdem in einem Stück, kommt das Plugin damit zurecht: Die Antwort erscheint dann auf einmal.</p>
+</div>
+
+<h2>Weg 2: ein eigener Client</h2>
+
+<div class="einfach">
+	<p>Der Client ist der Dolmetscher zwischen dem Plugin und dem KI-Dienst. Das Plugin sagt „bette diese Texte ein“ oder „beantworte diese Frage“; der Client übersetzt das in die Sprache des Dienstes und die Antwort zurück.</p>
+</div>
+
+<p>Ein Client ist eine Klasse, die die Schnittstelle <code>PrstSearch\Provider\AiClient</code> erfüllt. Sie hat drei Methoden:</p>
+
+<table>
+	<thead>
+		<tr><th>Methode</th><th>Aufgabe</th><th>Rückgabe</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>embed( array $texts )</code></td><td>Einbettungen für mehrere Texte berechnen.</td><td><code>EmbeddingResult</code>: die Vektoren in der Reihenfolge der Texte, dazu der Verbrauch.</td></tr>
+		<tr><td><code>chat( string $instructions, string $message )</code></td><td>Eine Antwort schreiben.</td><td><code>ChatResult</code>: der Text, dazu der Verbrauch.</td></tr>
+		<tr><td><code>models()</code></td><td>Die nutzbaren Modelle auflisten.</td><td>Liste von Namen; darf leer sein.</td></tr>
+	</tbody>
+</table>
+
+<p>Scheitert ein Aufruf, wirft die Methode eine <code>ProviderException</code>. Das Plugin fängt sie und sucht als Keyword-Suche weiter.</p>
+
+<span class="datei">mein-ki-client.php – ein eigenes kleines Plugin</span>
+<pre><code><span class="k">&lt;?php</span>
+<span class="c">/**
+ * Plugin Name: Mein KI-Client für Smart Search
+ */</span>
+
+<span class="k">use</span> PrstSearch\Provider\AiClient;
+<span class="k">use</span> PrstSearch\Provider\ChatResult;
+<span class="k">use</span> PrstSearch\Provider\EmbeddingResult;
+<span class="k">use</span> PrstSearch\Provider\ProviderConfig;
+<span class="k">use</span> PrstSearch\Provider\ProviderException;
+<span class="k">use</span> PrstSearch\Provider\TokenUsage;
+
+<span class="k">add_filter</span>(
+	<span class="s">'prstsearch_ai_client'</span>,
+	<span class="k">static function</span> ( $client, ProviderConfig $config ) {
+		<span class="k">return new class</span>( $config ) <span class="k">implements</span> AiClient {
+
+			<span class="k">public function</span> __construct( <span class="k">private</span> ProviderConfig $config ) {}
+
+			<span class="k">public function</span> embed( <span class="k">array</span> $texts ): EmbeddingResult {
+				$data = $this-&gt;<span class="k">post</span>( <span class="s">'/einbetten'</span>, <span class="k">array</span>( <span class="s">'texte'</span> =&gt; $texts ) );
+
+				<span class="k">return new</span> EmbeddingResult(
+					$data[<span class="s">'vektoren'</span>],
+					<span class="k">new</span> TokenUsage( embedding: (int) $data[<span class="s">'token'</span>] )
+				);
+			}
+
+			<span class="k">public function</span> chat( <span class="k">string</span> $instructions, <span class="k">string</span> $message ): ChatResult {
+				$data = $this-&gt;<span class="k">post</span>(
+					<span class="s">'/antworten'</span>,
+					<span class="k">array</span>(
+						<span class="s">'regeln'</span> =&gt; $instructions,
+						<span class="s">'frage'</span>  =&gt; $message,
+					)
+				);
+
+				<span class="k">return new</span> ChatResult(
+					<span class="k">trim</span>( $data[<span class="s">'text'</span>] ),
+					<span class="k">new</span> TokenUsage( input: (int) $data[<span class="s">'gelesen'</span>], output: (int) $data[<span class="s">'geschrieben'</span>] )
+				);
+			}
+
+			<span class="k">public function</span> models(): <span class="k">array</span> {
+				<span class="k">return array</span>();
+			}
+
+			<span class="k">private function</span> post( <span class="k">string</span> $path, <span class="k">array</span> $body ): <span class="k">array</span> {
+				$response = <span class="k">wp_remote_post</span>(
+					$this-&gt;config-&gt;<span class="k">base_url</span>() . $path,
+					<span class="k">array</span>(
+						<span class="s">'headers'</span> =&gt; <span class="k">array</span>(
+							<span class="s">'Content-Type'</span> =&gt; <span class="s">'application/json'</span>,
+							<span class="s">'X-Api-Key'</span>    =&gt; $this-&gt;config-&gt;<span class="k">api_key</span>(),
+						),
+						<span class="s">'body'</span>    =&gt; <span class="k">wp_json_encode</span>( $body ),
+						<span class="s">'timeout'</span> =&gt; <span class="s">30</span>,
+					)
+				);
+
+				<span class="k">if</span> ( <span class="k">is_wp_error</span>( $response ) || <span class="s">200</span> !== <span class="k">wp_remote_retrieve_response_code</span>( $response ) ) {
+					<span class="k">throw new</span> ProviderException( <span class="s">'Der KI-Dienst hat nicht geantwortet.'</span> );
+				}
+
+				<span class="k">return</span> (<span class="k">array</span>) <span class="k">json_decode</span>( <span class="k">wp_remote_retrieve_body</span>( $response ), <span class="k">true</span> );
+			}
+		};
+	},
+	<span class="s">10</span>,
+	<span class="s">2</span>
+);</code></pre>
+
+<p>Die Pfade <code>/einbetten</code> und <code>/antworten</code> und die Feldnamen sind erfunden – ersetze sie durch die deines Dienstes. Adresse und Schlüssel kommen weiter aus den Einstellungen des Plugins; wähle dort „Eigener Endpoint“.</p>
+
+<h3>Worauf du achten musst</h3>
+
+<ul>
+	<li><strong>Reihenfolge.</strong> <code>embed()</code> muss die Vektoren in derselben Reihenfolge zurückgeben wie die Texte.</li>
+	<li><strong>Gleiche Länge.</strong> Alle Vektoren eines Modells müssen gleich viele Zahlen haben.</li>
+	<li><strong>Verbrauch.</strong> Gib die Token so genau an, wie der Dienst sie meldet. Danach richten sich Kostenanzeige und Budget. Meldet er nichts, schätze mit vier Zeichen pro Token.</li>
+	<li><strong>Fehler.</strong> Wirf bei jedem Fehlschlag eine <code>ProviderException</code> – keine andere Ausnahme und keinen leeren Text.</li>
+	<li><strong>Kein Speichern.</strong> Der Client soll nichts zwischenspeichern; das erledigt das Plugin.</li>
+</ul>
+
+<h3>Antworten einlaufen lassen</h3>
+
+<p>Erfüllt dein Client zusätzlich <code>PrstSearch\Provider\StreamingAiClient</code>, kann die Antwort Wort für Wort erscheinen. Die Schnittstelle fügt eine Methode hinzu:</p>
+
+<pre><code><span class="k">public function</span> chat_stream( <span class="k">string</span> $instructions, <span class="k">string</span> $message, <span class="k">callable</span> $on_text ): ChatResult;</code></pre>
+
+<p>Rufe <code>$on_text( $stueck )</code> für jedes Textstück auf, sobald es eintrifft, und gib am Ende das vollständige <code>ChatResult</code> zurück. Bricht die Verbindung ab, nachdem schon Text gekommen ist, wirf <code>ProviderException::after( $meldung, $verbrauch )</code> – so werden die bis dahin entstandenen Kosten gezählt.</p>
+
+<p>Ein Client ohne diese Schnittstelle funktioniert genauso. Seine Antworten erscheinen in einem Stück.</p>
+
+<h2>Preise und Schwellen für das eigene Modell</h2>
+
+<ul>
+	<li><strong>Preise</strong> trägst du im Tab <em>KI-Anbieter</em> ein. Ohne Preise rechnet das Plugin mit null, und das Monatsbudget greift nicht.</li>
+	<li><strong>Schwellen</strong> der semantischen Suche passen für die meisten Modelle, weil das Plugin die Werte bereinigt. Liefert dein Modell zu viele oder zu wenige Treffer nach Bedeutung, stelle sie mit dem Hook <code>prstsearch_centered_similarity_thresholds</code> ein.</li>
+</ul>

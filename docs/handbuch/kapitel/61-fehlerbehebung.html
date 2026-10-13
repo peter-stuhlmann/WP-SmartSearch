@@ -1,0 +1,152 @@
+<!-- kapitel: Fehlerbehebung und häufige Fragen -->
+
+<span id="fehlerbehebung"></span>
+
+<p class="einleitung">Die häufigsten Stolpersteine, jeweils mit Ursache und Abhilfe. Die Reihenfolge der Prüfschritte ist die, in der sich das Problem am schnellsten eingrenzen lässt.</p>
+
+<h2>Eine Seite wird nicht gefunden</h2>
+
+<div class="frage">
+	<h3>Ich suche nach einem Wort, das auf der Seite steht, und sie erscheint nicht.</h3>
+	<ol>
+		<li><strong>Zustand im Editor prüfen.</strong> Öffne die Seite und sieh im Bereich „Suche“ nach. „Ausgeschlossen“ nennt den Grund; bei „Fehler“ steht er im Tab <em>Werkzeuge</em>.</li>
+		<li><strong>Inhaltstyp prüfen.</strong> Ist der Typ im Tab <em>Inhalte</em> angehakt?</li>
+		<li><strong>Testsuche benutzen.</strong> Im Tab <em>Suche</em> unter „Suche ausprobieren“ siehst du, was gefunden wird und warum.</li>
+		<li><strong>Steht das Wort im sichtbaren Text?</strong> Text in Bildern, in ausgeklappten Akkordeons, die erst per JavaScript nachgeladen werden, oder in Feldern, die das Theme nicht ausgibt, kennt der Index nicht. Abhilfe: „Eigene Felder“ im Tab <em>Inhalte</em> oder der Hook <code>prstsearch_post_text</code>.</li>
+		<li><strong>„Schwache Treffer ausblenden“.</strong> Enthält die Seite nur einen Teil der Suchwörter, wird sie mit diesem Schalter verborgen.</li>
+		<li><strong>Sprache.</strong> Auf mehrsprachigen Websites erscheinen nur Treffer in der Sprache der aktuellen Fassung.</li>
+	</ol>
+</div>
+
+<div class="frage">
+	<h3>Die Seite wurde mit einem Page-Builder gebaut und der Index enthält kaum Text.</h3>
+	<p>Schalte im Tab <em>Inhalte</em> „Öffentliche Seite lesen, wenn der Inhalt leer ist“ ein und baue den Index neu auf.</p>
+</div>
+
+<div class="frage">
+	<h3>Ich habe etwas geändert, aber die Suche zeigt den alten Stand.</h3>
+	<p>Die Keyword-Suche kennt eine Änderung sofort nach dem Speichern. Zeigt sie trotzdem den alten Stand, liefert vermutlich ein Seiten-Cache (Cache-Plugin, CDN) die alte Ergebnisseite aus. Leere ihn. In den KI-Modi folgt die Suche nach Bedeutung kurz nach dem Speichern im Hintergrund.</p>
+</div>
+
+<h2>Der Index</h2>
+
+<div class="frage">
+	<h3>Der Zustand bleibt lange auf „Veraltet“, oder die Zahl der Inhalte im Index wächst nicht.</h3>
+	<p>Die Hintergrundläufe starten nicht. Mögliche Gründe:</p>
+	<ul>
+		<li>Die Website hat keine Besucher. Öffne <em>Werkzeuge → Index neu aufbauen</em> und lass die Seite offen.</li>
+		<li>WP-Cron ist abgeschaltet (<code>DISABLE_WP_CRON</code> in der <code>wp-config.php</code>) und es gibt keinen Ersatz-Cronjob. Richte einen ein, der regelmäßig <code>wp-cron.php</code> aufruft.</li>
+		<li>In den KI-Modi: Das Monatsbudget ist erreicht oder der Anbieter meldet Fehler. Dann versucht das Plugin es nach sechs Stunden beziehungsweise fünfzehn Minuten erneut.</li>
+	</ul>
+</div>
+
+<div class="frage">
+	<h3>Nach einem Umzug stimmt die Suche nicht mehr.</h3>
+	<p>Baue den Index neu auf (<em>Werkzeuge</em>). Prüfe im Tab <em>KI-Anbieter</em>, ob der API-Schlüssel noch lesbar ist – nach einem Wechsel der Sicherheitsschlüssel muss er neu eingegeben werden.</p>
+</div>
+
+<div class="frage">
+	<h3>Im Tab „Werkzeuge“ stehen Inhalte unter „Probleme beim Indexieren“.</h3>
+	<p>Beim Erzeugen dieser Seite ist ein Fehler aufgetreten, meist in einem Shortcode oder Block eines anderen Plugins. Öffne die Seite im Frontend: Wird sie dort korrekt angezeigt? Behebe die Ursache und speichere die Seite neu.</p>
+</div>
+
+<h2>KI-Anbieter</h2>
+
+<div class="frage">
+	<h3>„Verbindung testen“ schlägt fehl.</h3>
+	<table>
+		<thead>
+			<tr><th>Meldung enthält</th><th>Wahrscheinliche Ursache</th></tr>
+		</thead>
+		<tbody>
+			<tr><td>HTTP 401, „Unauthorized“, „invalid api key“</td><td>Der Schlüssel ist falsch, abgelaufen oder gehört zu einem anderen Anbieter.</td></tr>
+			<tr><td>HTTP 404, „model not found“</td><td>Der Modellname stimmt nicht, oder dein Konto hat keinen Zugriff darauf.</td></tr>
+			<tr><td>HTTP 429, „rate limit“, „quota“</td><td>Das Kontingent beim Anbieter ist erschöpft oder es ist kein Zahlungsmittel hinterlegt.</td></tr>
+			<tr><td>„cURL error“, „timed out“, „could not resolve host“</td><td>Dein Server erreicht den Anbieter nicht: Adresse falsch, Firewall, oder ausgehende Verbindungen sind beim Hoster gesperrt.</td></tr>
+			<tr><td>HTTP 3xx</td><td>Die Adresse leitet weiter. Trage die endgültige Adresse ein; das Plugin folgt Weiterleitungen nicht.</td></tr>
+		</tbody>
+	</table>
+</div>
+
+<div class="frage">
+	<h3>Der gespeicherte Schlüssel „lässt sich nicht mehr entschlüsseln“.</h3>
+	<p>Die Sicherheitsschlüssel in der <code>wp-config.php</code> haben sich geändert. Gib den API-Schlüssel neu ein.</p>
+</div>
+
+<div class="frage">
+	<h3>Es erscheint keine KI-Antwort.</h3>
+	<ol>
+		<li>Steht der Suchmodus auf „KI-Antwort“?</li>
+		<li>Gibt es zu der Frage überhaupt Treffer, die mindestens „Passend“ sind? Ohne Quellen gibt es keine Antwort.</li>
+		<li>Ist das Monatsbudget erreicht? Die Seitenleiste der Einstellungsseite zeigt den Stand.</li>
+		<li>Bei „Nur Technik ersetzen“: Ist „KI-Antwort über den Treffern des Themes anzeigen“ an?</li>
+		<li>Funktioniert „Verbindung testen“ für das Sprachmodell?</li>
+		<li>Liefert ein Seiten-Cache die Ergebnisseite aus, bevor das Skript die Antwort nachlädt? Nimm die Suchergebnisseite vom Caching aus.</li>
+	</ol>
+</div>
+
+<div class="frage">
+	<h3>Die KI-Antwort erscheint auf einmal, obwohl das Einlaufen eingeschaltet ist.</h3>
+	<p>Irgendetwas zwischen deinem Server und dem Browser hält den Text zurück, bis er vollständig ist: Ausgabepufferung des Webservers, ein Proxy, Kompression. Das ist kein Fehler. Auf nginx hilft oft, die Pufferung für die Adresse <code>/wp-json/prstsearch/v1/answer/stream</code> abzuschalten.</p>
+</div>
+
+<div class="frage">
+	<h3>Die Suche nach Bedeutung findet zu viel – oder zu wenig.</h3>
+	<p>Die Schwellen lassen sich mit dem Hook <code>prstsearch_centered_similarity_thresholds</code> verschieben. „Schwache Treffer ausblenden“ entfernt die unterste Stufe. Auf Websites mit sehr wenig Inhalt sind die Werte naturgemäß unzuverlässiger.</p>
+</div>
+
+<h2>Darstellung</h2>
+
+<div class="frage">
+	<h3>Das Suchfeld meines Themes zeigt keine Vorschläge und keine markierten Suchwörter.</h3>
+	<p>Bei „Nur Technik ersetzen“ kommen Suchfeld und Ergebnisseite aus dem Theme. Vorschläge und Markierungen gehören zum Such-Block und zu den Templates des Plugins.</p>
+</div>
+
+<div class="frage">
+	<h3>Der Such-Block sieht nicht so aus wie der Rest der Website.</h3>
+	<p>Er übernimmt Schrift und Textfarbe aus dem umgebenden Element. Die Akzentfarbe und die Rundungen stellst du über CSS-Variablen ein, siehe Kapitel „Gestaltung mit CSS“.</p>
+</div>
+
+<div class="frage">
+	<h3>Der Link eines Treffers springt nicht zur Textstelle.</h3>
+	<p>Das hängt vom Browser ab und davon, ob der Text auf der Zielseite genau so vorkommt. Steht er dort in einem eingeklappten Bereich oder wird er erst per JavaScript eingefügt, findet der Browser ihn nicht und öffnet die Seite oben.</p>
+</div>
+
+<h2>Statistik und Kosten</h2>
+
+<div class="frage">
+	<h3>Die Statistik bleibt leer.</h3>
+	<p>Ist im Tab <em>Statistik</em> „Suchbegriffe“ eingeschaltet? Testsuchen aus der Einstellungsseite werden nie aufgezeichnet. Wer schneller als 30-mal pro Minute sucht, wird ebenfalls nicht aufgezeichnet.</p>
+</div>
+
+<div class="frage">
+	<h3>Die Kosten stehen auf 0, obwohl die KI benutzt wird.</h3>
+	<p>Es sind keine Preise hinterlegt. Das ist bei „Eigener Endpoint“ der Ausgangszustand. Trage die Preise im Tab <em>KI-Anbieter</em> ein.</p>
+</div>
+
+<div class="frage">
+	<h3>Die Kosten im Plugin weichen von der Rechnung des Anbieters ab.</h3>
+	<p>Das Plugin schätzt aus Token-Zahl und eingetragenen Preisen. Abweichungen entstehen durch geänderte Preise, ein anderes Modell als das voreingestellte, Rundungen und Mindestbeträge des Anbieters. Verbindlich ist die Rechnung.</p>
+</div>
+
+<h2>Allgemeines</h2>
+
+<div class="frage">
+	<h3>Verträgt sich das Plugin mit Caching-Plugins?</h3>
+	<p>Ja. Die Suchergebnisseite sollte – wie üblich – nicht zwischengespeichert werden; die meisten Caching-Plugins nehmen sie von sich aus aus. Dasselbe gilt für die Adressen unter <code>/wp-json/prstsearch/</code>.</p>
+</div>
+
+<div class="frage">
+	<h3>Verträgt es sich mit anderen Such-Plugins?</h3>
+	<p>Zwei Plugins, die beide die Suche von WordPress ersetzen, stören sich gegenseitig. Benutze eines. Smart Search hält sich zurück, wenn ein anderes Plugin die Treffer bereits geliefert hat.</p>
+</div>
+
+<div class="frage">
+	<h3>Was geschieht, wenn ich das Plugin deaktiviere?</h3>
+	<p>Die Suche von WordPress übernimmt wieder. Nichts wird gelöscht; nach dem Aktivieren ist alles da und wird im Hintergrund auf den neuesten Stand gebracht.</p>
+</div>
+
+<div class="frage">
+	<h3>In der Plugin-Liste zeigt „Details ansehen“ nichts oder ein anderes Plugin.</h3>
+	<p>Smart Search wird nicht über das Verzeichnis von wordpress.org verteilt und meldet das WordPress auch so, damit es nicht mit einem gleichnamigen Plugin verwechselt wird. Updates spielst du deshalb von Hand ein.</p>
+</div>

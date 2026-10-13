@@ -1,0 +1,126 @@
+<!-- kapitel: Tab „KI-Anbieter“ – Zugang, Modelle und Kosten -->
+
+<span id="tab-anbieter"></span>
+
+<p class="einleitung">Diesen Tab brauchst du nur für die Modi „Semantisch“ und „KI-Antwort“. Wer bei „Keyword“ bleibt, kann ihn ignorieren – dann wird nichts an irgendeinen Dienst gesendet und es entstehen keine Kosten.</p>
+
+<h2>Anbieter wählen</h2>
+
+<p>Vier Möglichkeiten stehen zur Wahl:</p>
+
+<table>
+	<thead>
+		<tr><th>Anbieter</th><th>Voreingestellte Modelle</th><th>Besonderheit</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><strong>OpenAI</strong></td><td><code>text-embedding-3-small</code> für die Suche, <code>gpt-6-luna</code> für die Antwort</td><td>Die Voreinstellung des Plugins.</td></tr>
+		<tr><td><strong>Google Gemini</strong></td><td><code>gemini-embedding-001</code>, <code>gemini-2.5-flash</code></td><td>Wird über die OpenAI-kompatible Schnittstelle von Google angesprochen.</td></tr>
+		<tr><td><strong>Mistral</strong></td><td><code>mistral-embed</code>, <code>mistral-small-latest</code></td><td>Anbieter mit Sitz in der EU.</td></tr>
+		<tr><td><strong>Eigener Endpoint</strong></td><td>keine – du trägst sie ein</td><td>Für jeden Dienst, der die Schnittstelle von OpenAI spricht, auch auf dem eigenen Rechner (zum Beispiel Ollama). Ein API-Schlüssel ist dann nicht zwingend.</td></tr>
+	</tbody>
+</table>
+
+<p class="klein">Die Modellnamen sind der Stand der Plugin-Version 1.0.0. Anbieter benennen ihre Modelle häufig um; du kannst jederzeit ein anderes wählen oder einen Namen von Hand eintragen.</p>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Nach einem Wechsel wird neu gerechnet</span>
+	<p>Jedes Modell für Einbettungen hat seine eigene „Landkarte“. Einbettungen des einen Modells sind für ein anderes wertlos. Wechselst du den Anbieter oder das Modell für die semantische Suche, berechnet das Plugin deshalb alle Einbettungen neu. Das kostet erneut Token.</p>
+</div>
+
+<div class="einstellung__schluessel">Schlüssel: <code>provider</code> · Werte: <code>openai</code>, <code>gemini</code>, <code>mistral</code>, <code>custom</code></div>
+
+<h2>Zugang</h2>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Adresse des Endpoints</span><span class="einstellung__standard">Nur bei „Eigener Endpoint“</span></div>
+	<p>Die Basisadresse des Dienstes. Für ein lokal laufendes Ollama zum Beispiel <code>http://localhost:11434/v1</code>.</p>
+	<p>Das Plugin hängt selbst <code>/embeddings</code>, <code>/chat/completions</code> und <code>/models</code> an. Weiterleitungen folgt es nicht: Die Anfrage enthält deinen API-Schlüssel, und der soll nicht bei einem Server landen, den niemand eingetragen hat.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>base_url</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">API-Schlüssel</span><span class="einstellung__standard">Wird verschlüsselt gespeichert</span></div>
+	<p>Trage den Schlüssel ein, den du beim Anbieter erzeugt hast. Nach dem Speichern zeigt das Plugin nur noch die letzten Zeichen an. Lässt du das Feld beim nächsten Speichern leer, bleibt der gespeicherte Schlüssel erhalten. Über <em>Gespeicherten Schlüssel entfernen</em> löschst du ihn.</p>
+	<p>Der Schlüssel wird mit den Sicherheitsschlüsseln deiner WordPress-Installation verschlüsselt. Ändern sich diese – etwa nach einem Umzug mit neuer <code>wp-config.php</code> –, lässt er sich nicht mehr entschlüsseln. Das Plugin sagt dir das und bittet dich, ihn neu einzugeben.</p>
+</div>
+
+<div class="kasten kasten--code">
+	<span class="kasten__titel">Für Entwickler: Schlüssel in der wp-config.php</span>
+	<p>Wer den Schlüssel nicht in der Datenbank haben möchte, legt ihn in der <code>wp-config.php</code> fest. Das Feld auf der Einstellungsseite ist dann gesperrt.</p>
+<pre><code><span class="k">define</span>( <span class="s">'PRSTSEARCH_API_KEY'</span>, <span class="s">'dein-schluessel'</span> );</code></pre>
+</div>
+
+<h2>Modelle</h2>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Modell für die semantische Suche</span></div>
+	<p>Das Modell, das Texte und Suchanfragen in Einbettungen umwandelt. Die Auswahlliste zeigt die Modelle, die dein Konto beim Anbieter tatsächlich nutzen kann; du kannst auch einen Namen eintippen.</p>
+	<p>Eine Änderung führt dazu, dass der ganze Index neu berechnet wird.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>embedding_model</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Modell für die KI-Antwort</span></div>
+	<p>Das Sprachmodell, das die Antwort schreibt und – falls eingeschaltet – bei unsicheren Suchen die passenden Seiten auswählt. Lässt sich jederzeit ändern, ohne dass etwas neu berechnet werden muss.</p>
+	<p>Ein kleines, schnelles Modell genügt. Die Aufgabe ist einfach: aus wenigen vorgelegten Absätzen eine kurze Antwort formulieren.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>chat_model</code></div>
+</div>
+
+<h2>Schutz vor unerwarteten Kosten</h2>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Monatliches Kostenlimit</span><span class="einstellung__standard">Standard: 0 (kein Limit)</span></div>
+	<p>Ein Betrag in der gewählten Währung. Erreichen die geschätzten Kosten des laufenden Monats diesen Betrag, schaltet das Plugin die KI ab und sucht bis zum Monatswechsel als Keyword-Suche weiter. Besucher bekommen weiterhin Treffer.</p>
+	<p>Das Limit kann nur greifen, wenn das Plugin die Preise kennt. Bei den drei eingebauten Anbietern ist das der Fall. Bei „Eigener Endpoint“ musst du unten Preise eintragen – sonst rechnet das Plugin mit null und das Limit wird nie erreicht.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>monthly_budget</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Suchanfragen zwischenspeichern</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Eine wiederholte Anfrage wird nicht erneut an den Anbieter geschickt: die Einbettung einer Suchanfrage eine Stunde lang, eine KI-Antwort einen Tag lang. Das spart Kosten und Zeit.</p>
+	<p>Gespeicherte Antworten verfallen sofort, wenn sich deine Inhalte ändern. Ausschalten solltest du das nur zum Testen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>cache_enabled</code></div>
+</div>
+
+<h2>Zusätzliche Anweisungen für die KI-Antwort</h2>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Zusätzliche Anweisungen</span><span class="einstellung__standard">Standard: leer</span></div>
+	<p>Ein Freitextfeld für Wünsche an den Ton, zum Beispiel: „Sprich Besucher mit du an.“ oder „Antworte knapp und sachlich.“</p>
+	<p>Die Grundregeln des Plugins gelten immer zusätzlich: nur aus den vorgelegten Quellen antworten, nicht raten, höchstens fünf Sätze, Quellen nennen. Daran ändern deine Anweisungen nichts.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>answer_instructions</code></div>
+</div>
+
+<h2>Preise für die Kostenschätzung</h2>
+
+<p>Das Plugin rechnet Kosten aus, indem es die verbrauchten Token mit Preisen multipliziert. Für die voreingestellten Modelle der drei Anbieter kennt es die Listenpreise in US-Dollar pro eine Million Token:</p>
+
+<table>
+	<thead>
+		<tr><th>Anbieter</th><th class="zahl">Einbettungen</th><th class="zahl">Eingabe</th><th class="zahl">Ausgabe</th><th>Stand</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>OpenAI</td><td class="zahl">0,02 $</td><td class="zahl">0,10 $</td><td class="zahl">0,50 $</td><td>Oktober 2026</td></tr>
+		<tr><td>Google Gemini</td><td class="zahl">0,15 $</td><td class="zahl">0,30 $</td><td class="zahl">2,50 $</td><td>Juni 2026</td></tr>
+		<tr><td>Mistral</td><td class="zahl">0,10 $</td><td class="zahl">0,10 $</td><td class="zahl">0,30 $</td><td>Juni 2026</td></tr>
+	</tbody>
+</table>
+
+<p>Wählst du ein anderes Modell, ändern sich die Preise. Trage dann die Preise deines Modells in die drei Felder ein. Leere Felder bedeuten: Listenpreis des Anbieters verwenden.</p>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Währung</span><span class="einstellung__standard">Standard: US-Dollar</span></div>
+	<p>Bestimmt nur, welches Zeichen hinter den Beträgen steht. Das Plugin rechnet nicht um. Wenn du Euro wählst, trage bitte eigene Preise in Euro ein.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>currency</code>, <code>price_embedding</code>, <code>price_input</code>, <code>price_output</code></div>
+</div>
+
+<div class="kasten">
+	<span class="kasten__titel">Es bleibt eine Schätzung</span>
+	<p>Die Kostenanzeige im Plugin stützt sich auf die Token-Zahlen, die der Anbieter zurückmeldet, und auf die Preise, die hier stehen. Verbindlich ist allein die Rechnung deines Anbieters.</p>
+</div>
+
+<h2>Verbindung testen</h2>
+
+<p>Der Knopf <em>Verbindung testen</em> prüft beide Modelle mit einer winzigen Anfrage und meldet für jedes getrennt, ob es funktioniert. Auch hier gilt: Der Test nutzt die <em>gespeicherten</em> Einstellungen.</p>
+
+<p>Schlägt der Test fehl, zeigt das Plugin die Meldung des Anbieters. Die häufigsten Ursachen stehen in Kapitel <a href="#fehlerbehebung">„Fehlerbehebung“</a>.</p>

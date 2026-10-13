@@ -1,0 +1,119 @@
+<!-- kapitel: Die semantische Suche -->
+
+<span id="semantik"></span>
+
+<p class="einleitung">Die Keyword-Suche findet Wörter. Die semantische Suche findet Bedeutungen. Sie läuft zusätzlich zur Keyword-Suche, und am Ende werden beide Ergebnisse zusammengeführt.</p>
+
+<h2>Die Idee</h2>
+
+<div class="einfach">
+	<p>Stell dir eine riesige Landkarte vor, auf der jeder Text einen Ort hat. Texte über Essen liegen in einer Gegend, Texte über Reisen in einer anderen, und innerhalb der Essensgegend liegen „Hähnchen“ und „Geflügel“ fast am selben Fleck. Die semantische Suche setzt die Frage des Besuchers auf dieselbe Karte und schaut, welche Texte in der Nähe liegen.</p>
+</div>
+
+<p>Den Ort eines Textes bestimmt ein KI-Modell. Es gibt ihn als lange Zahlenreihe aus – die <strong>Einbettung</strong>. Zwei Einbettungen lassen sich vergleichen: Das Ergebnis ist eine Zahl, die <strong>Ähnlichkeit</strong>, und je höher sie ist, desto näher liegen die Texte beieinander.</p>
+
+<h2>Der Ablauf einer Suche</h2>
+
+<div class="ablauf">
+	<div class="ablauf__schritt"><strong>1</strong>Die Suchanfrage wird an den Anbieter geschickt und kommt als Einbettung zurück.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>2</strong>Sie wird mit den gespeicherten Einbettungen der Abschnitte verglichen.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>3</strong>Die ähnlichsten Abschnitte werden eingestuft.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>4</strong>Das Ergebnis wird mit dem der Keyword-Suche zusammengeführt.</div>
+</div>
+
+<p>An den Anbieter geht dabei nur die Suchanfrage. Die Einbettungen deiner Inhalte liegen bereits in deiner Datenbank, und der Vergleich findet auf deinem Server statt.</p>
+
+<h2>Vergleichen – auch bei tausenden Seiten</h2>
+
+<p>Der Vergleich einer Einbettung mit einer anderen ist eine kurze Rechnung. Bei sehr vielen Abschnitten summiert sie sich. Das Plugin geht deshalb in zwei Stufen vor:</p>
+
+<table>
+	<thead>
+		<tr><th>Größe des Index</th><th>Vorgehen</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>bis 2.000 Abschnitte</td><td>Jeder Abschnitt wird genau verglichen.</td></tr>
+		<tr><td>darüber</td><td>Die Datenbank wählt zuerst die 600 aussichtsreichsten Abschnitte anhand ihrer Signatur aus. Nur diese werden genau verglichen.</td></tr>
+	</tbody>
+</table>
+
+<div class="einfach">
+	<p>Die Signatur ist wie die Postleitzahl einer Adresse. Zwei Orte mit fast derselben Postleitzahl liegen nah beieinander – das lässt sich prüfen, ohne die genaue Entfernung auszurechnen. Erst für die Orte mit ähnlicher Postleitzahl wird dann genau gemessen.</p>
+</div>
+
+<p>Technisch besteht die Signatur aus 512 Ja/Nein-Werten, gespeichert in acht Zahlenspalten. Zwei Signaturen zu vergleichen heißt, die abweichenden Stellen zu zählen; das erledigt die Datenbank selbst und sehr schnell.</p>
+
+<h2>Einstufen: Was ist ähnlich genug?</h2>
+
+<p>Rohe Ähnlichkeitswerte sind tückisch. Bei vielen Modellen liegen <em>alle</em> Texte einer Website nah beieinander, weil sie dieselbe Sprache und dasselbe Themenfeld teilen. Eine Unsinns-Suche bekäme dann immer noch „ähnliche“ Treffer.</p>
+
+<p>Das Plugin rechnet diesen gemeinsamen Anteil heraus. Es bildet den <strong>Mittelwert</strong> aller Einbettungen der Website und zieht ihn von jeder Einbettung ab, bevor es vergleicht. Übrig bleibt, was einen Text von den anderen Texten <em>dieser</em> Website unterscheidet. Der Mittelwert wird bei großen Websites aus einer gleichmäßigen Stichprobe von 2.000 Abschnitten gebildet.</p>
+
+<p>Für diese bereinigten Werte gelten feste Schwellen:</p>
+
+<table>
+	<thead>
+		<tr><th>Bereinigte Ähnlichkeit</th><th>Stufe</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>ab 0,35</td><td><span class="stufe stufe--hoch">Sehr passend</span></td></tr>
+		<tr><td>ab 0,22</td><td><span class="stufe stufe--mittel">Passend</span></td></tr>
+		<tr><td>ab 0,20</td><td><span class="stufe stufe--schwach">Schwach</span></td></tr>
+		<tr><td>darunter</td><td>kein Treffer</td></tr>
+	</tbody>
+</table>
+
+<p>Zwei Feinheiten:</p>
+
+<ul>
+	<li>Sehr <strong>kurze Abschnitte</strong> – unter etwa 60 Zeichen – zählen weniger. Ein Abschnitt, der nur aus einer Überschrift besteht, ähnelt sonst zu leicht allem Möglichen.</li>
+	<li>Auf <strong>sehr kleinen Websites</strong> mit weniger als zehn Abschnitten ergibt ein Mittelwert keinen Sinn. Dort vergleicht das Plugin die rohen Werte und benutzt Schwellen, die zum jeweiligen Anbieter passen.</li>
+</ul>
+
+<p class="klein">Beide Sätze von Schwellen lassen sich von Entwicklern anpassen, siehe Kapitel <a href="#hooks">„Hooks“</a>.</p>
+
+<h2>Zusammenführen mit der Keyword-Suche</h2>
+
+<p>Jetzt gibt es zwei Ranglisten: eine nach Wörtern, eine nach Bedeutung. Ihre Bewertungen sind nicht vergleichbar – die eine zählt Wörter, die andere misst Abstände. Das Plugin führt sie deshalb über die <em>Plätze</em> zusammen, nicht über die Punkte: Eine Seite, die in beiden Listen weit oben steht, landet ganz oben. Das Verfahren heißt <em>Reciprocal Rank Fusion</em>.</p>
+
+<p>Die Relevanzstufe einer Seite ist die bessere ihrer beiden Stufen. Eine Seite, die alle Suchwörter enthält, ist „Sehr passend“ – auch wenn die semantische Suche sie nur als „Passend“ eingestuft hat.</p>
+
+<h2>Die Zweitmeinung des Sprachmodells</h2>
+
+<p>Manchmal findet weder die eine noch die andere Suche etwas Überzeugendes. Ist „Bei Unsicherheit das Sprachmodell fragen“ eingeschaltet, geschieht dann Folgendes:</p>
+
+<ol class="schritte">
+	<li>Das Plugin nimmt die zehn Seiten, die der Suchanfrage am nächsten liegen, auch wenn sie unter der Schwelle geblieben sind.</li>
+	<li>Es legt dem Sprachmodell die Frage und je einen kurzen Auszug dieser Seiten vor.</li>
+	<li>Das Modell nennt die Seiten, die tatsächlich zur Frage passen. Diese werden als „Passend“ in die Trefferliste aufgenommen.</li>
+</ol>
+
+<p>So findet „Was könnte ich heute essen?“ deine Rezepte, obwohl keines der Wörter dort vorkommt.</p>
+
+<p>Das geschieht <strong>nur</strong>, wenn kein Treffer mindestens „Passend“ ist, und nicht, wenn die Suche Anführungszeichen oder Ausschlüsse enthält. Die Auswahl des Modells wird einen Tag lang gespeichert.</p>
+
+<h3>Niemand wartet darauf</h3>
+
+<p>Das Sprachmodell braucht eine oder zwei Sekunden. Der Such-Block des Plugins zeigt deshalb in zwei Schritten an: sofort die Treffer, die ohne das Modell feststehen, und kurz danach die ergänzte Liste. Für Screenreader wird angesagt, dass noch verfeinert wird.</p>
+
+<h2>Was es kostet</h2>
+
+<table>
+	<thead>
+		<tr><th>Vorgang</th><th>Wie oft</th><th>Größenordnung</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Einbettung eines Abschnitts</td><td>einmal, und wieder nach einer Textänderung</td><td>ein paar hundert Token</td></tr>
+		<tr><td>Einbettung einer Suchanfrage</td><td>einmal pro neuer Anfrage, dann eine Stunde gespeichert</td><td>eine Handvoll Token</td></tr>
+		<tr><td>Zweitmeinung</td><td>nur bei unsicheren Suchen, dann einen Tag gespeichert</td><td>einige hundert Token Eingabe, wenige Ausgabe</td></tr>
+	</tbody>
+</table>
+
+<p>Zum Einordnen: Eine Website mit 1.000 Seiten ergibt grob 1.500 bis 2.500 Abschnitte, zusammen wenige hunderttausend Token. Bei Preisen von einigen Cent pro Million Token für Einbettungen kostet der erste Aufbau des Index also Bruchteile eines Cents bis wenige Cent. Die genauen Preise hängen von deinem Anbieter und Modell ab.</p>
+
+<h2>Wenn der Anbieter ausfällt</h2>
+
+<p>Kann die Einbettung der Suchanfrage nicht berechnet werden – Anbieter nicht erreichbar, Budget erschöpft, zu viele Anfragen –, liefert das Plugin die Treffer der Keyword-Suche. In den Daten der Trefferliste ist das vermerkt; Besucher sehen einfach Treffer.</p>

@@ -1,0 +1,120 @@
+<!-- kapitel: Datenbank und gespeicherte Daten -->
+
+<p class="einleitung">Was das Plugin wo ablegt: zwei eigene Tabellen, eine Handvoll Optionen, drei Zusatzfelder pro Inhalt und vier geplante Aufgaben. Nützlich für Sicherungen, Umzüge und die Fehlersuche.</p>
+
+<h2>Tabelle des Index</h2>
+
+<p><code>{prefix}prstsearch_chunks</code> – eine Zeile pro Textabschnitt.</p>
+
+<table>
+	<thead>
+		<tr><th>Spalte</th><th>Typ</th><th>Inhalt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>id</code></td><td>bigint</td><td>Fortlaufende Nummer des Abschnitts.</td></tr>
+		<tr><td><code>post_id</code></td><td>bigint</td><td>Der Inhalt, zu dem der Abschnitt gehört.</td></tr>
+		<tr><td><code>chunk_index</code></td><td>int</td><td>Position des Abschnitts im Inhalt, bei 0 beginnend.</td></tr>
+		<tr><td><code>post_type</code></td><td>varchar(20)</td><td>Inhaltstyp, für den Filter und zum Aufräumen.</td></tr>
+		<tr><td><code>title</code></td><td>text</td><td>Titel des Inhalts.</td></tr>
+		<tr><td><code>content</code></td><td>longtext</td><td>Der lesbare Text des Abschnitts.</td></tr>
+		<tr><td><code>content_hash</code></td><td>char(32)</td><td>Prüfsumme aus Titel und Text. Bleibt sie gleich, bleibt die Einbettung.</td></tr>
+		<tr><td><code>terms</code></td><td>longtext</td><td>Die Wortstämme, vorwärts und rückwärts. Darauf liegt der Volltextindex.</td></tr>
+		<tr><td><code>embedding</code></td><td>longblob</td><td>Die Einbettung als gepackte 32-Bit-Kommazahlen, oder leer.</td></tr>
+		<tr><td><code>embedding_model</code></td><td>varchar(100)</td><td>Das Modell, das sie berechnet hat.</td></tr>
+		<tr><td><code>sig_0</code> … <code>sig_7</code></td><td>bigint unsigned</td><td>Die 512-Bit-Signatur der Einbettung.</td></tr>
+	</tbody>
+</table>
+
+<p>Indizes: der Primärschlüssel, <code>post_id</code>, <code>first_chunks (chunk_index, post_id)</code> für Vorschläge, <code>signature</code> für die Vorauswahl der semantischen Suche und der Volltextindex <code>search_terms</code> auf <code>terms</code>. Die Tabelle ist InnoDB.</p>
+
+<h2>Tabelle der Statistik</h2>
+
+<p><code>{prefix}prstsearch_log</code> – eine Zeile pro aufgezeichneter Suche.</p>
+
+<table>
+	<thead>
+		<tr><th>Spalte</th><th>Typ</th><th>Inhalt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>id</code></td><td>bigint</td><td>Fortlaufende Nummer.</td></tr>
+		<tr><td><code>searched_at</code></td><td>datetime</td><td>Zeitpunkt in UTC.</td></tr>
+		<tr><td><code>query</code></td><td>varchar(191)</td><td>Der Suchbegriff.</td></tr>
+		<tr><td><code>mode</code></td><td>varchar(20)</td><td><code>keyword</code>, <code>semantic</code> oder <code>ai</code> – der Modus, der tatsächlich lief.</td></tr>
+		<tr><td><code>results</code></td><td>int</td><td>Anzahl der Treffer.</td></tr>
+		<tr><td><code>embedding_tokens</code>, <code>input_tokens</code>, <code>output_tokens</code></td><td>int</td><td>Verbrauchte Token nach Art.</td></tr>
+		<tr><td><code>input_cost</code>, <code>output_cost</code></td><td>decimal(16,10)</td><td>Kosten zum Zeitpunkt der Suche. Zehn Nachkommastellen, weil eine einzelne Einbettung weniger als ein Millionstel Dollar kostet.</td></tr>
+		<tr><td><code>duration_ms</code></td><td>int, kann leer sein</td><td>Antwortzeit.</td></tr>
+		<tr><td><code>clicked_post_id</code></td><td>bigint, kann leer sein</td><td>Der geöffnete Treffer.</td></tr>
+	</tbody>
+</table>
+
+<p>Es gibt keine Spalte für IP-Adresse, Benutzer oder Sitzung.</p>
+
+<h2>Optionen</h2>
+
+<table>
+	<thead>
+		<tr><th>Option</th><th>Inhalt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>prstsearch_settings</code></td><td>Alle Einstellungen als ein Array.</td></tr>
+		<tr><td><code>prstsearch_api_key</code></td><td>Der verschlüsselte API-Schlüssel.</td></tr>
+		<tr><td><code>prstsearch_recommendations</code></td><td>Die empfohlenen Treffer.</td></tr>
+		<tr><td><code>prstsearch_usage</code></td><td>Geschätzte Kosten je Monat, getrennt nach Indexieren und Suchen.</td></tr>
+		<tr><td><code>prstsearch_db_version</code></td><td>Versionsnummer des Datenbankschemas, derzeit 6.</td></tr>
+		<tr><td><code>prstsearch_index_version</code></td><td>Zeitstempel der letzten Änderung am Index. Zwischengespeichertes hängt daran.</td></tr>
+		<tr><td><code>prstsearch_backfill_cursor</code>, <code>prstsearch_prune_cursor</code></td><td>Merker, wie weit ein Hintergrundlauf gekommen ist.</td></tr>
+		<tr><td><code>prstsearch_lock_*</code></td><td>Kurzlebige Sperren, damit eine Arbeit nicht doppelt läuft.</td></tr>
+	</tbody>
+</table>
+
+<p>Dazu kommen Transients mit dem Präfix <code>prstsearch_</code> für alle Zwischenspeicher. Mit einem Objekt-Cache liegen sie dort, sonst in der Optionstabelle.</p>
+
+<h2>Zusatzfelder der Inhalte</h2>
+
+<table>
+	<thead>
+		<tr><th>Meta-Schlüssel</th><th>Inhalt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>_prstsearch_state</code></td><td>Zustand des Inhalts im Index.</td></tr>
+		<tr><td><code>_prstsearch_indexed_at</code></td><td>Zeitpunkt des letzten Einlesens.</td></tr>
+		<tr><td><code>_prstsearch_error</code></td><td>Die Fehlermeldung, falls das Einlesen gescheitert ist.</td></tr>
+		<tr><td><code>_prstsearch_exclude</code></td><td>Gesetzt, wenn der Inhalt von Hand ausgeschlossen wurde.</td></tr>
+	</tbody>
+</table>
+
+<h2>Geplante Aufgaben</h2>
+
+<table>
+	<thead>
+		<tr><th>Hook</th><th>Aufgabe</th><th>Takt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>prstsearch_backfill_index</code></td><td>Nachindexieren</td><td>einmalig, plant sich neu ein, solange etwas fehlt</td></tr>
+		<tr><td><code>prstsearch_process_embeddings</code></td><td>Einbettungen berechnen</td><td>ebenso</td></tr>
+		<tr><td><code>prstsearch_complete_index</code></td><td>Abschnitte älterer Versionen vervollständigen</td><td>ebenso</td></tr>
+		<tr><td><code>prstsearch_cleanup_log</code></td><td>Statistik kürzen, verwaiste Einträge entfernen</td><td>täglich</td></tr>
+	</tbody>
+</table>
+
+<h2>Updates des Schemas</h2>
+
+<p>Beim Laden vergleicht das Plugin <code>prstsearch_db_version</code> mit der Version im Code. Weicht sie ab, bringt <code>Database\Installer</code> die Tabellen mit <code>dbDelta()</code> auf den neuen Stand. Eine Sperre sorgt dafür, dass das nur eine Anfrage tut. Aufwendige Nacharbeiten – etwa das Neuberechnen der Wortstämme – erledigt danach ein Hintergrundlauf.</p>
+
+<h2>Sicherung und Umzug</h2>
+
+<ul>
+	<li>Eine normale Datenbanksicherung enthält alles.</li>
+	<li>Der Index lässt sich jederzeit aus den Inhalten neu aufbauen. Wer Platz sparen will, kann <code>{prefix}prstsearch_chunks</code> aus der Sicherung ausnehmen – muss dann aber nach dem Zurückspielen neu aufbauen und in den KI-Modi die Einbettungen neu bezahlen.</li>
+	<li>Nach einem Umzug auf eine Installation mit anderen Sicherheitsschlüsseln muss der API-Schlüssel neu eingegeben werden.</li>
+	<li>Nach einem Umzug mit geänderter Adresse stimmt der Index weiterhin: Er speichert keine Adressen, sondern Nummern der Inhalte.</li>
+</ul>
+
+<div class="kasten kasten--code">
+	<span class="kasten__titel">Größe des Index abfragen</span>
+<pre><code><span class="k">SELECT</span> <span class="k">COUNT</span>(*) <span class="k">AS</span> abschnitte,
+       <span class="k">COUNT</span>(<span class="k">DISTINCT</span> post_id) <span class="k">AS</span> inhalte,
+       <span class="k">SUM</span>(embedding <span class="k">IS NOT NULL</span>) <span class="k">AS</span> mit_einbettung
+<span class="k">FROM</span> wp_prstsearch_chunks;</code></pre>
+</div>

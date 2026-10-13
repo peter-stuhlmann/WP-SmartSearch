@@ -1,0 +1,844 @@
+/* Gestaltung des Handbuchs. Gedacht für den Druck nach PDF auf A4. */
+
+:root {
+	--akzent: #3858e9;
+	--akzent-dunkel: #2a45c4;
+	--akzent-hell: #f4f6fe;
+	--akzent-mittel: #c7d0fa;
+	--text: #1d2327;
+	--text-leise: #50575e;
+	--linie: #dcdcde;
+	--flaeche: #f6f7f7;
+	--nacht-1: #12151f;
+	--nacht-2: #1c2553;
+	--gruen: #007017;
+	--gruen-hell: #edfaef;
+	--gelb: #8a6500;
+	--gelb-hell: #fcf9e8;
+	--rot: #a81313;
+	--rot-hell: #fcf0f1;
+}
+
+@page {
+	size: A4;
+	margin: 22mm 20mm 24mm;
+
+	@bottom-left {
+		content: "Smart Search – Handbuch";
+		font: 8.5pt "Segoe UI", system-ui, sans-serif;
+		color: #787c82;
+	}
+
+	@bottom-right {
+		content: "Seite " counter(page) " von " counter(pages);
+		font: 8.5pt "Segoe UI", system-ui, sans-serif;
+		color: #787c82;
+	}
+}
+
+@page titel {
+	margin: 0;
+
+	@bottom-left {
+		content: none;
+	}
+
+	@bottom-right {
+		content: none;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	font: 10.5pt/1.55 "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+	color: var(--text);
+	-webkit-print-color-adjust: exact;
+	print-color-adjust: exact;
+}
+
+body {
+	margin: 0;
+}
+
+/* Titelseite */
+
+.titel {
+	page: titel;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	height: 297mm;
+	padding: 34mm 26mm 26mm;
+	color: #fff;
+	background: linear-gradient(135deg, var(--nacht-1) 0%, var(--nacht-2) 55%, var(--akzent) 130%);
+	break-after: page;
+}
+
+.titel__marke {
+	display: inline-flex;
+	gap: 3mm;
+	align-items: center;
+	padding: 2mm 4.5mm;
+	font-size: 10pt;
+	font-weight: 600;
+	letter-spacing: 0.04em;
+	background: rgb(255 255 255 / 12%);
+	border-radius: 999px;
+}
+
+.titel__punkt {
+	width: 2.4mm;
+	height: 2.4mm;
+	background: #4ade80;
+	border-radius: 50%;
+}
+
+.titel h1 {
+	margin: 0 0 6mm;
+	font-size: 46pt;
+	font-weight: 700;
+	line-height: 1.05;
+	letter-spacing: -0.02em;
+	color: #fff;
+	border: 0;
+}
+
+.titel__unter {
+	max-width: 120mm;
+	margin: 0;
+	font-size: 15pt;
+	line-height: 1.4;
+	color: rgb(255 255 255 / 85%);
+}
+
+.titel__kacheln {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 4mm;
+	margin-top: 14mm;
+}
+
+.titel__kachel {
+	padding: 5mm;
+	background: rgb(255 255 255 / 10%);
+	border-radius: 3mm;
+}
+
+.titel__kachel strong {
+	display: block;
+	margin-bottom: 1mm;
+	font-size: 12pt;
+}
+
+.titel__kachel span {
+	font-size: 9pt;
+	line-height: 1.4;
+	color: rgb(255 255 255 / 78%);
+}
+
+.titel__fuss {
+	display: flex;
+	justify-content: space-between;
+	font-size: 9.5pt;
+	color: rgb(255 255 255 / 70%);
+}
+
+/* Überschriften */
+
+h1,
+h2,
+h3,
+h4 {
+	line-height: 1.2;
+	break-after: avoid;
+}
+
+h1 {
+	margin: 0 0 7mm;
+	padding-bottom: 4mm;
+	font-size: 25pt;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+	border-bottom: 0.8mm solid var(--akzent);
+}
+
+h1 .nummer {
+	display: block;
+	margin-bottom: 1.5mm;
+	font-size: 10pt;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	color: var(--akzent);
+	text-transform: uppercase;
+}
+
+h2 {
+	margin: 9mm 0 3mm;
+	font-size: 15pt;
+	font-weight: 650;
+	color: var(--nacht-2);
+}
+
+h3 {
+	margin: 6mm 0 2mm;
+	font-size: 11.5pt;
+	font-weight: 650;
+}
+
+h4 {
+	margin: 4mm 0 1mm;
+	font-size: 10.5pt;
+	font-weight: 650;
+	color: var(--text-leise);
+}
+
+.kapitel {
+	break-before: page;
+}
+
+/* Teil-Trennseiten */
+
+.teil {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	height: 240mm;
+	break-before: page;
+	break-after: page;
+}
+
+.teil__kennung {
+	font-size: 11pt;
+	font-weight: 600;
+	letter-spacing: 0.1em;
+	color: var(--akzent);
+	text-transform: uppercase;
+}
+
+.teil__name {
+	margin: 3mm 0 6mm;
+	font-size: 34pt;
+	font-weight: 700;
+	line-height: 1.1;
+	letter-spacing: -0.02em;
+}
+
+.teil__text {
+	max-width: 125mm;
+	font-size: 12.5pt;
+	color: var(--text-leise);
+}
+
+.teil__liste {
+	margin-top: 8mm;
+	padding: 0;
+	font-size: 10.5pt;
+	list-style: none;
+	columns: 2;
+	column-gap: 10mm;
+}
+
+.teil__liste li {
+	padding: 1.2mm 0;
+	border-bottom: 0.2mm solid var(--linie);
+	break-inside: avoid;
+}
+
+/* Fließtext */
+
+p {
+	margin: 0 0 3mm;
+	orphans: 3;
+	widows: 3;
+}
+
+ul,
+ol {
+	margin: 0 0 3.5mm;
+	padding-left: 5.5mm;
+}
+
+li {
+	margin-bottom: 1mm;
+}
+
+a {
+	color: var(--akzent-dunkel);
+	text-decoration: none;
+}
+
+strong {
+	font-weight: 650;
+}
+
+.einleitung {
+	margin-bottom: 6mm;
+	font-size: 12.5pt;
+	line-height: 1.5;
+	color: var(--text-leise);
+}
+
+/* Inhaltsverzeichnis */
+
+.inhalt h1 {
+	break-before: auto;
+}
+
+.inhalt ol {
+	padding: 0;
+	list-style: none;
+}
+
+.inhalt__teil {
+	margin: 5mm 0 1.5mm;
+	font-size: 9pt;
+	font-weight: 650;
+	letter-spacing: 0.08em;
+	color: var(--akzent);
+	text-transform: uppercase;
+	break-after: avoid;
+}
+
+.inhalt__kapitel {
+	display: flex;
+	gap: 3mm;
+	align-items: baseline;
+	margin: 0;
+	padding: 1.3mm 0;
+	border-bottom: 0.2mm solid var(--linie);
+	break-inside: avoid;
+}
+
+.inhalt__kapitel a {
+	color: var(--text);
+}
+
+.inhalt__zahl {
+	flex: 0 0 8mm;
+	font-weight: 650;
+	color: var(--akzent);
+}
+
+.inhalt__unter {
+	margin: 0 0 0 11mm;
+	padding: 0.4mm 0;
+	font-size: 9pt;
+	color: var(--text-leise);
+}
+
+.inhalt__unter a {
+	color: var(--text-leise);
+}
+
+/* Kästen */
+
+.kasten {
+	margin: 4mm 0 5mm;
+	padding: 4mm 5mm 4mm 12mm;
+	position: relative;
+	background: var(--akzent-hell);
+	border-left: 1mm solid var(--akzent);
+	border-radius: 0 2mm 2mm 0;
+	break-inside: avoid;
+}
+
+.kasten::before {
+	content: "i";
+	position: absolute;
+	top: 4mm;
+	left: 3.5mm;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 5mm;
+	height: 5mm;
+	font-size: 9pt;
+	font-weight: 700;
+	color: #fff;
+	background: var(--akzent);
+	border-radius: 50%;
+}
+
+.kasten > :last-child {
+	margin-bottom: 0;
+}
+
+.kasten__titel {
+	display: block;
+	margin-bottom: 1mm;
+	font-weight: 650;
+}
+
+.kasten--tipp {
+	background: var(--gruen-hell);
+	border-color: var(--gruen);
+}
+
+.kasten--tipp::before {
+	content: "✓";
+	background: var(--gruen);
+}
+
+.kasten--achtung {
+	background: var(--gelb-hell);
+	border-color: #dba617;
+}
+
+.kasten--achtung::before {
+	content: "!";
+	background: #b88400;
+}
+
+.kasten--grenze {
+	background: var(--rot-hell);
+	border-color: var(--rot);
+}
+
+.kasten--grenze::before {
+	content: "×";
+	background: var(--rot);
+}
+
+.kasten--code {
+	background: #f3f1fb;
+	border-color: #6b4fbb;
+}
+
+.kasten--code::before {
+	content: "</>";
+	width: 6.5mm;
+	font-size: 6.5pt;
+	background: #6b4fbb;
+	border-radius: 1mm;
+}
+
+.kasten--code {
+	padding-left: 14mm;
+}
+
+.einfach {
+	margin: 4mm 0 5mm;
+	padding: 4mm 5mm;
+	background: #fff;
+	border: 0.3mm solid var(--akzent-mittel);
+	border-radius: 2mm;
+	break-inside: avoid;
+}
+
+.einfach::before {
+	content: "In einfachen Worten";
+	display: block;
+	margin-bottom: 1.5mm;
+	font-size: 8.5pt;
+	font-weight: 650;
+	letter-spacing: 0.07em;
+	color: var(--akzent);
+	text-transform: uppercase;
+}
+
+.einfach > :last-child {
+	margin-bottom: 0;
+}
+
+/* Code */
+
+code,
+pre,
+kbd {
+	font-family: "Cascadia Mono", Consolas, "SFMono-Regular", Menlo, monospace;
+}
+
+code {
+	padding: 0.2mm 1mm;
+	font-size: 9pt;
+	background: var(--flaeche);
+	border: 0.2mm solid var(--linie);
+	border-radius: 0.8mm;
+	overflow-wrap: anywhere;
+}
+
+td:first-child code {
+	white-space: nowrap;
+	overflow-wrap: normal;
+}
+
+pre {
+	tab-size: 4;
+	margin: 3mm 0 5mm;
+	padding: 4mm 5mm;
+	font-size: 8.4pt;
+	line-height: 1.5;
+	color: #e6e9f2;
+	white-space: pre-wrap;
+	overflow-wrap: anywhere;
+	background: #161a26;
+	border-radius: 2mm;
+	break-inside: avoid;
+}
+
+pre code {
+	padding: 0;
+	font-size: inherit;
+	color: inherit;
+	background: none;
+	border: 0;
+}
+
+pre .k {
+	color: #9db1ff;
+}
+
+pre .s {
+	color: #a5e3a1;
+}
+
+pre .c {
+	color: #8b93a7;
+	font-style: italic;
+}
+
+.datei {
+	display: block;
+	margin: 4mm 0 -2mm;
+	font-size: 8.5pt;
+	font-weight: 600;
+	color: var(--text-leise);
+}
+
+kbd {
+	padding: 0.3mm 1.4mm;
+	font-size: 8.5pt;
+	background: #fff;
+	border: 0.3mm solid #a7aaad;
+	border-bottom-width: 0.7mm;
+	border-radius: 1mm;
+}
+
+/* Tabellen */
+
+table {
+	width: 100%;
+	margin: 3mm 0 5mm;
+	font-size: 9.3pt;
+	line-height: 1.4;
+	border-collapse: collapse;
+}
+
+th,
+td {
+	padding: 2mm 2.5mm;
+	text-align: left;
+	vertical-align: top;
+	border-bottom: 0.2mm solid var(--linie);
+}
+
+th {
+	font-size: 8.5pt;
+	font-weight: 650;
+	letter-spacing: 0.03em;
+	color: #fff;
+	background: var(--nacht-2);
+}
+
+th:first-child {
+	border-radius: 1.5mm 0 0;
+}
+
+th:last-child {
+	border-radius: 0 1.5mm 0 0;
+}
+
+tr {
+	break-inside: avoid;
+}
+
+tbody tr:nth-child(even) td {
+	background: #fafafb;
+}
+
+td.zahl,
+th.zahl {
+	text-align: right;
+	white-space: nowrap;
+}
+
+/* Einstellungen */
+
+.einstellung {
+	margin: 4mm 0;
+	padding: 4mm 5mm;
+	border: 0.3mm solid var(--linie);
+	border-radius: 2mm;
+	break-inside: avoid;
+}
+
+.einstellung__kopf {
+	display: flex;
+	gap: 3mm;
+	align-items: baseline;
+	justify-content: space-between;
+	margin-bottom: 1.5mm;
+}
+
+.einstellung__name {
+	font-size: 11pt;
+	font-weight: 650;
+}
+
+.einstellung__standard {
+	flex: none;
+	padding: 0.4mm 2.2mm;
+	font-size: 8pt;
+	font-weight: 600;
+	color: var(--akzent-dunkel);
+	background: var(--akzent-hell);
+	border-radius: 999px;
+}
+
+.einstellung__schluessel {
+	margin-top: 2mm;
+	font-size: 8pt;
+	color: #787c82;
+}
+
+.einstellung > p:last-of-type {
+	margin-bottom: 0;
+}
+
+/* Bilder */
+
+figure {
+	margin: 4mm 0 6mm;
+	break-inside: avoid;
+}
+
+.bild {
+	overflow: hidden;
+	border: 0.3mm solid var(--linie);
+	border-radius: 2mm;
+	box-shadow: 0 1mm 4mm rgb(0 0 0 / 8%);
+}
+
+.bild img {
+	display: block;
+	width: 100%;
+}
+
+figcaption {
+	margin-top: 2mm;
+	font-size: 8.8pt;
+	color: var(--text-leise);
+}
+
+figcaption strong {
+	color: var(--text);
+}
+
+/* Schaubilder */
+
+.ablauf {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2mm 0;
+	align-items: stretch;
+	margin: 4mm 0 6mm;
+	break-inside: avoid;
+}
+
+.ablauf__schritt {
+	flex: 1 1 0;
+	min-width: 24mm;
+	padding: 3mm;
+	font-size: 8.6pt;
+	line-height: 1.35;
+	text-align: center;
+	background: var(--akzent-hell);
+	border: 0.3mm solid var(--akzent-mittel);
+	border-radius: 2mm;
+}
+
+.ablauf__schritt strong {
+	display: block;
+	margin-bottom: 0.8mm;
+	font-size: 9.3pt;
+	color: var(--nacht-2);
+}
+
+.ablauf__pfeil {
+	flex: 0 0 6mm;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 12pt;
+	color: var(--akzent);
+}
+
+.ablauf--dunkel .ablauf__schritt {
+	color: #fff;
+	background: var(--nacht-2);
+	border-color: var(--nacht-2);
+}
+
+.ablauf--dunkel .ablauf__schritt strong {
+	color: #fff;
+}
+
+.spalten {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 4mm;
+	margin: 4mm 0 6mm;
+}
+
+.spalten--zwei {
+	grid-template-columns: repeat(2, 1fr);
+}
+
+.karte {
+	padding: 4mm;
+	border: 0.3mm solid var(--linie);
+	border-top: 1mm solid var(--akzent);
+	border-radius: 2mm;
+	break-inside: avoid;
+}
+
+.karte h3,
+.karte h4 {
+	margin: 0 0 1.5mm;
+	font-size: 11pt;
+	color: var(--text);
+}
+
+.karte p,
+.karte ul {
+	margin-bottom: 1.5mm;
+	font-size: 9.3pt;
+}
+
+.karte__preis {
+	display: inline-block;
+	margin-top: 1mm;
+	font-size: 8.3pt;
+	font-weight: 600;
+	color: var(--akzent-dunkel);
+}
+
+.stufe {
+	display: inline-block;
+	padding: 0.2mm 2.2mm;
+	font-size: 8.3pt;
+	font-weight: 650;
+	border-radius: 999px;
+}
+
+.stufe--hoch {
+	color: var(--gruen);
+	background: var(--gruen-hell);
+}
+
+.stufe--mittel {
+	color: var(--akzent-dunkel);
+	background: var(--akzent-hell);
+}
+
+.stufe--schwach {
+	color: #50575e;
+	background: #f0f0f1;
+}
+
+.stufe--gelb {
+	color: var(--gelb);
+	background: var(--gelb-hell);
+}
+
+.stufe--rot {
+	color: var(--rot);
+	background: var(--rot-hell);
+}
+
+.schritte {
+	padding: 0;
+	list-style: none;
+	counter-reset: schritt;
+}
+
+.schritte > li {
+	position: relative;
+	margin-bottom: 3mm;
+	padding-left: 10mm;
+	counter-increment: schritt;
+	break-inside: avoid;
+}
+
+.schritte > li::before {
+	content: counter(schritt);
+	position: absolute;
+	top: 0;
+	left: 0;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 6.5mm;
+	height: 6.5mm;
+	font-size: 9pt;
+	font-weight: 700;
+	color: #fff;
+	background: var(--akzent);
+	border-radius: 50%;
+}
+
+.glossar dt {
+	margin-top: 3mm;
+	font-weight: 650;
+	break-after: avoid;
+}
+
+.glossar dd {
+	margin: 0.5mm 0 0;
+	color: var(--text-leise);
+}
+
+.frage {
+	margin: 4mm 0;
+	break-inside: avoid;
+}
+
+.frage h3 {
+	margin: 0 0 1mm;
+	padding-left: 7mm;
+	position: relative;
+}
+
+.frage h3::before {
+	content: "?";
+	position: absolute;
+	left: 0;
+	top: -0.3mm;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 5mm;
+	height: 5mm;
+	font-size: 9pt;
+	color: #fff;
+	background: var(--akzent);
+	border-radius: 50%;
+}
+
+.frage > p,
+.frage > ul,
+.frage > ol {
+	margin-left: 7mm;
+}
+
+.klein {
+	font-size: 9pt;
+	color: var(--text-leise);
+}
+
+.keinumbruch {
+	break-inside: avoid;
+}

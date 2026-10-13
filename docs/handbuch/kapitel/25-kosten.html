@@ -1,0 +1,120 @@
+<!-- kapitel: Kosten, Budget und Begrenzungen -->
+
+<span id="kosten"></span>
+
+<p class="einleitung">Der Modus „Keyword“ kostet nichts. In den KI-Modi bezahlst du deinen KI-Anbieter nach Verbrauch. Dieses Kapitel zeigt, wofür Kosten anfallen, wie das Plugin sie niedrig hält und wie du dich vor Überraschungen schützt.</p>
+
+<h2>Wofür Kosten entstehen</h2>
+
+<table>
+	<thead>
+		<tr><th>Vorgang</th><th>Modus</th><th>Wann</th><th>Preisart</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Einbettungen der Inhalte</td><td>Semantisch, KI-Antwort</td><td>Beim ersten Aufbau, danach nur für geänderten Text</td><td>Einbettung</td></tr>
+		<tr><td>Einbettung der Suchanfrage</td><td>Semantisch, KI-Antwort</td><td>Bei jeder neuen Anfrage</td><td>Einbettung</td></tr>
+		<tr><td>Zweitmeinung des Sprachmodells</td><td>Semantisch, KI-Antwort</td><td>Nur bei unsicheren Suchen, falls eingeschaltet</td><td>Eingabe + Ausgabe</td></tr>
+		<tr><td>KI-Antwort</td><td>KI-Antwort</td><td>Bei jeder neuen Frage mit passenden Treffern</td><td>Eingabe + Ausgabe</td></tr>
+	</tbody>
+</table>
+
+<p>Der größte Posten ist in der Praxis die KI-Antwort: Das Modell bekommt bis zu fünf Textabschnitte zu lesen (Eingabe) und schreibt einige Sätze (Ausgabe). Das sind typischerweise ein- bis zweitausend Token Eingabe und rund hundert Token Ausgabe pro Antwort.</p>
+
+<h2>Wie das Plugin spart</h2>
+
+<ul>
+	<li><strong>Unveränderter Text wird nie zweimal eingebettet.</strong> Korrigierst du einen Tippfehler im dritten Absatz, wird nur dieser Abschnitt neu berechnet.</li>
+	<li><strong>Wiederholte Anfragen kommen aus dem Zwischenspeicher:</strong> die Einbettung einer Suchanfrage eine Stunde, das Ergebnis des Bedeutungsvergleichs zehn Minuten, KI-Antworten und Zweitmeinungen einen Tag.</li>
+	<li><strong>Die Zweitmeinung</strong> wird nur eingeholt, wenn die Suche sonst nichts Passendes hat.</li>
+	<li><strong>Eine Antwort wird nur geschrieben,</strong> wenn es Quellen dafür gibt.</li>
+	<li><strong>Kommentare und Seitenaufrufe</strong> lösen keine neuen Antworten aus – ein neuer Kommentar macht nicht alle gespeicherten Antworten ungültig.</li>
+</ul>
+
+<h2>Das Monatsbudget</h2>
+
+<p>Im Tab <em>KI-Anbieter</em> kannst du ein monatliches Kostenlimit setzen. Das Plugin führt Buch über die geschätzten Kosten des laufenden Monats – für das Indexieren und das Suchen zusammen. Ist das Limit erreicht,</p>
+
+<ul>
+	<li>werden keine Einbettungen mehr berechnet (das Plugin versucht es nach sechs Stunden wieder),</li>
+	<li>läuft die Suche als Keyword-Suche,</li>
+	<li>werden keine KI-Antworten geschrieben.</li>
+</ul>
+
+<p>Mit dem Monatswechsel beginnt die Zählung neu. Die Monate richten sich nach der Zeitzone deiner Website.</p>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Ohne Preise kein Limit</span>
+	<p>Das Budget rechnet mit den Preisen aus dem Tab <em>KI-Anbieter</em>. Sind dort keine hinterlegt – wie anfangs bei „Eigener Endpoint“ –, sind die geschätzten Kosten immer null, und das Limit wird nie erreicht. Trage in diesem Fall Preise ein. Zusätzlich empfiehlt es sich, direkt beim Anbieter ein Ausgabenlimit zu setzen; das ist die einzige Grenze, die verbindlich gilt.</p>
+</div>
+
+<h2>Begrenzung der Anfragen</h2>
+
+<p>Jeder Besucher kann mit einer Suche kostenpflichtige Anfragen auslösen. Damit niemand – ob aus Versehen oder mit Absicht – dein Budget in Minuten aufbraucht, begrenzt das Plugin die Zahl der Anfragen pro Minute:</p>
+
+<table>
+	<thead>
+		<tr><th>Art</th><th class="zahl">Ganze Website</th><th class="zahl">Einzelner Besucher</th><th>Was bei Überschreitung geschieht</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Sprachmodell (KI-Antwort, Zweitmeinung)</td><td class="zahl">30</td><td class="zahl">10</td><td>Keine Antwort für diese Anfrage.</td></tr>
+		<tr><td>Einbettung einer Suchanfrage</td><td class="zahl">120</td><td class="zahl">30</td><td>Die Suche läuft als Keyword-Suche.</td></tr>
+		<tr><td>Eintrag in die Statistik</td><td class="zahl">600</td><td class="zahl">30</td><td>Die Suche läuft, wird aber nicht aufgezeichnet.</td></tr>
+	</tbody>
+</table>
+
+<p>Die Grenze „Ganze Website“ schützt dein Budget. Die Grenze „Einzelner Besucher“ verhindert, dass eine einzelne Person die gemeinsame Grenze aufbraucht und damit die KI für alle anderen abschaltet.</p>
+
+<h3>Wie Besucher unterschieden werden – ohne sie zu erkennen</h3>
+
+<p>Um Besucher auseinanderzuhalten, braucht das Plugin irgendein Merkmal. Es benutzt die IP-Adresse, speichert sie aber nicht:</p>
+
+<ol>
+	<li>Die IP-Adresse wird zusammen mit der aktuellen Minute zu einer Prüfsumme verrechnet.</li>
+	<li>Davon werden nur drei Zeichen behalten. Das ergibt eine von 4.096 Gruppennummern.</li>
+	<li>Gespeichert wird nur ein Zähler pro Gruppennummer, und das höchstens zwei Minuten lang.</li>
+</ol>
+
+<p>Viele verschiedene Adressen teilen sich eine Gruppennummer, und in der nächsten Minute ist es eine andere. Aus einer Nummer lässt sich deshalb keine Adresse zurückrechnen, und nichts davon gelangt in die Statistik.</p>
+
+<h3>Besonderheit: Websites hinter einem Proxy oder CDN</h3>
+
+<div class="einfach">
+	<p>Manche Websites laufen hinter einem vorgeschalteten Dienst, etwa Cloudflare. Dann kommt jede Anfrage scheinbar von diesem Dienst – WordPress sieht bei allen Besuchern dieselbe Adresse und hält sie für eine einzige Person.</p>
+</div>
+
+<p>Die Grenze „pro Besucher“ gilt dann für alle zusammen. Kosten und Datenschutz sind davon nicht berührt; es wird höchstens früher gebremst als nötig. Ein Entwickler kann dem Plugin die echte Adresse mitteilen, siehe den Hook <code>prstsearch_visitor_address</code> in Kapitel <a href="#hooks">„Hooks“</a>. Ohne solchen Dienst spielt das keine Rolle.</p>
+
+<h2>Kosten im Blick behalten</h2>
+
+<table>
+	<thead>
+		<tr><th>Wo</th><th>Was du siehst</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Seitenleiste der Einstellungsseite</td><td>Verbrauch des laufenden Monats im Verhältnis zum Limit</td></tr>
+		<tr><td>Tab <em>Statistik</em>, Kacheln</td><td>KI-Kosten im gewählten Zeitraum und Kosten pro Suche</td></tr>
+		<tr><td>Tab <em>Statistik</em>, Diagramm</td><td>Kosten pro Tag, getrennt nach Eingabe und Ausgabe</td></tr>
+		<tr><td>Tab <em>Statistik</em>, Tabelle „Alle Suchen“</td><td>Token und Kosten jeder einzelnen Suche</td></tr>
+	</tbody>
+</table>
+
+<p>Alle Beträge im Plugin sind Schätzungen aus Token-Zahl mal Preis. Verbindlich ist die Abrechnung deines Anbieters.</p>
+
+<h2>Eine Beispielrechnung</h2>
+
+<p>Angenommen, eine Website hat 500 Seiten und 2.000 Suchen im Monat, davon die Hälfte mit KI-Antwort, und nutzt die voreingestellten Modelle von OpenAI zu den hinterlegten Preisen:</p>
+
+<table>
+	<thead>
+		<tr><th>Posten</th><th>Menge</th><th class="zahl">Kosten</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Einbettungen beim ersten Aufbau</td><td>rund 1.000 Abschnitte × 300 Token = 0,3 Mio. Token</td><td class="zahl">0,006 $</td></tr>
+		<tr><td>Einbettungen der Suchanfragen</td><td>2.000 × 10 Token</td><td class="zahl">unter 0,001 $</td></tr>
+		<tr><td>KI-Antworten, Eingabe</td><td>1.000 × 1.500 Token = 1,5 Mio. Token</td><td class="zahl">0,15 $</td></tr>
+		<tr><td>KI-Antworten, Ausgabe</td><td>1.000 × 120 Token = 0,12 Mio. Token</td><td class="zahl">0,06 $</td></tr>
+		<tr><td><strong>Summe im Monat</strong></td><td></td><td class="zahl"><strong>rund 0,22 $</strong></td></tr>
+	</tbody>
+</table>
+
+<p class="klein">Eine Überschlagsrechnung mit angenommenen Mengen und den im Plugin hinterlegten Listenpreisen. Größere Modelle kosten ein Vielfaches. Prüfe die aktuellen Preise deines Anbieters.</p>

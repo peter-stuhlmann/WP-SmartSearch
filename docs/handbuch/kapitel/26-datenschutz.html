@@ -1,0 +1,98 @@
+<!-- kapitel: Datenschutz -->
+
+<span id="datenschutz"></span>
+
+<p class="einleitung">Eine Suche verrät viel über Menschen. Smart Search ist deshalb so gebaut, dass es möglichst wenig speichert und nichts, womit sich ein einzelner Besucher erkennen ließe. Dieses Kapitel sagt genau, welche Daten wo landen.</p>
+
+<div class="kasten">
+	<span class="kasten__titel">Keine Rechtsberatung</span>
+	<p>Dieses Kapitel beschreibt, was das Plugin technisch tut. Wie du das rechtlich einordnest und was in deine Datenschutzerklärung gehört, hängt von deiner Website und deinem Anbieter ab. Im Zweifel hilft dir eine Fachperson für Datenschutz.</p>
+</div>
+
+<h2>Im Modus „Keyword“</h2>
+
+<p>Alles geschieht auf deinem Server. Es wird <strong>nichts an Dritte übertragen</strong>. Gespeichert wird, sofern die Statistik eingeschaltet ist, der Suchbegriff mit einigen Angaben dazu – siehe unten.</p>
+
+<h2>In den Modi „Semantisch“ und „KI-Antwort“</h2>
+
+<p>An den gewählten KI-Anbieter werden übertragen:</p>
+
+<table>
+	<thead>
+		<tr><th>Was</th><th>Wann</th><th>Wozu</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Der Text deiner <strong>öffentlichen</strong> Inhalte, abschnittsweise</td><td>beim Aufbau des Index und nach Änderungen</td><td>Einbettungen berechnen</td></tr>
+		<tr><td>Die <strong>Suchanfrage</strong> des Besuchers</td><td>bei jeder neuen Suche</td><td>Einbettung der Anfrage berechnen</td></tr>
+		<tr><td>Die Suchanfrage und <strong>Auszüge</strong> der besten Treffer</td><td>bei einer KI-Antwort oder Zweitmeinung</td><td>Antwort schreiben, Treffer auswählen</td></tr>
+	</tbody>
+</table>
+
+<p><strong>Nicht</strong> übertragen werden: die IP-Adresse des Besuchers, sein Benutzerkonto, Cookies oder sonst etwas über die Person. Die Anfrage an den Anbieter kommt von deinem Server, nicht aus dem Browser des Besuchers – der Anbieter sieht deinen Server, nicht den Besucher.</p>
+
+<p>Übertragen wird nur, was ohnehin öffentlich auf deiner Website steht. Entwürfe, private und passwortgeschützte Inhalte sowie alles, was nur angemeldete Nutzer sehen, kommen gar nicht erst in den Index.</p>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Suchanfragen können persönlich sein</span>
+	<p>Was Besucher in ein Suchfeld tippen, bestimmst du nicht. Jemand kann dort einen Namen oder eine Krankheit eingeben, und in den KI-Modi geht diese Eingabe an den Anbieter. Das solltest du in deiner Datenschutzerklärung benennen und bei der Wahl des Anbieters bedenken – etwa, wo er seinen Sitz hat und ob er Eingaben für eigene Zwecke verwendet. Mit einem eigenen Endpoint, der auf deinem Server läuft, verlässt nichts dein Haus.</p>
+</div>
+
+<h2>Was die Statistik speichert</h2>
+
+<table>
+	<thead>
+		<tr><th>Angabe</th><th>Gespeichert</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Suchbegriff (höchstens 191 Zeichen)</td><td>wenn „Suchbegriffe“ an ist</td></tr>
+		<tr><td>Zeitpunkt, Suchmodus, Anzahl der Treffer</td><td>wenn „Suchbegriffe“ an ist</td></tr>
+		<tr><td>Token und Kosten</td><td>wenn zusätzlich „KI-Verbrauch“ an ist</td></tr>
+		<tr><td>Antwortzeit</td><td>wenn zusätzlich „Antwortzeit“ an ist</td></tr>
+		<tr><td>Welcher Treffer geöffnet wurde</td><td>wenn zusätzlich „Klicks auf Treffer“ an ist</td></tr>
+		<tr><td><strong>IP-Adresse</strong></td><td><strong>nie</strong></td></tr>
+		<tr><td><strong>Benutzerkonto, Benutzer-ID</strong></td><td><strong>nie</strong></td></tr>
+		<tr><td><strong>Cookies, Geräte- oder Browserkennung</strong></td><td><strong>nie</strong></td></tr>
+	</tbody>
+</table>
+
+<p>Einträge werden nach der eingestellten Zahl von Tagen automatisch gelöscht, voreingestellt nach 90. Zwei Suchen derselben Person lassen sich in der Statistik nicht einander zuordnen.</p>
+
+<h3>Wie ein Klick zur richtigen Suche findet</h3>
+
+<p>Damit ein Klick der Suche zugeordnet werden kann, zu der er gehört, bekommt jede Trefferliste ein kleines, signiertes Kennzeichen mit. Es verweist auf den Eintrag dieser einen Suche und auf nichts sonst. Es wird nicht im Browser gespeichert, enthält nichts über die Person und verfällt mit der Seite.</p>
+
+<h2>Cookies und Speicher im Browser</h2>
+
+<p>Das Plugin setzt <strong>keine Cookies</strong> und legt nichts dauerhaft im Browser ab. Der Such-Block merkt sich während eines Seitenbesuchs bis zu 50 Vorschlagslisten im Arbeitsspeicher, damit beim Zurücklöschen nicht erneut gefragt wird; mit dem Schließen der Seite ist das weg.</p>
+
+<h2>Die Begrenzung der Anfragen</h2>
+
+<p>Für die Begrenzung pro Besucher verrechnet das Plugin die IP-Adresse mit der aktuellen Minute zu einer von 4.096 Gruppennummern und speichert dazu einen Zähler für höchstens zwei Minuten. Die Adresse selbst wird nicht gespeichert und lässt sich aus der Nummer nicht zurückgewinnen. Einzelheiten stehen im Kapitel <a href="#kosten">„Kosten, Budget und Begrenzungen“</a>.</p>
+
+<h2>Der API-Schlüssel</h2>
+
+<p>Der Schlüssel deines KI-Anbieters liegt verschlüsselt in der Datenbank. Er erscheint in keinem Export, wird nie vollständig angezeigt und wird beim Löschen des Plugins immer entfernt. Wer ihn gar nicht in der Datenbank haben möchte, legt ihn in der <code>wp-config.php</code> fest.</p>
+
+<h2>Textbaustein für die Datenschutzerklärung</h2>
+
+<p>WordPress hat unter <em>Einstellungen → Datenschutz</em> einen Leitfaden für die Datenschutzerklärung. Smart Search trägt dort einen Vorschlag ein. Er lautet:</p>
+
+<div class="einstellung">
+	<p>Wenn du die Suche auf dieser Website nutzt, speichern wir den Suchbegriff, den Zeitpunkt, die Anzahl der Treffer und gegebenenfalls, welcher Treffer geöffnet wurde. Damit verbessern wir die Suche und unsere Inhalte. Wir speichern weder deine IP-Adresse noch andere Daten, mit denen du identifiziert werden kannst.</p>
+	<p>Sind die semantische Suche oder KI-Antworten aktiviert, werden dein Suchbegriff und Auszüge unserer öffentlichen Inhalte an den von uns genutzten KI-Anbieter übertragen, um passende Inhalte zu finden und eine Antwort zu schreiben.</p>
+</div>
+
+<p>Ergänze den Namen deines Anbieters und passe den Text an deine Einstellungen an.</p>
+
+<h2>Was beim Entfernen des Plugins bleibt</h2>
+
+<table>
+	<thead>
+		<tr><th>Aktion</th><th>Wirkung</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Deaktivieren</td><td>Nichts wird gelöscht. Die Hintergrundläufe hören auf.</td></tr>
+		<tr><td>Löschen, Schalter „Daten entfernen“ aus</td><td>API-Schlüssel, Zwischenspeicher und geplante Läufe werden entfernt. Index, Statistik und Einstellungen bleiben in der Datenbank.</td></tr>
+		<tr><td>Löschen, Schalter „Daten entfernen“ an</td><td>Zusätzlich werden beide Tabellen, alle Einstellungen, die Kostenbuchführung und die empfohlenen Treffer gelöscht.</td></tr>
+	</tbody>
+</table>

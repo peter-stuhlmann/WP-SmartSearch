@@ -1,0 +1,143 @@
+<!-- kapitel: Glossar -->
+
+<p class="einleitung">Die Begriffe dieses Handbuchs in alphabetischer Reihenfolge, jeweils in einem oder zwei Sätzen.</p>
+
+<dl class="glossar">
+	<dt>Abdeckung</dt>
+	<dd>Der Anteil der Suchwörter, den eine Seite enthält, als Zahl zwischen 0 und 1. Grundlage der Relevanzstufe in der Keyword-Suche.</dd>
+
+	<dt>API</dt>
+	<dd>Eine Schnittstelle, über die Programme miteinander sprechen. Das Plugin benutzt die API des KI-Anbieters und bietet selbst eine an.</dd>
+
+	<dt>API-Schlüssel</dt>
+	<dd>Eine Zeichenfolge, mit der du dich bei einem KI-Anbieter ausweist. Wie ein Passwort zu behandeln.</dd>
+
+	<dt>Block</dt>
+	<dd>Ein Baustein im Editor von WordPress. Smart Search bringt den Block „Smart Search“ mit.</dd>
+
+	<dt>Cache</dt>
+	<dd>Ein Zwischenspeicher für bereits berechnete Ergebnisse, damit sie nicht noch einmal berechnet oder bezahlt werden müssen.</dd>
+
+	<dt>CDN</dt>
+	<dd>Ein vorgeschalteter Dienst, der eine Website schneller ausliefert und schützt, zum Beispiel Cloudflare.</dd>
+
+	<dt>Child-Theme</dt>
+	<dd>Ein Theme, das ein anderes erweitert. Eigene Änderungen dort überstehen Updates des Haupt-Themes.</dd>
+
+	<dt>Cron, WP-Cron</dt>
+	<dd>Der Mechanismus, mit dem WordPress Arbeiten im Hintergrund erledigt. Er wird durch Seitenaufrufe angestoßen.</dd>
+
+	<dt>Einbettung (Embedding)</dt>
+	<dd>Eine Zahlenreihe, die die Bedeutung eines Textes beschreibt. Ähnliche Bedeutungen ergeben ähnliche Zahlenreihen.</dd>
+
+	<dt>Empfohlener Treffer</dt>
+	<dd>Eine Seite, die du für bestimmte Suchbegriffe von Hand an die erste Stelle setzt.</dd>
+
+	<dt>Endpoint</dt>
+	<dd>Die Adresse, unter der ein Dienst erreichbar ist.</dd>
+
+	<dt>Filter</dt>
+	<dd>Eine Art Hook: Er reicht einen Wert herum, den eingehängte Funktionen verändern dürfen.</dd>
+
+	<dt>Frontend</dt>
+	<dd>Der Teil der Website, den Besucher sehen – im Gegensatz zum Admin-Bereich.</dd>
+
+	<dt>Hintergrundlauf</dt>
+	<dd>Eine Arbeit, die das Plugin portionsweise erledigt, ohne dass jemand darauf wartet.</dd>
+
+	<dt>Hook</dt>
+	<dd>Eine Stelle im Code, an der andere mitreden können, ohne das Plugin zu ändern.</dd>
+
+	<dt>Index</dt>
+	<dd>Das Verzeichnis, in dem die Suche nachschlägt. Enthält den Text aller durchsuchbaren Inhalte, in Abschnitte zerlegt.</dd>
+
+	<dt>Inhaltstyp (Post Type)</dt>
+	<dd>Eine Sorte von Inhalten in WordPress: Beitrag, Seite, Produkt und so weiter.</dd>
+
+	<dt>JSON</dt>
+	<dd>Ein Textformat für Daten, das Programme leicht lesen können.</dd>
+
+	<dt>Keyword-Suche</dt>
+	<dd>Die Suche nach den eingegebenen Wörtern, mit Wortformen, Zusammensetzungen und Tippfehlerkorrektur.</dd>
+
+	<dt>KI-Antwort</dt>
+	<dd>Ein kurzer Text über den Treffern, den ein Sprachmodell aus den besten Fundstellen schreibt.</dd>
+
+	<dt>KI-Anbieter</dt>
+	<dd>Der Dienst, bei dem die KI-Modelle laufen, zum Beispiel OpenAI, Google Gemini oder Mistral.</dd>
+
+	<dt>Modell</dt>
+	<dd>Ein bestimmtes KI-Programm eines Anbieters. Das Plugin benutzt eines für Einbettungen und eines zum Schreiben.</dd>
+
+	<dt>Nonce</dt>
+	<dd>Ein Einmal-Kennzeichen von WordPress, das belegt, dass eine Anfrage wirklich von der eigenen Oberfläche kommt.</dd>
+
+	<dt>Objekt-Cache</dt>
+	<dd>Ein schneller Zwischenspeicher auf dem Server, etwa Redis oder Memcached.</dd>
+
+	<dt>Page-Builder</dt>
+	<dd>Ein Plugin, mit dem Seiten per Baukasten gestaltet werden, zum Beispiel Elementor oder Divi.</dd>
+
+	<dt>Proxy</dt>
+	<dd>Ein Server, der Anfragen stellvertretend weiterreicht. Dahinter sieht WordPress nur die Adresse des Proxys.</dd>
+
+	<dt>Relevanz</dt>
+	<dd>Wie gut ein Treffer zur Suche passt. Drei Stufen: Sehr passend, Passend, Schwach.</dd>
+
+	<dt>REST-API</dt>
+	<dd>Eine Adresse, die Daten statt Seiten ausliefert. Unter <code>/wp-json/prstsearch/v1</code> steht die Suche anderen Programmen offen.</dd>
+
+	<dt>Semantische Suche</dt>
+	<dd>Die Suche nach Bedeutung statt nach Wörtern, mit Hilfe von Einbettungen.</dd>
+
+	<dt>Server-Sent Events</dt>
+	<dd>Eine Technik, mit der ein Server Daten Stück für Stück an den Browser schickt. Damit läuft die KI-Antwort ein.</dd>
+
+	<dt>Shortcode</dt>
+	<dd>Ein Kürzel in eckigen Klammern, das WordPress durch eine Ausgabe ersetzt, zum Beispiel <code>[prstsearch]</code>.</dd>
+
+	<dt>Signatur</dt>
+	<dd>Eine stark verkürzte Fassung einer Einbettung aus 512 Ja/Nein-Werten, für die schnelle Vorauswahl auf großen Websites.</dd>
+
+	<dt>Sprachmodell</dt>
+	<dd>Ein KI-Modell, das Text liest und schreibt.</dd>
+
+	<dt>Stoppwort, Füllwort</dt>
+	<dd>Ein sehr häufiges Wort ohne eigene Suchbedeutung, etwa „der“, „und“, „für“. Wird bei der Suche übergangen.</dd>
+
+	<dt>Streaming</dt>
+	<dd>Das Anzeigen der KI-Antwort, während sie geschrieben wird.</dd>
+
+	<dt>Template</dt>
+	<dd>Eine Datei, die festlegt, wie etwas ausgegeben wird. Die Templates des Plugins lassen sich im Theme überschreiben.</dd>
+
+	<dt>Textabschnitt</dt>
+	<dd>Ein Stück einer Seite von höchstens 1.200 Zeichen. Die Einheit, in der der Index speichert und die semantische Suche vergleicht.</dd>
+
+	<dt>Token</dt>
+	<dd>Die Maßeinheit, in der KI-Anbieter abrechnen; grob vier Zeichen. Auch: das signierte Kennzeichen einer Suche in der Statistik.</dd>
+
+	<dt>Transient</dt>
+	<dd>Ein Wert, den WordPress für eine begrenzte Zeit speichert. Das Plugin legt darin seine Zwischenspeicher ab.</dd>
+
+	<dt>Vokabular</dt>
+	<dd>Die Liste der Wörter deiner Website mit ihrer Häufigkeit. Grundlage der Tippfehlerkorrektur.</dd>
+
+	<dt>Volltextindex</dt>
+	<dd>Eine Einrichtung der Datenbank, mit der sie Wörter in Texten sehr schnell findet.</dd>
+
+	<dt>Wortstamm</dt>
+	<dd>Ein Wort ohne seine Endung. Alle Formen eines Wortes haben denselben Stamm.</dd>
+
+	<dt>Zusammensetzung (Kompositum)</dt>
+	<dd>Ein Wort aus mehreren Wörtern, wie „Versandkosten“. Das Plugin findet es über seinen Anfang und über sein Ende.</dd>
+
+	<dt>Zweitmeinung</dt>
+	<dd>Die Rückfrage beim Sprachmodell, welche der nächstliegenden Seiten zu einer Suche passen, wenn die Suche selbst unsicher ist.</dd>
+</dl>
+
+<h2>Über dieses Handbuch</h2>
+
+<p>Dieses Handbuch beschreibt Smart Search in der Version 1.0.0. Es wird aus den Dateien im Ordner <code>docs/handbuch/</code> des Plugins erzeugt und lässt sich mit <code>node docs/handbuch/build.js</code> neu bauen. Die Bildschirmfotos stammen aus einer Testinstallation mit erzeugten Reiseangeboten.</p>
+
+<p>Wo das Handbuch und das Verhalten des Plugins voneinander abweichen, gilt der Code.</p>

@@ -1,0 +1,86 @@
+<!-- kapitel: Tab „Werkzeuge“ – übertragen, reparieren, Rechte vergeben -->
+
+<span id="tab-werkzeuge"></span>
+
+<p class="einleitung">Im Alltag brauchst du diesen Tab selten. Er hilft, wenn du eine bewährte Konfiguration auf eine andere Website mitnehmen willst, wenn nach einem Umzug etwas nicht stimmt oder wenn Kolleginnen und Kollegen Zugriff bekommen sollen.</p>
+
+<figure>
+	<div class="bild" style="height: 112mm;"><img src="bilder/einstellungen-tools.png" alt="Tab Werkzeuge" style="margin-top: -7%;"></div>
+	<figcaption><strong>Der Tab „Werkzeuge“.</strong></figcaption>
+</figure>
+
+<h2>Einstellungen übertragen</h2>
+
+<h3>Exportieren</h3>
+
+<p>Lädt alle Einstellungen und die empfohlenen Treffer als Datei herunter. Der <strong>API-Schlüssel ist nicht enthalten</strong> – die Datei kannst du also weitergeben, ohne Zugangsdaten preiszugeben.</p>
+
+<h3>Importieren</h3>
+
+<p>Übernimmt Einstellungen und empfohlene Treffer aus einer Exportdatei. Vorhandene Werte werden überschrieben; das Plugin fragt vorher nach.</p>
+
+<ul>
+	<li>Nur Administratoren dürfen importieren.</li>
+	<li>Die Datei darf höchstens 100 KB groß sein.</li>
+	<li>Jeder Wert wird beim Import geprüft, als hättest du ihn von Hand eingetragen. Unbekannte oder ungültige Angaben werden verworfen.</li>
+	<li>Empfohlene Treffer werden anhand der Seitenadresse und des Titels zugeordnet. Gibt es eine Seite auf der neuen Website nicht, wird ihre Empfehlung ausgelassen. Das Plugin meldet das.</li>
+</ul>
+
+<h2>Probleme beim Indexieren</h2>
+
+<p>Konnte das Plugin einen Inhalt nicht lesen, steht er hier mit dem Grund. Über <em>Öffnen</em> gelangst du zum Inhalt. Steht hier nichts, ist alles in Ordnung.</p>
+
+<p>Häufige Ursachen sind ein Fehler in einem Shortcode oder Block eines anderen Plugins, der beim Erzeugen der Seite auftritt, oder ein Inhalt, der gar keinen Text ergibt.</p>
+
+<h2>Index</h2>
+
+<p>Normalerweise pflegt sich der Index von selbst. Diese beiden Werkzeuge sind für Sonderfälle.</p>
+
+<h3>Index neu aufbauen</h3>
+
+<p>Liest alle Inhalte neu ein. Ein Balken zeigt den Fortschritt; du kannst die Seite währenddessen offen lassen.</p>
+
+<p>Sinnvoll ist das</p>
+
+<ul>
+	<li>nach einem Umzug der Website oder dem Einspielen einer Datenbanksicherung,</li>
+	<li>nach einem Wechsel des Themes oder Page-Builders, wenn sich dadurch der sichtbare Text ändert,</li>
+	<li>wenn Treffer offensichtlich veraltet sind.</li>
+</ul>
+
+<div class="kasten kasten--tipp">
+	<span class="kasten__titel">Kostet nicht alles noch einmal</span>
+	<p>Hat sich der Text eines Abschnitts nicht geändert, behält er seine Einbettung. Ein Neuaufbau schickt also nur das an den KI-Anbieter, was wirklich neu ist.</p>
+</div>
+
+<h3>Index leeren</h3>
+
+<p>Entfernt alles aus dem Index, auch die Einbettungen. Bis zum Neuaufbau sucht WordPress wieder auf die alte Art – deine Suche fällt also nicht aus, sie ist nur vorübergehend schlechter.</p>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Danach wird alles neu berechnet</span>
+	<p>Nach dem Leeren müssen in den KI-Modi sämtliche Einbettungen neu berechnet werden. Das kostet erneut Token. Für fast alle Fälle reicht <em>Index neu aufbauen</em>.</p>
+</div>
+
+<h2>Zugriff und Daten</h2>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Statistik ansehen</span><span class="einstellung__standard">Standard: Administrator, Redakteur</span></div>
+	<p>Diese Rollen sehen den Tab „Statistik“ – und sonst nichts von den Einstellungen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>roles_stats</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Einstellungen ändern</span><span class="einstellung__standard">Standard: Administrator</span></div>
+	<p>Diese Rollen dürfen die Einstellungen bearbeiten. Wer das darf, sieht auch die Statistik.</p>
+	<p>Anbieter, Endpunkt-Adresse, API-Schlüssel, der Import und diese Rollenliste bleiben trotzdem Administratoren vorbehalten. Wer die Adresse des KI-Dienstes ändern könnte, könnte deinen Schlüssel an einen fremden Server schicken lassen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>roles_manage</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Daten beim Löschen des Plugins entfernen</span><span class="einstellung__standard">Standard: aus</span></div>
+	<p>Ist der Schalter an, werden Index, Statistik und Einstellungen gelöscht, wenn du das Plugin <em>löschst</em>. Beim bloßen Deaktivieren bleibt immer alles erhalten.</p>
+	<p>Ist er aus, bleiben die Daten auch nach dem Löschen in der Datenbank, damit bei einer erneuten Installation alles wieder da ist.</p>
+	<p>Unabhängig vom Schalter löscht das Plugin beim Entfernen immer den gespeicherten API-Schlüssel, seine Zwischenspeicher und seine geplanten Hintergrundläufe.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>delete_data_on_uninstall</code></div>
+</div>

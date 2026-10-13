@@ -1,0 +1,75 @@
+<!-- kapitel: Im Editor – der Zustand einzelner Inhalte -->
+
+<span id="im-editor"></span>
+
+<p class="einleitung">Ob ein bestimmter Beitrag oder eine bestimmte Seite von der Suche gefunden wird, siehst du direkt dort, wo du den Inhalt bearbeitest. Dort kannst du ihn auch von der Suche ausnehmen.</p>
+
+<h2>Die vier Zustände</h2>
+
+<table>
+	<thead>
+		<tr><th>Zustand</th><th>Bedeutung</th><th>Was zu tun ist</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><span class="stufe stufe--hoch">Indexiert</span></td><td>Die Suche findet den aktuellen Stand dieses Inhalts.</td><td>Nichts.</td></tr>
+		<tr><td><span class="stufe stufe--gelb">Veraltet</span></td><td>Der Inhalt wurde geändert, und der Index wird gerade im Hintergrund aktualisiert. Über seine Wörter wird er bereits gefunden; die Suche nach Bedeutung folgt.</td><td>Abwarten – oder <em>Jetzt aktualisieren</em> anklicken.</td></tr>
+		<tr><td><span class="stufe stufe--rot">Fehler</span></td><td>Der Inhalt konnte nicht in den Index aufgenommen werden.</td><td>Im Tab <em>Werkzeuge</em> den Grund nachlesen.</td></tr>
+		<tr><td><span class="stufe stufe--schwach">Ausgeschlossen</span></td><td>Der Inhalt erscheint nicht in den Suchergebnissen.</td><td>Nichts, wenn es so gewollt ist. Der Grund steht dabei.</td></tr>
+	</tbody>
+</table>
+
+<h3>Warum ein Inhalt ausgeschlossen sein kann</h3>
+
+<ul>
+	<li>„Dieser Inhaltstyp wird nicht durchsucht.“ – im Tab <em>Inhalte</em> nicht angehakt.</li>
+	<li>„Nur veröffentlichte Inhalte sind durchsuchbar.“ – ein Entwurf, ein geplanter oder privater Inhalt.</li>
+	<li>„Passwortgeschützte Inhalte sind nicht durchsuchbar.“</li>
+	<li>„Von Hand aus der Suche ausgeschlossen.“ – jemand hat den Schalter im Editor umgelegt.</li>
+	<li>„Durch eine eigene Regel ausgeschlossen.“ – ein Entwickler hat per Code eine Regel hinterlegt.</li>
+</ul>
+
+<h2>Wo du den Zustand siehst</h2>
+
+<table>
+	<thead>
+		<tr><th>Ort</th><th>Anzeige</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><strong>Block-Editor</strong></td><td>Ein farbiger Punkt in der Kopfzeile neben „Veröffentlichen“ und ein Bereich „Suche“ in der Seitenleiste.</td></tr>
+		<tr><td><strong>Klassischer Editor</strong></td><td>Eine Zeile „Suche: …“ im Kasten „Veröffentlichen“.</td></tr>
+		<tr><td><strong>Listen der Beiträge und Seiten</strong></td><td>Eine Spalte „Suche“ mit dem farbigen Punkt.</td></tr>
+		<tr><td><strong>Auf der Website</strong></td><td>Für angemeldete Bearbeiter steht in der schwarzen Admin-Leiste oben „Suche: Indexiert“, wenn sie einen einzelnen Inhalt ansehen.</td></tr>
+	</tbody>
+</table>
+
+<h2>Einen Inhalt von der Suche ausschließen</h2>
+
+<ol class="schritte">
+	<li>Öffne den Inhalt im Editor.</li>
+	<li>Öffne in der Seitenleiste den Bereich <em>Suche</em>.</li>
+	<li>Lege den Schalter <em>Von der Suche ausschließen</em> um.</li>
+</ol>
+
+<p>Das gilt sofort – du musst den Inhalt dafür nicht speichern. Der Inhalt ist danach weder über die Trefferliste noch über Vorschläge noch als Quelle einer KI-Antwort zu finden. Er bleibt aber ganz normal auf der Website erreichbar.</p>
+
+<p>Sinnvoll ist das für Seiten wie „Danke für deine Bestellung“, das Impressum, Landingpages für Werbekampagnen oder interne Übersichten, die zwar öffentlich sind, aber in keiner Trefferliste stehen sollen.</p>
+
+<p>Zurückholen kannst du den Inhalt an derselben Stelle – oder im Tab <em>Inhalte</em> unter „Ausgeschlossene Inhalte“.</p>
+
+<h2>Jetzt aktualisieren</h2>
+
+<p>Der Knopf <em>Jetzt aktualisieren</em> im Bereich „Suche“ liest den Inhalt sofort neu ein und berechnet in den KI-Modi auch gleich seine Einbettungen. Du brauchst ihn selten: Beim Speichern geschieht das Einlesen von selbst, und die Einbettungen folgen kurz darauf im Hintergrund. Nützlich ist er, wenn du nach einer Änderung sofort testen willst.</p>
+
+<h2>Was beim Speichern geschieht</h2>
+
+<div class="ablauf">
+	<div class="ablauf__schritt"><strong>Du speicherst</strong>einen veröffentlichten Inhalt</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Sofort</strong>Der Text wird neu eingelesen. Die Keyword-Suche kennt den neuen Stand.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Kurz darauf</strong>Nur für geänderte Abschnitte werden neue Einbettungen berechnet.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Fertig</strong>Zustand „Indexiert“</div>
+</div>
+
+<p>Dasselbe geschieht, wenn ein Kommentar freigegeben, geändert oder gelöscht wird – vorausgesetzt, Kommentare werden durchsucht.</p>

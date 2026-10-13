@@ -1,0 +1,151 @@
+<!-- kapitel: Tab „Darstellung“ – wie die Suche aussieht -->
+
+<span id="tab-darstellung"></span>
+
+<p class="einleitung">Die Technik der Suche und ihr Aussehen sind im Plugin getrennt. Du kannst die bessere Suche bekommen, ohne dass sich auf deiner Website sichtbar etwas ändert – oder das Suchfeld und die Trefferliste des Plugins verwenden.</p>
+
+<figure>
+	<div class="bild" style="height: 105mm;"><img src="bilder/einstellungen-display.png" alt="Tab Darstellung" style="margin-top: -7%;"></div>
+	<figcaption><strong>Der Tab „Darstellung“.</strong> Drei Arten der Einbindung, darunter die Anleitung zur gewählten.</figcaption>
+</figure>
+
+<h2>Die drei Arten der Einbindung</h2>
+
+<div class="spalten">
+	<div class="karte">
+		<h3>Nur Technik ersetzen</h3>
+		<p>Suchfeld und Ergebnisseite kommen weiter aus deinem Theme. Das Plugin liefert nur die Treffer.</p>
+		<span class="karte__preis">Standard · nichts zu tun</span>
+	</div>
+	<div class="karte">
+		<h3>Eigener Such-Block</h3>
+		<p>Ein Block für Suchfeld und Treffer, mit Vorschlägen beim Tippen und Treffern ohne Neuladen der Seite.</p>
+		<span class="karte__preis">Im Editor einfügen</span>
+	</div>
+	<div class="karte">
+		<h3>Eigene Templates</h3>
+		<p>Für Entwickler: die Ausgabe im Theme überschreiben oder nur die Schnittstelle nutzen.</p>
+		<span class="karte__preis">Volle Kontrolle im Code</span>
+	</div>
+</div>
+
+<p>Die Wahl ist vor allem eine Lesehilfe: Unter den Karten zeigt das Plugin die passende Anleitung. Technisch schließen sich die Wege nicht aus. Du kannst die Suche deines Themes ersetzen lassen <em>und</em> auf einer Seite zusätzlich den Block einsetzen.</p>
+
+<div class="einstellung__schluessel">Schlüssel: <code>integration</code> · Werte: <code>replace</code>, <code>block</code>, <code>templates</code></div>
+
+<h2>Weg 1: Nur Technik ersetzen</h2>
+
+<p>Dein Theme bestimmt das Aussehen. Tippt jemand etwas in das Suchfeld des Themes, fragt WordPress nach Treffern – und Smart Search antwortet anstelle der eingebauten Suche. Das Theme merkt davon nichts und zeigt die Treffer mit seiner gewohnten Ergebnisseite an.</p>
+
+<p>In diesem Modus bleiben zwei Dinge dem Theme überlassen: Es gibt keine Vorschläge beim Tippen und keine markierten Suchwörter im Auszug, weil beides vom Theme kommen müsste.</p>
+
+<p>Die KI-Antwort kann das Plugin trotzdem einblenden, siehe „KI-Antwort über den Treffern des Themes anzeigen“ weiter unten.</p>
+
+<h2>Weg 2: Der Such-Block</h2>
+
+<ol class="schritte">
+	<li>Öffne die Seite, auf der die Suche erscheinen soll, im Editor.</li>
+	<li>Füge einen Block hinzu und suche nach „Smart Search“.</li>
+	<li>Stelle rechts in der Seitenleiste ein, was du möchtest (siehe Tabelle).</li>
+	<li>Speichere die Seite.</li>
+</ol>
+
+<table>
+	<thead>
+		<tr><th>Einstellung des Blocks</th><th>Wirkung</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Beschriftung</td><td>Der Text über dem Suchfeld. Leer bedeutet „Suche“.</td></tr>
+		<tr><td>Platzhalter</td><td>Der graue Text im leeren Feld, zum Beispiel „Wonach suchst du?“</td></tr>
+		<tr><td>Button-Text</td><td>Leer bedeutet „Suche“.</td></tr>
+		<tr><td>Treffer auf dieser Seite anzeigen</td><td>An: Treffer erscheinen direkt unter dem Feld, ohne die Seite neu zu laden. Aus: Nur das Feld; die Treffer erscheinen auf der Suchseite deines Themes.</td></tr>
+		<tr><td>KI-Antwort anzeigen</td><td>Ob über den Treffern die KI-Antwort erscheint (nur im Modus „KI-Antwort“).</td></tr>
+	</tbody>
+</table>
+
+<p>Der Block übernimmt Schrift und Farben aus deinem Theme und unterstützt die üblichen Block-Einstellungen für Breite, Abstände und Schriftgröße.</p>
+
+<figure>
+	<div class="bild" style="height: 96mm;"><img src="bilder/frontend-treffer.png" alt="Trefferliste des Such-Blocks" style="margin-top: -4%;"></div>
+	<figcaption><strong>Der Such-Block mit Treffern.</strong> Jeder Treffer zeigt Titel, Inhaltstyp, Relevanz und einen Auszug mit den markierten Suchwörtern.</figcaption>
+</figure>
+
+<h3>Dasselbe als Shortcode</h3>
+
+<p>Wo kein Block-Editor zur Verfügung steht – im klassischen Editor, in Widgets, in manchen Page-Buildern –, leisten Shortcodes dasselbe:</p>
+
+<table>
+	<thead>
+		<tr><th>Shortcode</th><th>Zeigt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>[prstsearch]</code></td><td>Suchfeld mit Treffern und KI-Antwort auf derselben Seite</td></tr>
+		<tr><td><code>[prstsearch_form]</code></td><td>Nur das Suchfeld; die Treffer erscheinen auf der Suchseite</td></tr>
+		<tr><td><code>[prstsearch_results]</code></td><td>Die Treffer der aktuellen Suche, für eine selbst gebaute Suchseite</td></tr>
+		<tr><td><code>[prstsearch_answer]</code></td><td>Die KI-Antwort zur aktuellen Suche</td></tr>
+	</tbody>
+</table>
+
+<p>Die ersten beiden kennen vier Angaben:</p>
+
+<pre><code>[prstsearch label=<span class="s">"Reise finden"</span> placeholder=<span class="s">"Land, Ort oder Reiseart"</span> button=<span class="s">"Los"</span> answer=<span class="s">"no"</span>]</code></pre>
+
+<p><code>answer="no"</code> blendet die KI-Antwort aus. Alle Angaben sind freiwillig.</p>
+
+<h2>Weg 3: Eigene Templates</h2>
+
+<p>Für Entwickler. Das Plugin bringt sechs kleine Template-Dateien mit, die du im Theme überschreiben kannst, und vier PHP-Funktionen für eigene Theme-Dateien. Beides beschreibt Kapitel <a href="#templates">„Template-Funktionen und eigene Templates“</a> ausführlich.</p>
+
+<h2>Was angezeigt wird</h2>
+
+<p>Diese Schalter gelten für die KI-Antwort, den Block, die Shortcodes und die Templates des Plugins.</p>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Filter nach Inhaltstyp anbieten</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Über den Treffern erscheint eine Reihe von Knöpfen, mit denen Besucher zum Beispiel nur Seiten oder nur Beiträge wählen. Hinter jedem steht die Zahl der Treffer. Die Reihe erscheint nur, wenn die Treffer aus mehr als einem Inhaltstyp stammen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>type_filter</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Treffer an der gefundenen Textstelle öffnen</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Der Link eines Treffers führt nicht nur zur Seite, sondern zur passenden Stelle: Der Browser scrollt dorthin und markiert sie. Technisch hängt das Plugin dafür einen Textverweis an die Adresse an (<code>#:~:text=…</code>).</p>
+	<p>Die gängigen Browser unterstützen das. Wo nicht, öffnet sich die Seite wie gewohnt oben – es geht nichts kaputt.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>jump_to_passage</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">KI-Antwort schon beim Schreiben anzeigen</span><span class="einstellung__standard">Standard: aus</span></div>
+	<p>Der Text der Antwort erscheint Wort für Wort, während das Sprachmodell ihn schreibt, statt am Ende auf einmal. Schneller wird die Antwort dadurch nicht, aber Besucher sehen früher, dass etwas passiert.</p>
+	<p>Manche Server und Zwischenspeicher halten Text zurück, bis er vollständig ist. Dann erscheint die Antwort wie ohne diesen Schalter in einem Stück. Schaden entsteht dadurch nicht.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>stream_answers</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">KI-Antwort über den Treffern des Themes anzeigen</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Wirkt nur bei „Nur Technik ersetzen“ und dem Suchmodus „KI-Antwort“. Das Plugin setzt die Antwort dann von sich aus über die Trefferliste deines Themes. Sie übernimmt Schrift und Farben des Themes.</p>
+	<p>Schalte es aus, wenn du die Antwort selbst platzieren möchtest – mit <code>[prstsearch_answer]</code> oder der Funktion <code>prstsearch_answer()</code>.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>auto_answer</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Quellen unter der KI-Antwort auflisten</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Unter der Antwort steht eine nummerierte Liste der Seiten, auf denen sie beruht. Im Text verweisen Ziffern in eckigen Klammern darauf: [1], [2]. Empfehlenswert, damit Besucher wichtige Angaben nachprüfen können.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>show_sources</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Relevanz jedes Treffers anzeigen</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Neben jedem Treffer des Blocks steht ein Hinweis wie „Sehr passend“ oder „Passend“. Empfohlene Treffer sind immer als „Empfohlen“ markiert, auch wenn dieser Schalter aus ist.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>show_relevance</code></div>
+</div>
+
+<h2>Barrierefreiheit</h2>
+
+<p>Suchfeld, Vorschläge, Trefferliste und KI-Antwort des Plugins sind für die Bedienung mit Tastatur und Screenreader gebaut:</p>
+
+<ul>
+	<li>Vorschläge lassen sich mit den Pfeiltasten wählen und mit <kbd>Esc</kbd> schließen.</li>
+	<li>Die Zahl der Treffer und der Stand der Suche werden Screenreadern angesagt.</li>
+	<li>Alles, was man bedienen kann, hat einen sichtbaren Fokusrahmen.</li>
+	<li>Ohne JavaScript funktioniert das Suchfeld als ganz normales Formular; „Weitere Treffer“ ist ein gewöhnlicher Link.</li>
+</ul>

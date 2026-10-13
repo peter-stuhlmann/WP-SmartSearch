@@ -1,0 +1,85 @@
+<!-- kapitel: So sucht man – Tipps für Besucher -->
+
+<p class="einleitung">Die meisten Besucher tippen ein, zwei Wörter und drücken die Eingabetaste – und genau dafür ist die Suche gebaut. Es gibt aber ein paar Schreibweisen, mit denen man gezielter sucht. Dieses Kapitel kannst du als Vorlage für eine Hilfeseite auf deiner Website verwenden.</p>
+
+<h2>Einfach lostippen</h2>
+
+<table>
+	<thead>
+		<tr><th>Das musst du nicht beachten</th><th>Beispiel</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><strong>Groß- und Kleinschreibung</strong></td><td>„italien“ findet „Italien“.</td></tr>
+		<tr><td><strong>Einzahl oder Mehrzahl, Fall, Endung</strong></td><td>„Rundreisen“ findet „Rundreise“, „Strände“ findet „Strand“.</td></tr>
+		<tr><td><strong>Umlaute</strong></td><td>„Osterreich“ findet „Österreich“, „Strasse“ findet „Straße“.</td></tr>
+		<tr><td><strong>Kleine Tippfehler</strong></td><td>„Itallien“ findet „Italien“, „Portugall“ findet „Portugal“.</td></tr>
+		<tr><td><strong>Die Reihenfolge der Wörter</strong></td><td>„Italien Rundreise“ und „Rundreise Italien“ liefern dasselbe.</td></tr>
+		<tr><td><strong>Füllwörter</strong></td><td>„der“, „und“, „für“ werden übergangen. „Reise für Familien“ sucht nach „Reise“ und „Familien“.</td></tr>
+	</tbody>
+</table>
+
+<h2>Mehrere Wörter</h2>
+
+<p>Gibt jemand mehrere Wörter ein, stehen die Seiten oben, die <em>alle</em> enthalten. Danach kommen Seiten, die nur einen Teil enthalten – es sei denn, „Schwache Treffer ausblenden“ ist eingeschaltet.</p>
+
+<p>Unter den Seiten mit allen Wörtern stehen die oben, auf denen die Wörter nah beieinander stehen. Die Seite mit dem Satz „unsere Rundreise durch Italien“ schlägt die Seite, auf der „Rundreise“ im ersten und „Italien“ im letzten Absatz steht.</p>
+
+<h2>Genau diese Wortfolge: Anführungszeichen</h2>
+
+<pre><code><span class="s">"Halong-Bucht"</span>
+<span class="s">"Frühstück inklusive"</span></code></pre>
+
+<p>Was in Anführungszeichen steht, muss Wort für Wort so auf der Seite vorkommen. Das Plugin erkennt alle üblichen Arten von Anführungszeichen, auch die deutschen „…“ und die französischen «…».</p>
+
+<h2>Dieses Wort nicht: das Minuszeichen</h2>
+
+<pre><code>Vietnam -Rundreise
+Hotel -<span class="s">"ohne Frühstück"</span></code></pre>
+
+<p>Ein Minus direkt vor einem Wort schließt Seiten aus, die dieses Wort enthalten. Vor Anführungszeichen schließt es die ganze Wortfolge aus. Ein Bindestrich mitten im Wort bleibt ein Bindestrich: „E-Mail“ ist ein Wort.</p>
+
+<p>Beides – die Forderung und der Ausschluss – gilt für die ganze Seite, nicht nur für einen Absatz.</p>
+
+<h2>Teile von Wörtern</h2>
+
+<table>
+	<thead>
+		<tr><th>Gesucht</th><th>Gefunden wird auch</th><th>Warum</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>„Versand“</td><td>„Versandkosten“</td><td>Das Suchwort ist der Anfang eines längeren Wortes.</td></tr>
+		<tr><td>„Kosten“</td><td>„Versandkosten“</td><td>Das Suchwort ist das Ende eines längeren Wortes.</td></tr>
+		<tr><td>„Wagen“</td><td>„Mietwagen“</td><td>Ebenso, auch bei kurzen Wörtern.</td></tr>
+		<tr><td>„hof“</td><td>„Bahnhofstraße“</td><td>Nur als letzter Ausweg: wenn sonst gar nichts gefunden wird.</td></tr>
+	</tbody>
+</table>
+
+<h2>Fragen stellen</h2>
+
+<p>In den Modi „Semantisch“ und „KI-Antwort“ dürfen Besucher schreiben, wie sie sprechen:</p>
+
+<pre><code>Was kostet der Versand nach Österreich?
+Welche Reise passt für eine Familie mit kleinen Kindern?</code></pre>
+
+<p>Die Suche nach Bedeutung findet dann auch Seiten, auf denen keines der Wörter aus der Frage steht. Im Modus „KI-Antwort“ steht über den Treffern außerdem eine kurze Antwort mit Verweisen auf die Quellen.</p>
+
+<p>Im Modus „Keyword“ funktionieren Fragen ebenfalls – die Suche übergeht die Füllwörter und sucht nach den übrigen. Sie versteht die Frage aber nicht.</p>
+
+<h2>Grenzen, die Besucher kennen sollten</h2>
+
+<ul>
+	<li>Eine Suche wird nach 200 Zeichen abgeschnitten.</li>
+	<li>Von den Wörtern einer Suche werden höchstens zwölf berücksichtigt.</li>
+	<li>Wörter mit zwei Buchstaben („Ei“, „EU“) werden nur als ganzes Wort gefunden, nie als Teil eines anderen.</li>
+	<li>Ganz andere Wörter mit derselben Bedeutung („Geflügel“ statt „Hähnchen“) findet nur die semantische Suche.</li>
+</ul>
+
+<div class="kasten kasten--tipp">
+	<span class="kasten__titel">Der Such-Block hilft beim Tippen</span>
+	<p>Schon nach wenigen Buchstaben schlägt der Such-Block passende Seitentitel vor. Mit <kbd>↓</kbd> und <kbd>↑</kbd> wählt man einen Vorschlag, <kbd>Enter</kbd> öffnet ihn, <kbd>Esc</kbd> schließt die Liste.</p>
+</div>
+
+<figure>
+	<div class="bild" style="height: 62mm;"><img src="bilder/frontend-vorschlaege.png" alt="Vorschläge beim Tippen" style="margin-top: -3%;"></div>
+	<figcaption><strong>Vorschläge beim Tippen.</strong> Titel, die mit der Eingabe beginnen, stehen oben.</figcaption>
+</figure>

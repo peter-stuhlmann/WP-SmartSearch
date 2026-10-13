@@ -1,0 +1,111 @@
+<!-- kapitel: Tab „Statistik“ – was Besucher suchen -->
+
+<span id="tab-statistik"></span>
+
+<p class="einleitung">Die Statistik zeigt dir, wonach auf deiner Website gesucht wird. Das Wertvollste daran ist die Liste der Suchen <em>ohne</em> Treffer: Sie verrät, welche Inhalte fehlen oder unter welchen Wörtern Besucher etwas erwarten.</p>
+
+<h2>Zeitraum wählen</h2>
+
+<p>Oben wählst du den Zeitraum: <em>Heute</em>, <em>7 Tage</em>, <em>30 Tage</em>, <em>90 Tage</em>, <em>Dieses Jahr</em> – oder du gibst über „Von … bis“ einen eigenen an. Alles auf der Seite bezieht sich auf diesen Zeitraum.</p>
+
+<p>Der Knopf <em>CSV exportieren</em> lädt die Suchen des gewählten Zeitraums als Tabelle herunter, die du mit Excel oder LibreOffice öffnen kannst.</p>
+
+<h2>Die Kennzahlen</h2>
+
+<table>
+	<thead>
+		<tr><th>Kachel</th><th>Bedeutung</th><th>Erscheint, wenn …</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><strong>Suchen</strong></td><td>Anzahl aller Suchen, darunter der Durchschnitt pro Tag.</td><td>immer</td></tr>
+		<tr><td><strong>Ohne Treffer</strong></td><td>Wie viele Suchen nichts gefunden haben, und ihr Anteil.</td><td>immer</td></tr>
+		<tr><td><strong>KI-Kosten</strong></td><td>Geschätzte Kosten, getrennt nach Eingabe und Ausgabe.</td><td>immer</td></tr>
+		<tr><td><strong>Ø Kosten pro Suche</strong></td><td>KI-Kosten geteilt durch die Zahl der Suchen.</td><td>immer</td></tr>
+		<tr><td><strong>Treffer angeklickt</strong></td><td>Anteil der Suchen, nach denen ein Treffer geöffnet wurde.</td><td>mindestens ein Klick aufgezeichnet wurde</td></tr>
+		<tr><td><strong>Ø Antwortzeit</strong></td><td>Wie lange die Trefferliste im Schnitt gebraucht hat, in Millisekunden. Ohne die KI-Antwort.</td><td>Antwortzeiten aufgezeichnet wurden</td></tr>
+	</tbody>
+</table>
+
+<h2>Die Diagramme</h2>
+
+<ul>
+	<li><strong>Suchen pro Tag</strong> – ein Balken pro Tag.</li>
+	<li><strong>KI-Kosten pro Tag</strong> – gestapelt aus Eingabe und Ausgabe.</li>
+</ul>
+
+<p>Beide Diagramme sind für Screenreader beschriftet, und jeder Balken nennt seinen Wert, wenn du mit der Maus darauf zeigst. Die genauen Zahlen stehen in der Tabelle „Alle Suchen“ weiter unten und im CSV-Export.</p>
+
+<h2>Die Ranglisten</h2>
+
+<h3>Häufigste Suchbegriffe</h3>
+
+<p>Was am häufigsten gesucht wurde. Daran erkennst du, was Besuchern wichtig ist – und ob die Navigation deiner Website diese Dinge leicht genug auffindbar macht. Wonach oft gesucht wird, sollte oft auch ohne Suche erreichbar sein.</p>
+
+<h3>Suchen ohne Treffer</h3>
+
+<p>Die wichtigste Liste. Jede Zeile ist ein Besucher, der nicht gefunden hat, was er wollte. Typische Gründe und was du tun kannst:</p>
+
+<table>
+	<thead>
+		<tr><th>Grund</th><th>Beispiel</th><th>Abhilfe</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Besucher benutzen ein anderes Wort als du</td><td>Gesucht: „Preise“. Deine Seite heißt „Konditionen“.</td><td><em>Seite empfehlen</em> anklicken – oder das Wort auf der Seite ergänzen.</td></tr>
+		<tr><td>Der Inhalt fehlt</td><td>Gesucht: „Parkplatz“. Dazu steht nirgends etwas.</td><td>Den Inhalt schreiben.</td></tr>
+		<tr><td>Der Inhalt ist nicht im Index</td><td>Die Seite existiert, wird aber nicht gefunden.</td><td>Im Tab <em>Inhalte</em> den Inhaltstyp prüfen, im Editor den Zustand der Seite.</td></tr>
+		<tr><td>Unsinn oder Tests</td><td>„asdf“</td><td>Nichts.</td></tr>
+	</tbody>
+</table>
+
+<p>Der Link <em>Seite empfehlen</em> neben jedem Eintrag führt in den Tab <em>Suche</em> und trägt den Suchbegriff bei den empfohlenen Treffern schon ein.</p>
+
+<h2>Alle Suchen</h2>
+
+<p>Eine Tabelle mit jeder einzelnen Suche: Zeitpunkt, Suchbegriff, Modus, Zahl der Treffer und – falls aufgezeichnet – Token und Kosten. Du kannst nach einem Suchbegriff und nach dem Modus filtern und seitenweise blättern.</p>
+
+<h2>Aufzeichnung</h2>
+
+<p>Hier legst du fest, was gespeichert wird.</p>
+
+<div class="kasten kasten--tipp">
+	<span class="kasten__titel">Was nie gespeichert wird</span>
+	<p>IP-Adressen und Benutzerkonten. Die Statistik weiß, <em>dass</em> gesucht wurde und <em>wonach</em> – nicht, von wem.</p>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Suchbegriffe</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Der Hauptschalter. Gespeichert werden Suchbegriff, Zeitpunkt, Modus und Anzahl der Treffer. Ohne ihn wird gar nichts aufgezeichnet, und die anderen drei Schalter sind wirkungslos.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>tracking_enabled</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">KI-Verbrauch</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Zu jeder Suche werden die verbrauchten Token und die Kosten gespeichert – zu den Preisen, die in diesem Moment eingestellt sind. Änderst du später die Preise, bleiben alte Einträge, wie sie waren.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>track_usage</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Klicks auf Treffer</span><span class="einstellung__standard">Standard: aus</span></div>
+	<p>Speichert, welcher Treffer nach einer Suche geöffnet wurde. Dafür lädt das Plugin ein kleines Skript im Frontend. Es gilt für die Trefferliste des Plugins.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>track_clicks</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Antwortzeit</span><span class="einstellung__standard">Standard: aus</span></div>
+	<p>Speichert, wie lange jede Suche gedauert hat. Nützlich, um zu sehen, ob die Suche mit wachsender Website langsamer wird.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>track_duration</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Aufbewahrung in Tagen</span><span class="einstellung__standard">Standard: 90</span></div>
+	<p>Ältere Einträge löscht das Plugin einmal täglich von selbst. Einstellbar von 1 bis 3.650 Tagen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>retention_days</code></div>
+</div>
+
+<h2>Statistik löschen</h2>
+
+<p>Der Knopf <em>Statistik löschen</em> entfernt alle aufgezeichneten Suchen endgültig. Das Plugin fragt vorher nach.</p>
+
+<h2>Schutz vor Missbrauch</h2>
+
+<p>Damit niemand die Statistik mit einem Skript füllen kann, zeichnet das Plugin pro Besucher höchstens 30 Suchen in der Minute auf. Wer schneller sucht, als ein Mensch tippen kann, bekommt weiter Treffer – seine Suchen erscheinen nur nicht in der Statistik.</p>

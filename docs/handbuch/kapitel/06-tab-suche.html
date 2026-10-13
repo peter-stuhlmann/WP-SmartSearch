@@ -1,0 +1,138 @@
+<!-- kapitel: Tab „Suche“ – wie gesucht wird -->
+
+<span id="tab-suche"></span>
+
+<p class="einleitung">Der wichtigste Tab. Hier wählst du den Suchmodus, stellst das Verhalten der Suche ein, legst für einzelne Suchbegriffe eine Wunschseite fest und kannst jede Suche ausprobieren.</p>
+
+<figure>
+	<div class="bild" style="height: 150mm;"><img src="bilder/einstellungen-search.png" alt="Tab Suche" style="margin-top: -7%;"></div>
+	<figcaption><strong>Der Tab „Suche“.</strong> Oben die drei Suchmodi als Karten, darunter das Verhalten.</figcaption>
+</figure>
+
+<h2>Suchmodus</h2>
+
+<p>Drei Karten, von denen genau eine gewählt ist. Du kannst jederzeit wechseln.</p>
+
+<table>
+	<thead>
+		<tr><th>Modus</th><th>Was er tut</th><th>Was er braucht</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><strong>Keyword</strong></td><td>Findet Inhalte, in denen die gesuchten Wörter vorkommen – in jeder Wortform, auch als Teil zusammengesetzter Wörter und trotz Tippfehlern.</td><td>Nichts. Läuft auf deinem Server.</td></tr>
+		<tr><td><strong>Semantisch</strong></td><td>Wie Keyword, und zusätzlich Inhalte mit derselben Bedeutung.</td><td>KI-Anbieter mit einem Modell für Einbettungen.</td></tr>
+		<tr><td><strong>KI-Antwort</strong></td><td>Wie Semantisch, und zusätzlich eine geschriebene Antwort über den Treffern.</td><td>KI-Anbieter mit einem Modell für Einbettungen und einem Sprachmodell.</td></tr>
+	</tbody>
+</table>
+
+<p>Wechselst du zum ersten Mal von „Keyword“ in einen KI-Modus, beginnt das Plugin, im Hintergrund die Einbettungen für alle Textabschnitte zu berechnen. Die Keyword-Suche funktioniert währenddessen normal weiter; die Suche nach Bedeutung kommt Seite für Seite dazu.</p>
+
+<div class="einstellung__schluessel">Schlüssel: <code>mode</code> · Werte: <code>keyword</code>, <code>semantic</code>, <code>ai</code> · Standard: <code>keyword</code></div>
+
+<h2>Verhalten</h2>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Standardsuche von WordPress ersetzen</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Das Suchfeld deines Themes benutzt automatisch den Index von Smart Search. Du musst am Theme nichts ändern.</p>
+	<p>Schaltest du es aus, bleibt die Suche deines Themes, wie sie war, und Smart Search arbeitet nur dort, wo du es ausdrücklich einsetzt – im Such-Block, über die Shortcodes oder im eigenen Code.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>replace_wp_search</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Treffer pro Seite</span><span class="einstellung__standard">Standard: 10</span></div>
+	<p>Wie viele Treffer auf einmal angezeigt werden, von 1 bis 100. Weitere erreichen Besucher über „Weitere Treffer anzeigen“ oder die Seitennavigation deines Themes.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>results_per_page</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Treffer pro Suche</span><span class="einstellung__standard">Standard: 200</span></div>
+	<p>Wie viele Treffer eine Suche <em>insgesamt</em> höchstens liefert, über alle Seiten hinweg. Einstellbar von 10 bis 2.000.</p>
+	<p>Jeder dieser Treffer wird gelesen und bewertet. Eine höhere Zahl macht deshalb Suchen nach sehr häufigen Wörtern langsamer. 200 reichen fast immer: Kaum jemand blättert über die zweite Seite hinaus.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>max_results</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Text innerhalb von Wörtern finden</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Ein letzter Ausweg. Enthält keine einzige Seite die Suchwörter als Wort, als Wortanfang oder als Wortende, zeigt das Plugin Seiten, die sie <em>irgendwo</em> enthalten – etwa „hof“ in „Bahnhofstraße“ oder „234“ in der Artikelnummer „AB-12345“.</p>
+	<p>Dafür muss der ganze Index gelesen werden, so wie es die Suche von WordPress immer tut. Das geschieht nur, wenn sonst nichts gefunden wurde, und nur für Suchwörter ab drei Buchstaben. Findet auch das nichts, merkt sich das Plugin das zehn Minuten lang und liest für dieselbe Suche nicht noch einmal.</p>
+	<p>Schalte es aus, wenn deine Website sehr groß ist und du merkst, dass ergebnislose Suchen langsam sind.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>match_inside_words</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Titel stärker gewichten</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Eine Fundstelle im Titel zählt mehr als eine im Text. Das entspricht meist der Erwartung: Wer „Versand“ sucht, will zuerst die Seite, die „Versand“ <em>heißt</em>, und erst danach die, die den Versand am Rand erwähnt.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>boost_title</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Bei Unsicherheit das Sprachmodell fragen</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Wirkt nur in den Modi „Semantisch“ und „KI-Antwort“. Wenn keine Seite klar zur Suche passt, legt das Plugin dem Sprachmodell die nächstliegenden Seiten vor und lässt es auswählen, welche wirklich passen. So wird „Geflügel“ gefunden, obwohl auf der Seite nur „Hähnchen“ steht.</p>
+	<p>Das kostet eine kleine Anfrage pro solcher Suche. Besucher warten nicht darauf: Im Such-Block erscheinen die ersten Treffer sofort, die Ergänzung des Modells folgt nach.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>ai_judge</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Schwache Treffer ausblenden</span><span class="einstellung__standard">Standard: aus</span></div>
+	<p>Treffer der niedrigsten Stufe „Schwach“ werden nicht angezeigt. Das räumt die Liste auf und verhindert, dass eine Unsinns-Suche trotzdem irgendetwas liefert.</p>
+	<p>Der Preis: Bei einer Suche mit mehreren Wörtern verschwinden Seiten, die nur die Hälfte davon enthalten. Wer „Rundreise Italien“ sucht, sieht dann nur Rundreisen nach Italien – nicht mehr die übrigen Italienreisen. Probiere aus, was zu deinen Inhalten passt.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>hide_weak_results</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Vorschläge beim Tippen</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Der Such-Block zeigt schon während der Eingabe unter dem Feld bis zu sechs passende Seitentitel. Ein Klick oder die Eingabetaste führt direkt dorthin. Gilt nur für den Block und die Shortcodes des Plugins, nicht für das Suchfeld deines Themes.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>suggestions</code></div>
+</div>
+
+<h2>Empfohlene Treffer</h2>
+
+<div class="einfach">
+	<p>Du sagst der Suche: „Wenn jemand <em>das</em> sucht, zeig zuerst <em>diese</em> Seite.“ – auch wenn die Seite das Suchwort gar nicht enthält.</p>
+</div>
+
+<p>Typisches Beispiel: Besucher suchen „Öffnungszeiten“, aber die Zeiten stehen auf deiner Seite „Kontakt“, und das Wort „Öffnungszeiten“ kommt dort nicht vor. Mit einer Empfehlung steht „Kontakt“ für diese Suche an erster Stelle und ist als <span class="stufe stufe--mittel">Empfohlen</span> markiert.</p>
+
+<h3>So legst du eine Empfehlung an</h3>
+
+<ol class="schritte">
+	<li>Klicke auf <em>Empfehlung hinzufügen</em>.</li>
+	<li>Trage links unter „Wenn jemand sucht nach“ einen oder mehrere Suchbegriffe ein, durch Kommas getrennt: <code>öffnungszeiten, geöffnet, wann offen</code></li>
+	<li>Tippe rechts unter „diese Seite zuerst zeigen“ einen Teil des Seitentitels und wähle die Seite aus der Liste. Hinter dem Titel steht „#“ und eine Zahl; sie bezeichnet die Seite eindeutig.</li>
+	<li>Klicke auf <em>Änderungen speichern</em>.</li>
+</ol>
+
+<h3>Was du wissen solltest</h3>
+
+<ul>
+	<li>Ein Begriff gilt <strong>in jeder Wortform</strong>. „öffnungszeit“ greift auch bei „Öffnungszeiten“.</li>
+	<li>Er gilt auch für <strong>längere Suchen</strong>, die ihn enthalten: „Öffnungszeiten am Samstag“.</li>
+	<li>Empfehlen lässt sich nur, was im Index ist. Wird die Seite später gelöscht oder ausgeschlossen, greift die Empfehlung nicht mehr.</li>
+	<li>Empfehlungen sind für die <strong>Handvoll Suchen</strong> gedacht, die laut Statistik nichts finden – nicht als Liste von Synonymen für die ganze Website.</li>
+</ul>
+
+<div class="kasten kasten--tipp">
+	<span class="kasten__titel">Der schnelle Weg über die Statistik</span>
+	<p>Im Tab <em>Statistik</em> steht neben jeder Suche ohne Treffer der Link <em>Seite empfehlen</em>. Er bringt dich hierher und trägt den Suchbegriff schon ein.</p>
+</div>
+
+<h2>Suche ausprobieren</h2>
+
+<p>Ganz unten auf dem Tab kannst du eine Suchanfrage testen. Sie läuft mit den <em>gespeicherten</em> Einstellungen – speichere also zuerst, wenn du etwas geändert hast.</p>
+
+<p>Unter jedem Treffer steht, warum er gefunden wurde:</p>
+
+<table>
+	<thead>
+		<tr><th>Begründung</th><th>Bedeutung</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>„In den Einstellungen für diese Suche empfohlen.“</td><td>Eine deiner Empfehlungen greift.</td></tr>
+		<tr><td>„Ein Suchwort steht im Titel.“</td><td>Treffer über den Titel.</td></tr>
+		<tr><td>„Enthält die Suchwörter.“</td><td>Treffer über den Text.</td></tr>
+		<tr><td>„Enthält die Suchwörter und passt zur Bedeutung.“</td><td>Keyword-Suche und semantische Suche sind sich einig.</td></tr>
+		<tr><td>„Passt zur Bedeutung; die Suchwörter kommen nicht wörtlich vor.“</td><td>Nur die semantische Suche hat die Seite gefunden.</td></tr>
+		<tr><td>„Das Sprachmodell hält diese Seite für passend zur Suche.“</td><td>Die Seite kam über „Bei Unsicherheit das Sprachmodell fragen“ dazu.</td></tr>
+	</tbody>
+</table>
+
+<p>Testsuchen erscheinen nicht in der Statistik.</p>

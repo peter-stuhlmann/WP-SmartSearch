@@ -1,0 +1,151 @@
+<!-- kapitel: Entwicklung, Tests und Messungen -->
+
+<span id="entwicklung"></span>
+
+<p class="einleitung">Wer am Plugin selbst arbeiten will, findet hier die Werkzeuge: wie man es baut, wie man es prüft und wie man die Messungen aus diesem Handbuch auf der eigenen Installation wiederholt.</p>
+
+<h2>Einrichten</h2>
+
+<p>Zur Laufzeit braucht das Plugin weder Composer noch npm: Es hat einen eigenen Autoloader, und das fertige JavaScript und CSS liegt im Ordner <code>build/</code>. Beides wird nur zum Entwickeln gebraucht.</p>
+
+<pre><code>cd wp-content/plugins/smart-search
+
+composer install     <span class="c"># Prüfwerkzeuge für PHP</span>
+npm install          <span class="c"># Bauwerkzeuge für JavaScript und SCSS</span></code></pre>
+
+<h2>Bauen</h2>
+
+<table>
+	<thead>
+		<tr><th>Befehl</th><th>Wirkung</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>npm run build</code></td><td>Übersetzt SCSS und JavaScript aus <code>assets/src/</code> nach <code>build/</code>.</td></tr>
+		<tr><td><code>npm run start</code></td><td>Dasselbe, fortlaufend bei jeder Änderung.</td></tr>
+	</tbody>
+</table>
+
+<h2>Prüfen</h2>
+
+<table>
+	<thead>
+		<tr><th>Befehl</th><th>Prüft</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>composer lint</code></td><td>PHP gegen die WordPress Coding Standards. <code>composer lint:fix</code> behebt, was sich automatisch beheben lässt.</td></tr>
+		<tr><td><code>composer analyse</code></td><td>Statische Analyse mit PHPStan.</td></tr>
+		<tr><td><code>composer check</code></td><td>Stil, statische Analyse und PHP-Unit-Tests in einem.</td></tr>
+		<tr><td><code>composer test:integration</code></td><td>Das SQL gegen eine echte Datenbank, siehe unten.</td></tr>
+		<tr><td><code>npm run lint:js</code>, <code>npm run lint:css</code></td><td>JavaScript und SCSS.</td></tr>
+		<tr><td><code>npm test</code></td><td>Die JavaScript-Tests.</td></tr>
+	</tbody>
+</table>
+
+<h2>Die Tests</h2>
+
+<table>
+	<thead>
+		<tr><th>Art</th><th>Ort</th><th class="zahl">Anzahl</th><th>Was sie prüfen</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>PHP-Unit-Tests</td><td><code>tests/php/Unit/</code></td><td class="zahl">338</td><td>Die Logik ohne WordPress und ohne Datenbank: Suche, Wortregeln, Indexierung, Hintergrundläufe, KI-Antwort, REST-Routen, Formulare, Ausgabe.</td></tr>
+		<tr><td>Integrationstests</td><td><code>tests/php/Integration/</code></td><td class="zahl">40</td><td>Das SQL gegen MySQL oder MariaDB: Volltextsuche, Signaturen, Sperren, Schema-Updates.</td></tr>
+		<tr><td>JavaScript-Tests</td><td><code>tests/js/</code></td><td class="zahl">90</td><td>Live-Suche, Vorschläge, Nachladen der Antwort, Klick-Erfassung, Admin-Skripte.</td></tr>
+	</tbody>
+</table>
+
+<p class="klein">Stand der Version 1.0.0.</p>
+
+<h3>Wie die Unit-Tests gebaut sind</h3>
+
+<p>Die echten Dienste werden vom echten Container zusammengesteckt. Ersetzt werden nur die drei Ränder: der Index (<code>FakeChunkStore</code>), die Statistik (<code>FakeSearchLog</code>) und der KI-Anbieter (<code>ScriptedTransport</code>). WordPress-Funktionen stellt Brain Monkey bereit. Ein Test liest sich deshalb wie ein Anwendungsfall:</p>
+
+<pre><code><span class="k">public function</span> test_a_short_word_is_found_as_the_last_part_of_a_compound(): <span class="k">void</span> {
+	$this-&gt;<span class="k">add_page</span>( <span class="s">1</span>, <span class="s">'Eingang'</span>, <span class="s">'Die Haustür klemmt seit Tagen.'</span> );
+	$this-&gt;<span class="k">add_page</span>( <span class="s">2</span>, <span class="s">'Wohnen'</span>, <span class="s">'Ein Haus am See.'</span> );
+	$this-&gt;<span class="k">add_page</span>( <span class="s">3</span>, <span class="s">'Umwelt'</span>, <span class="s">'Natur und Kultur in der Region.'</span> );
+
+	<span class="k">self</span>::<span class="k">assertSame</span>( <span class="k">array</span>( <span class="s">1</span> ), $this-&gt;<span class="k">found</span>( <span class="s">'Tür'</span> ) );
+}</code></pre>
+
+<h3>Integrationstests</h3>
+
+<p>Sie brauchen eine WordPress-Installation, über die sie die Datenbank erreichen. Sie legen eigene Tabellen mit eigenem Präfix an und entfernen sie wieder; die Tabellen des Plugins und die Inhalte der Website bleiben unberührt. Ohne die Variable werden sie übersprungen.</p>
+
+<pre><code>WP_LOAD_PATH=/pfad/zu/wp-load.php composer test:integration</code></pre>
+
+<div class="kasten">
+	<p>Die Tests des verschlüsselten Schlüssels brauchen die PHP-Erweiterung sodium: <code>php -d extension=sodium vendor/bin/phpunit</code>. Zur Laufzeit ersetzt WordPress sie durch eine eigene Fassung.</p>
+</div>
+
+<h2>Die Messskripte</h2>
+
+<p>Im Ordner <code>tests/benchmark/</code> liegen drei Skripte für die Kommandozeile. Alle erwarten den Pfad zur Installation in der Variable <code>WP_LOAD_PATH</code>.</p>
+
+<h3>travel-corpus.php – einen Testbestand anlegen</h3>
+
+<p>Erzeugt Reiseangebote als Beiträge in der Kategorie „Reisen“. Dieselbe Nummer ergibt immer denselben Text; ein Lauf lässt sich also wiederholen oder fortsetzen. Zu jedem Beitrag merkt sich das Skript Reiseart und Länder – daraus weiß später der Vergleich, welche Reisen zu einer Suche gehören.</p>
+
+<pre><code>export WP_LOAD_PATH=/pfad/zu/wp-load.php
+
+php tests/benchmark/travel-corpus.php 3000        <span class="c"># Nummern 1 bis 3000 anlegen</span>
+php tests/benchmark/travel-corpus.php 500 3001    <span class="c"># 500 weitere ab Nummer 3001</span>
+php tests/benchmark/travel-corpus.php delete      <span class="c"># alle wieder entfernen</span></code></pre>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Nur auf einer Testinstallation</span>
+	<p>Das Skript legt echte, veröffentlichte Beiträge an. In den KI-Modi würden für jeden davon Einbettungen berechnet – stelle den Suchmodus vorher auf „Keyword“, wenn du das nicht willst.</p>
+</div>
+
+<h3>measure.php – Zeiten messen</h3>
+
+<p>Führt eine Liste von Suchen aus und gibt für jede die Zeit der Keyword-Suche, die Zeit der ganzen Suche, die Zahl der Treffer und die Zahl der Datenbankabfragen aus. Nichts wird aufgezeichnet oder verändert.</p>
+
+<pre><code>php tests/benchmark/measure.php                         <span class="c"># die mitgelieferte Liste</span>
+php tests/benchmark/measure.php <span class="s">"Rundreise Italien"</span> Bus   <span class="c"># eigene Suchen</span></code></pre>
+
+<h3>quality.php – mit WordPress vergleichen</h3>
+
+<p>Führt rund vierzig Suchen durch die Keyword-Suche des Plugins und durch die Suche von WordPress und zeigt für jede, wie viele der ersten zehn Treffer gewollt waren und wie viele der gewollten Reisen gefunden wurden. Setzt den Testbestand voraus.</p>
+
+<pre><code>php tests/benchmark/quality.php</code></pre>
+
+<h2>Übersetzungen</h2>
+
+<table>
+	<thead>
+		<tr><th>Befehl</th><th>Wirkung</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>composer i18n:pot</code></td><td>Erneuert die Vorlage <code>languages/smart-search.pot</code> aus dem Code.</td></tr>
+		<tr><td><code>wp i18n update-po languages/smart-search.pot languages/smart-search-de_DE.po</code></td><td>Überträgt neue Texte in die deutsche Datei.</td></tr>
+		<tr><td><code>composer i18n:build</code></td><td>Erzeugt aus den <code>.po</code>-Dateien die Dateien, die WordPress lädt – für PHP und für JavaScript.</td></tr>
+	</tbody>
+</table>
+
+<p>Die Texte im Code sind Englisch. Eine weitere Sprache fügst du hinzu, indem du die <code>.pot</code>-Datei nach <code>smart-search-{locale}.po</code> kopierst, übersetzt und <code>composer i18n:build</code> ausführst.</p>
+
+<h2>Die Schnittstellen zur Datenbank</h2>
+
+<p><code>Database\ChunkStore</code> und <code>Database\SearchLog</code> sind die Schnittstellen, über die der Rest des Plugins Index und Statistik anspricht. Sie beschreiben genau die öffentlichen Methoden von <code>ChunkRepository</code> und <code>SearchLogRepository</code>. Wer dort eine Methode hinzufügt oder ändert, muss die Schnittstelle und die beiden Test-Doubles nachziehen.</p>
+
+<h2>Dieses Handbuch bauen</h2>
+
+<p>Das Handbuch liegt als HTML-Kapitel in <code>docs/handbuch/kapitel/</code>. Das Skript fügt sie zusammen, erzeugt Kapitelnummern und Inhaltsverzeichnis und druckt das Ergebnis mit Chrome oder Edge als PDF.</p>
+
+<pre><code>node docs/handbuch/build.js
+<span class="c"># → docs/Smart-Search-Handbuch.pdf</span></code></pre>
+
+<p>Liegt der Browser an einem ungewöhnlichen Ort, gib ihn in der Variable <code>BROWSER</code> an. Ohne Browser schreibt das Skript nur <code>docs/handbuch/handbuch.html</code>; die Datei lässt sich in jedem Browser öffnen und von dort als PDF drucken.</p>
+
+<h2>Regeln für Änderungen am Code</h2>
+
+<ul>
+	<li>Globale Namen beginnen mit <code>prstsearch</code>, Klassen liegen im Namespace <code>PrstSearch</code>.</li>
+	<li>SQL steht nur in <code>src/Database/</code>, jede Abfrage ist vorbereitet, Bezeichner laufen über <code>%i</code>.</li>
+	<li>Ausgabe wird im Template maskiert. Text aus dem Sprachmodell, von Besuchern oder aus Inhalten wird nie ungeprüft als HTML ausgegeben.</li>
+	<li>Die Statistik speichert keine IP-Adresse und keine Benutzer-ID. Das ist keine Voreinstellung, sondern ein Grundsatz.</li>
+	<li>Neue Einstellungen werden in <code>SettingsSchema</code> beschrieben; Formular, Prüfung, Export und Import folgen daraus.</li>
+	<li>Zu jeder Änderung am Verhalten gehört ein Test, der ohne die Änderung scheitert.</li>
+	<li><code>composer check</code>, <code>npm run lint:js</code>, <code>npm run lint:css</code> und <code>npm test</code> müssen ohne Meldung durchlaufen.</li>
+</ul>

@@ -1,0 +1,144 @@
+<!-- kapitel: Architektur -->
+
+<p class="einleitung">Das Plugin besteht aus vielen kleinen Klassen mit je einer Aufgabe, die von einem Container zusammengesteckt werden. Wer weiß, welche Klasse wofür zuständig ist, findet sich schnell zurecht.</p>
+
+<h2>Eckdaten</h2>
+
+<table>
+	<tbody>
+		<tr><td><strong>Ordner und Textdomain</strong></td><td><code>smart-search</code></td></tr>
+		<tr><td><strong>PHP-Namespace</strong></td><td><code>PrstSearch</code></td></tr>
+		<tr><td><strong>Präfix</strong> für Funktionen, Optionen, Hooks, CSS-Klassen</td><td><code>prstsearch</code></td></tr>
+		<tr><td><strong>REST-Namespace</strong></td><td><code>prstsearch/v1</code></td></tr>
+		<tr><td><strong>Voraussetzungen</strong></td><td>WordPress 6.6, PHP 8.1</td></tr>
+		<tr><td><strong>Lizenz</strong></td><td>GPL-2.0-or-later</td></tr>
+		<tr><td><strong>Abhängigkeiten zur Laufzeit</strong></td><td>keine – Composer und npm werden nur für die Entwicklung gebraucht</td></tr>
+	</tbody>
+</table>
+
+<h2>Der Ordner</h2>
+
+<pre><code>smart-search/
+├── smart-search.php      <span class="c">Einstieg: Kopfdaten, Konstanten, Start</span>
+├── uninstall.php         <span class="c">Aufräumen beim Löschen</span>
+├── src/                  <span class="c">der PHP-Code, eine Klasse pro Datei (PSR-4)</span>
+│   ├── Plugin.php        <span class="c">verdrahtet die Dienste, registriert Hooks</span>
+│   ├── template-tags.php <span class="c">die vier Funktionen für Themes</span>
+│   ├── Admin/            <span class="c">Einstellungsseite, Formulare, Anzeige im Editor</span>
+│   ├── Database/         <span class="c">Tabellen und sämtliches SQL</span>
+│   ├── Frontend/         <span class="c">Block, Shortcodes, Templates, Einbindung ins Theme</span>
+│   ├── Index/            <span class="c">Einlesen, Zerlegen, Hintergrundläufe</span>
+│   ├── Privacy/          <span class="c">Textvorschlag für die Datenschutzerklärung</span>
+│   ├── Provider/         <span class="c">KI-Client, Anbieter, Preise, Budget, Begrenzung</span>
+│   ├── Rest/             <span class="c">die REST-Routen</span>
+│   ├── Search/           <span class="c">die eigentliche Suche</span>
+│   ├── Security/         <span class="c">Rechte, verschlüsselter Schlüssel</span>
+│   ├── Settings/         <span class="c">Schema, Prüfung, Speicherung der Einstellungen</span>
+│   ├── Stats/            <span class="c">Statistik, Diagramme</span>
+│   └── Support/          <span class="c">Container, Cache, Sperre</span>
+├── templates/            <span class="c">Ausgabe im Frontend, im Theme überschreibbar</span>
+├── views/admin/          <span class="c">die Tabs der Einstellungsseite</span>
+├── assets/src/           <span class="c">Quellen: JavaScript und SCSS</span>
+├── build/                <span class="c">das Kompilat, das ausgeliefert wird</span>
+├── bin/                  <span class="c">Hilfsskript für die Übersetzungen</span>
+├── languages/            <span class="c">Übersetzungen</span>
+├── tests/                <span class="c">PHP-, JavaScript- und Integrationstests, Messskripte</span>
+└── docs/                 <span class="c">dieses Handbuch</span></code></pre>
+
+<h2>Der Container</h2>
+
+<div class="einfach">
+	<p>Statt dass jede Klasse sich selbst zusammensucht, was sie braucht, sagt sie nur, <em>was</em> sie braucht – und ein zentraler Baukasten, der Container, reicht es ihr herein. Das macht Klassen klein, austauschbar und testbar.</p>
+</div>
+
+<p>Der Container (<code>Support\Container</code>) liest per Reflection den Konstruktor einer Klasse und erzeugt die verlangten Abhängigkeiten selbst. Jede Klasse gibt es pro Anfrage genau einmal. Von Hand verdrahtet wird in <code>Plugin.php</code> nur, was sich nicht erraten lässt: die Datenbankverbindung und die beiden Schnittstellen zur Datenbank.</p>
+
+<p>Von außen kommst du an jeden Dienst so:</p>
+
+<pre><code><span class="k">use</span> PrstSearch\Plugin;
+<span class="k">use</span> PrstSearch\Search\SearchService;
+
+$search  = Plugin::<span class="k">instance</span>()-&gt;<span class="k">get</span>( SearchService::<span class="k">class</span> );
+$results = $search-&gt;<span class="k">search</span>( <span class="s">'Rundreise Italien'</span> );
+
+<span class="k">foreach</span> ( $results-&gt;<span class="k">post_ids</span>() <span class="k">as</span> $post_id ) {
+	<span class="k">echo</span> <span class="k">get_the_title</span>( $post_id ), <span class="s">"\n"</span>;
+}</code></pre>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Öffentlich ist, was dokumentiert ist</span>
+	<p>Verlasse dich auf die vier Template-Funktionen, die Hooks, die REST-API, die Templates und die CSS-Variablen aus diesem Teil des Handbuchs. Die Klassen im Inneren können sich von Version zu Version ändern.</p>
+</div>
+
+<h2>Die wichtigsten Dienste</h2>
+
+<table>
+	<thead>
+		<tr><th>Klasse</th><th>Aufgabe</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>Index\Indexer</code></td><td>Liest einen Inhalt ein und schreibt seine Abschnitte in den Index.</td></tr>
+		<tr><td><code>Index\ContentRenderer</code></td><td>Erzeugt den lesbaren Text eines Inhalts, wie ihn ein Besucher sieht.</td></tr>
+		<tr><td><code>Index\Chunker</code></td><td>Zerlegt Text in Abschnitte.</td></tr>
+		<tr><td><code>Index\Eligibility</code></td><td>Entscheidet, ob ein Inhalt in den Index gehört.</td></tr>
+		<tr><td><code>Index\IndexHooks</code></td><td>Reagiert auf Speichern, Löschen, Kommentare und geänderte Einstellungen.</td></tr>
+		<tr><td><code>Index\BackgroundJobs</code></td><td>Die vier Hintergrundläufe.</td></tr>
+		<tr><td><code>Search\SearchService</code></td><td>Der Dirigent: führt die Suchen aus und fügt die Ergebnisse zusammen.</td></tr>
+		<tr><td><code>Search\KeywordSearcher</code></td><td>Die Keyword-Suche.</td></tr>
+		<tr><td><code>Search\SemanticSearcher</code></td><td>Die Suche nach Bedeutung.</td></tr>
+		<tr><td><code>Search\Stemmer</code>, <code>IndexTerms</code>, <code>TermCoverage</code>, <code>CompoundEndings</code>, <code>Proximity</code></td><td>Wortstämme, Indexbegriffe, Bewertung, Zusammensetzungen, Nähe.</td></tr>
+		<tr><td><code>Search\SpellingCorrector</code>, <code>Vocabulary</code></td><td>Tippfehlerkorrektur und das Wörterverzeichnis der Website.</td></tr>
+		<tr><td><code>Search\Recommendations</code></td><td>Empfohlene Treffer.</td></tr>
+		<tr><td><code>Search\SecondOpinion</code>, <code>ResultJudge</code></td><td>Die Zweitmeinung des Sprachmodells.</td></tr>
+		<tr><td><code>Search\AnswerService</code></td><td>Die KI-Antwort.</td></tr>
+		<tr><td><code>Search\HitFilter</code></td><td>Die letzte Prüfung jedes Treffers; ruft den Hook <code>prstsearch_hits</code>.</td></tr>
+		<tr><td><code>Provider\OpenAiCompatibleClient</code></td><td>Spricht mit dem KI-Anbieter.</td></tr>
+		<tr><td><code>Provider\UsageLedger</code>, <code>RequestThrottle</code></td><td>Kostenbuch und Begrenzung der Anfragen.</td></tr>
+		<tr><td><code>Frontend\QueryIntegration</code></td><td>Ersetzt die Treffer der WordPress-Suche.</td></tr>
+		<tr><td><code>Frontend\ResultRenderer</code>, <code>SearchUi</code>, <code>TemplateLoader</code></td><td>Die Ausgabe im Frontend.</td></tr>
+		<tr><td><code>Database\ChunkRepository</code>, <code>SearchLogRepository</code></td><td>Das gesamte SQL für Index und Statistik.</td></tr>
+	</tbody>
+</table>
+
+<h2>Der Weg einer Suche durch den Code</h2>
+
+<div class="ablauf">
+	<div class="ablauf__schritt"><strong>Eingang</strong><code>QueryIntegration</code> (Theme) oder <code>SearchRoutes</code> (Block, REST)</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>SearchService</strong><code>QueryTerms</code> zerlegt die Eingabe</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Suchen</strong><code>KeywordSearcher</code> und <code>SemanticSearcher</code></div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Fügen</strong><code>RankFusion</code>, <code>Demands</code>, Korrektur, Empfehlungen</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Filter</strong><code>HitFilter</code></div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Ausgabe</strong><code>SearchResults</code> an Theme oder <code>ResultRenderer</code></div>
+</div>
+
+<h2>Grundsätze des Codes</h2>
+
+<ul>
+	<li><strong>SQL an einem Ort.</strong> Nur die Klassen in <code>Database/</code> (und zwei begründete Ausnahmen) sprechen direkt mit der Datenbank, jede Abfrage ist vorbereitet. Die übrigen Klassen kennen nur die Schnittstellen <code>ChunkStore</code> und <code>SearchLog</code>.</li>
+	<li><strong>Einstellungen aus einem Schema.</strong> <code>Settings\SettingsSchema</code> beschreibt jede Einstellung mit Typ, Standard und Grenzen. Formular, Prüfung, Export und Import richten sich danach.</li>
+	<li><strong>Ausgabe wird dort maskiert, wo sie entsteht.</strong> Templates escapen selbst; Text des Sprachmodells wird nie als HTML ausgegeben.</li>
+	<li><strong>Kein Zustand im Browser.</strong> Keine Cookies, kein <code>localStorage</code>.</li>
+	<li><strong>Frontend ohne Abhängigkeiten.</strong> Das JavaScript für Besucher ist reines JavaScript ohne Bibliothek; ohne JavaScript bleibt alles bedienbar.</li>
+</ul>
+
+<h2>Assets</h2>
+
+<table>
+	<thead>
+		<tr><th>Bündel</th><th>Geladen</th><th>Inhalt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>frontend</code></td><td>auf der Suchergebnisseite und dort, wo Such-Block, Shortcode oder KI-Antwort ausgegeben werden</td><td>Live-Suche, Vorschläge, Nachladen der Antwort, Klick-Erfassung</td></tr>
+		<tr><td><code>admin</code></td><td>nur auf der Einstellungsseite</td><td>Modellauswahl, Verbindungstest, Neuaufbau, Empfehlungen</td></tr>
+		<tr><td><code>editor</code></td><td>im Block-Editor</td><td>Der Bereich „Suche“ in der Seitenleiste</td></tr>
+		<tr><td><code>blocks/search</code></td><td>im Block-Editor</td><td>Der Such-Block</td></tr>
+		<tr><td><code>indicators</code></td><td>im Admin und für Bearbeiter im Frontend</td><td>Der farbige Zustandspunkt</td></tr>
+	</tbody>
+</table>
+
+<p>Gebaut wird mit <code>@wordpress/scripts</code>. Die Stile sind SCSS mit CSS-Variablen; der Admin-Bereich unterstützt Rechts-nach-links-Sprachen.</p>

@@ -1,0 +1,74 @@
+<!-- kapitel: Schnellstart -->
+
+<p class="einleitung">In fünf Minuten von der Installation zur ersten besseren Suche. Für den Anfang musst du nichts einstellen.</p>
+
+<h2>Installieren und aktivieren</h2>
+
+<ol class="schritte">
+	<li><strong>Plugin hochladen.</strong> Öffne in WordPress <em>Plugins → Plugin hinzufügen → Plugin hochladen</em> und wähle die ZIP-Datei von Smart Search. Alternativ kopierst du den Ordner <code>smart-search</code> nach <code>wp-content/plugins</code>.</li>
+	<li><strong>Aktivieren.</strong> Klicke in der Plugin-Liste bei „Smart Search“ auf <em>Aktivieren</em>.</li>
+	<li><strong>Warten – oder weitermachen.</strong> Das Plugin beginnt sofort, deine Inhalte in den Index aufzunehmen. Das geschieht im Hintergrund. Bei wenigen hundert Seiten ist es nach Sekunden fertig, bei mehreren tausend nach einigen Minuten.</li>
+</ol>
+
+<p>Das war es. Das Suchfeld deines Themes benutzt ab jetzt den neuen Index. Am Aussehen deiner Website ändert sich nichts.</p>
+
+<div class="kasten">
+	<span class="kasten__titel">Was beim Aktivieren automatisch geschieht</span>
+	<ul>
+		<li>Zwei Tabellen werden in der Datenbank angelegt: eine für den Index, eine für die Statistik.</li>
+		<li>Alle veröffentlichten Beiträge und Seiten werden eingelesen, ebenso andere öffentliche Inhaltstypen wie Produkte.</li>
+		<li>Der Suchmodus steht auf „Keyword“. Es wird nichts an externe Dienste gesendet.</li>
+	</ul>
+</div>
+
+<h2>Die erste Suche</h2>
+
+<p>Öffne deine Website und suche über das gewohnte Suchfeld. Probiere dabei bewusst aus, was vorher nicht ging:</p>
+
+<ul>
+	<li>die <strong>Mehrzahl</strong> eines Wortes, das nur in der Einzahl auf deinen Seiten steht,</li>
+	<li>ein Wort mit einem <strong>Tippfehler</strong>,</li>
+	<li>den <strong>hinteren Teil</strong> eines zusammengesetzten Wortes,</li>
+	<li>zwei Wörter, die auf einer Seite <strong>weit auseinander</strong> stehen.</li>
+</ul>
+
+<h2>Die Einstellungsseite finden</h2>
+
+<p>Alle Einstellungen liegen unter <em>Einstellungen → Smart Search</em> im WordPress-Menü. Oben siehst du auf einen Blick, wie viele Inhalte im Index sind und wann er zuletzt aktualisiert wurde.</p>
+
+<figure>
+	<div class="bild"><img src="bilder/kopfbereich.png" alt="Kopfbereich der Einstellungsseite mit drei Kennzahlen"></div>
+	<figcaption><strong>Der Kopfbereich.</strong> Der grüne Punkt „Index ist aktuell“ bedeutet: Alles, was auf deiner Website veröffentlicht ist, wird auch gefunden.</figcaption>
+</figure>
+
+<h2>Checkliste für die ersten fünf Minuten</h2>
+
+<table>
+	<thead>
+		<tr><th>Schritt</th><th>Wo</th><th>Warum</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Inhaltstypen prüfen</td><td>Tab <em>Inhalte</em></td><td>Soll wirklich alles durchsucht werden – auch Produkte, Termine, Mitarbeiterprofile?</td></tr>
+		<tr><td>Eine Suche testen</td><td>Tab <em>Suche</em>, ganz unten „Suche ausprobieren“</td><td>Du siehst unter jedem Treffer, <em>warum</em> er gefunden wurde.</td></tr>
+		<tr><td>Darstellung wählen</td><td>Tab <em>Darstellung</em></td><td>Reicht das Suchfeld deines Themes, oder möchtest du den eigenen Such-Block mit Live-Treffern?</td></tr>
+		<tr><td>Nach einer Woche: Statistik ansehen</td><td>Tab <em>Statistik</em></td><td>„Suchen ohne Treffer“ zeigt dir, was Besucher vergeblich suchen.</td></tr>
+	</tbody>
+</table>
+
+<h2>Optional: die KI-Modi einschalten</h2>
+
+<p>Wenn du die semantische Suche oder die KI-Antwort nutzen möchtest, brauchst du einen KI-Anbieter. In Kurzform:</p>
+
+<ol class="schritte">
+	<li>Lege bei einem Anbieter (zum Beispiel OpenAI, Google Gemini oder Mistral) ein Konto an und erzeuge dort einen <strong>API-Schlüssel</strong>. Das ist eine lange Zeichenfolge, die wie ein Passwort funktioniert.</li>
+	<li>Trage im Tab <em>KI-Anbieter</em> den Anbieter und den Schlüssel ein und klicke auf <em>Verbindung testen</em>.</li>
+	<li>Setze am besten gleich ein <strong>monatliches Kostenlimit</strong>, zum Beispiel 5 Euro.</li>
+	<li>Wähle im Tab <em>Suche</em> den Modus „Semantisch“ oder „KI-Antwort“.</li>
+</ol>
+
+<p>Danach berechnet das Plugin im Hintergrund für jeden Textabschnitt deiner Website eine sogenannte Einbettung. Was das ist und was es kostet, erklären die Kapitel <a href="#begriffe">„Grundbegriffe“</a> und <a href="#kosten">„Kosten, Budget und Begrenzungen“</a>.</p>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Bevor du die KI einschaltest</span>
+	<p>In den KI-Modi werden Suchbegriffe deiner Besucher und Auszüge deiner <em>öffentlichen</em> Inhalte an den gewählten Anbieter übertragen. Das gehört in deine Datenschutzerklärung. Einen Textvorschlag liefert das Plugin mit, siehe Kapitel <a href="#datenschutz">„Datenschutz“</a>.</p>
+</div>

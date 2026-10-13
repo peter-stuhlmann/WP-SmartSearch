@@ -1,0 +1,108 @@
+<!-- kapitel: Gestaltung mit CSS -->
+
+<p class="einleitung">Suchfeld, Trefferliste und KI-Antwort des Plugins sehen von sich aus so aus wie dein Theme: Sie übernehmen Schrift und Textfarbe. Alles Weitere steuerst du über wenige CSS-Variablen – ohne <code>!important</code> und ohne Kampf um die Reihenfolge der Stylesheets.</p>
+
+<h2>Wie das Plugin zu seinen Farben kommt</h2>
+
+<p>Das Plugin legt keine festen Farben fest. Es leitet sie ab:</p>
+
+<ul>
+	<li><strong>Schrift und Textfarbe</strong> erbt es vom umgebenden Element.</li>
+	<li><strong>Die Akzentfarbe</strong> nimmt es aus der Farbpalette des Themes (<code>--wp--preset--color--primary</code>, ersatzweise <code>…--accent</code>) und sonst die Linkfarbe des Browsers.</li>
+	<li><strong>Linien, Flächen und gedämpfter Text</strong> sind Abtönungen der Textfarbe. Deshalb passen sie auf hellem wie auf dunklem Hintergrund.</li>
+</ul>
+
+<h2>Die Variablen</h2>
+
+<table>
+	<thead>
+		<tr><th>Variable</th><th>Wofür</th><th>Standard</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>--prstsearch-accent</code></td><td>Fokusrahmen, gewählter Filter, Markierung</td><td>Primärfarbe des Themes</td></tr>
+		<tr><td><code>--prstsearch-highlight</code></td><td>Hintergrund markierter Suchwörter</td><td>Akzent zu 18 %</td></tr>
+		<tr><td><code>--prstsearch-border</code></td><td>Trennlinien</td><td>Textfarbe zu 22 %</td></tr>
+		<tr><td><code>--prstsearch-border-control</code></td><td>Rahmen von Eingabefeld und Knöpfen</td><td>Textfarbe zu 55 %</td></tr>
+		<tr><td><code>--prstsearch-surface-muted</code></td><td>Leicht abgesetzte Flächen</td><td>Textfarbe zu 5 %</td></tr>
+		<tr><td><code>--prstsearch-text-muted</code></td><td>Nebentext: Inhaltstyp, Hinweise</td><td>Textfarbe zu 70 %</td></tr>
+		<tr><td><code>--prstsearch-surface-overlay</code>, <code>--prstsearch-text-overlay</code></td><td>Hintergrund und Text der Vorschlagsliste</td><td>Systemfarben des Browsers</td></tr>
+		<tr><td><code>--prstsearch-shadow</code></td><td>Schatten der Vorschlagsliste</td><td>Schwarz zu 12 %</td></tr>
+		<tr><td><code>--prstsearch-error</code></td><td>Fehlermeldungen</td><td>Rot, an die Textfarbe angeglichen</td></tr>
+		<tr><td><code>--prstsearch-radius</code></td><td>Eckenrundung</td><td>6px</td></tr>
+		<tr><td><code>--prstsearch-gap</code></td><td>Grundabstand</td><td>1rem</td></tr>
+	</tbody>
+</table>
+
+<h2>Variablen überschreiben</h2>
+
+<div class="einfach">
+	<p>Die Standardwerte des Plugins sind so notiert, dass sie „kein Gewicht“ haben. Jede normale Regel in deinem Theme gewinnt gegen sie – egal, ob dein Stylesheet vor oder nach dem des Plugins geladen wird.</p>
+</div>
+
+<span class="datei">In das Stylesheet deines Themes oder unter Design → Customizer → Zusätzliches CSS</span>
+<pre><code>.prstsearch-form,
+.prstsearch-results,
+.prstsearch-answer {
+	--prstsearch-accent: #b4002d;
+	--prstsearch-radius: 0;
+	--prstsearch-gap: 1.25rem;
+}</code></pre>
+
+<span class="datei">Suchwörter gelb markieren wie mit einem Textmarker</span>
+<pre><code>.prstsearch-results {
+	--prstsearch-highlight: #fff3a3;
+}</code></pre>
+
+<h2>Die Klassen</h2>
+
+<p>Wenn Variablen nicht reichen, kannst du die Elemente direkt ansprechen. Die Klassen folgen dem Muster <em>Block__Element--Variante</em>.</p>
+
+<table>
+	<thead>
+		<tr><th>Klasse</th><th>Element</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>.prstsearch</code></td><td>Der Rahmen des Such-Blocks mit Live-Treffern</td></tr>
+		<tr><td><code>.prstsearch-form</code></td><td>Das Suchformular</td></tr>
+		<tr><td><code>.prstsearch-form__label</code>, <code>__input</code>, <code>__submit</code></td><td>Beschriftung, Feld, Knopf</td></tr>
+		<tr><td><code>.prstsearch-form__suggestions</code></td><td>Die Liste der Vorschläge</td></tr>
+		<tr><td><code>.prstsearch-types</code></td><td>Der Filter nach Inhaltstyp</td></tr>
+		<tr><td><code>.prstsearch-results</code></td><td>Die Trefferliste</td></tr>
+		<tr><td><code>.prstsearch-results__summary</code>, <code>__list</code>, <code>__more</code>, <code>__hint</code></td><td>Zusammenfassung, Liste, „Weitere Treffer“, Hinweis bei null Treffern</td></tr>
+		<tr><td><code>.prstsearch-result</code></td><td>Ein Treffer</td></tr>
+		<tr><td><code>.prstsearch-result__title</code>, <code>__meta</code>, <code>__type</code>, <code>__excerpt</code></td><td>Titel, Zeile darunter, Inhaltstyp, Auszug</td></tr>
+		<tr><td><code>.prstsearch-result__relevance--high</code>, <code>--medium</code>, <code>--low</code>, <code>--recommended</code></td><td>Die Relevanzanzeige je Stufe</td></tr>
+		<tr><td><code>.prstsearch-answer</code></td><td>Die KI-Antwort</td></tr>
+		<tr><td><code>.prstsearch-answer__title</code>, <code>__text</code>, <code>__cite</code>, <code>__sources</code>, <code>__note</code></td><td>Überschrift, Text, Quellenverweis, Quellenliste, Hinweis</td></tr>
+	</tbody>
+</table>
+
+<span class="datei">Treffer als Karten in zwei Spalten</span>
+<pre><code>.prstsearch-results__list {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(18rem, 1fr));
+	gap: var(--prstsearch-gap);
+}
+
+.prstsearch-result {
+	padding: 1rem;
+	border: 1px solid var(--prstsearch-border);
+	border-radius: var(--prstsearch-radius);
+}</code></pre>
+
+<h2>Barrierefreiheit erhalten</h2>
+
+<p>Beim Umgestalten bitte beachten:</p>
+
+<ul>
+	<li><strong>Den Fokusrahmen nicht entfernen.</strong> Wer mit der Tastatur bedient, sieht sonst nicht, wo er ist. Du kannst ihn umfärben, aber nicht abschaffen.</li>
+	<li><strong>Kontrast prüfen.</strong> Text braucht gegenüber dem Hintergrund ein Verhältnis von mindestens 4,5 : 1, Rahmen von Bedienelementen 3 : 1.</li>
+	<li><strong><code>.screen-reader-text</code> nicht sichtbar machen.</strong> Diese Texte sind für Screenreader gedacht.</li>
+	<li><strong>Elemente mit <code>hidden</code> nicht einblenden.</strong> Das Plugin steuert darüber, was gerade da ist.</li>
+</ul>
+
+<p>Das Plugin selbst berücksichtigt Rechts-nach-links-Sprachen und die Systemeinstellung „weniger Bewegung“; die Einstellungsseite außerdem den Kontrastmodus von Windows (<em>forced colors</em>).</p>
+
+<h2>Die Einstellungsseite</h2>
+
+<p>Auch der Admin-Bereich des Plugins ist mit CSS-Variablen gebaut. Sie stehen in <code>assets/src/styles/_tokens.scss</code>: Farben, Abstände, Rundungen und Schriftgrößen, jeweils mit dem Präfix <code>--prstsearch-</code>. Wer die Einstellungsseite an ein eigenes Erscheinungsbild anpassen will, überschreibt sie für <code>.prstsearch-admin</code>.</p>

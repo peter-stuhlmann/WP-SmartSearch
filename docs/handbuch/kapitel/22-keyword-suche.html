@@ -1,0 +1,170 @@
+<!-- kapitel: Die Keyword-Suche Schritt für Schritt -->
+
+<span id="keyword-suche"></span>
+
+<p class="einleitung">Die Keyword-Suche ist das Fundament. Sie läuft in jedem Modus mit, braucht keine KI und keinen externen Dienst. Dieses Kapitel folgt einer Suchanfrage vom Eintippen bis zur sortierten Trefferliste.</p>
+
+<div class="ablauf ablauf--dunkel">
+	<div class="ablauf__schritt"><strong>Eingabe lesen</strong>Wörter, Wortfolgen, Ausschlüsse</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Kandidaten holen</strong>aus dem Index der Datenbank</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Bewerten</strong>Wie viele Wörter, wie nah beieinander?</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>Sortieren</strong>die beste Seite zuerst</div>
+</div>
+
+<h2>1. Die Eingabe lesen</h2>
+
+<p>Aus der Eingabe „Was kostet eine <em>Rundreise</em> nach <em>Italien</em>?“ macht das Plugin eine Liste von Suchwörtern:</p>
+
+<ol>
+	<li>Alles wird kleingeschrieben, überflüssige Leerzeichen entfallen, und die Eingabe wird nach 200 Zeichen abgeschnitten.</li>
+	<li>Wortfolgen in Anführungszeichen und Wörter mit vorangestelltem Minus werden beiseitegelegt; sie sind Forderungen, die später geprüft werden.</li>
+	<li>Der Rest wird an allem getrennt, was kein Buchstabe und keine Ziffer ist.</li>
+	<li>Füllwörter fallen weg: Artikel, Pronomen, Hilfsverben, Fragewörter, Präpositionen – auf Deutsch und Englisch. Übrig bleibt hier <code>rundreise</code>, <code>italien</code>, <code>kostet</code>.</li>
+	<li>Bestünde die Eingabe <em>nur</em> aus Füllwörtern („wer sind wir“), würden sie ausnahmsweise doch gesucht.</li>
+</ol>
+
+<p>Höchstens zwölf Suchwörter und je acht Forderungen werden berücksichtigt.</p>
+
+<h2>2. Wortstämme bilden</h2>
+
+<p>Jedes Suchwort wird auf seinen Stamm gekürzt – nach denselben Regeln wie beim Aufbau des Index. Nur weil beide Seiten gleich behandelt werden, treffen sie sich.</p>
+
+<table>
+	<thead>
+		<tr><th>Regel</th><th>Beispiel</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Umlaute werden zum Grundvokal, „ß“ zu „ss“</td><td>Häuser → hauser, Straße → strasse</td></tr>
+		<tr><td>Endungen „-ern“, „-em“, „-er“, „-en“, „-es“, „-e“, „-s“ fallen weg</td><td>hauser → haus, Rezepten → rezept, Kindern → kind</td></tr>
+		<tr><td>Englische Endungen „-ing“ und „-ed“ fallen weg, ein verdoppelter Konsonant davor ebenfalls</td><td>shipping → ship, shipped → ship</td></tr>
+		<tr><td>Bis zu zwei Endungen nacheinander</td><td>Preisen → preise → preis</td></tr>
+		<tr><td>Nach „i“ oder „e“ ist nur der letzte Buchstabe Endung</td><td>Kategorien → kategorie, Ideen → idee</td></tr>
+		<tr><td>Ein „s“ nach „u“, „i“ oder „s“ gehört zum Wort</td><td>Haus bleibt haus, Preis bleibt preis</td></tr>
+		<tr><td>Ein „-ie“ am Ende wird zu „-y“</td><td>Kategorie → kategory, damit sie „category“ trifft</td></tr>
+		<tr><td>Mindestens drei Buchstaben bleiben</td><td>Tee bleibt tee</td></tr>
+		<tr><td>„-nisse“ und „Busse“ verlieren ein „s“</td><td>Ergebnisse → ergebnis, Busse → bus</td></tr>
+		<tr><td>Zwei kurze Wörter sind mit ihren Formen fest hinterlegt</td><td>Eier → ei, Öle → öl</td></tr>
+	</tbody>
+</table>
+
+<div class="kasten">
+	<span class="kasten__titel">Der Stamm muss kein Wort sein</span>
+	<p>„Kategory“ gibt es nicht, und „medy“ für „Medien“ auch nicht. Das macht nichts. Es zählt nur, dass alle Formen eines Wortes beim selben Stamm landen. Jede Regel schaut dabei ausschließlich auf das Wortende, nie auf die Länge des Wortes – nur so endet „Krankenhaus“ garantiert auf demselben Stamm wie „Haus“.</p>
+</div>
+
+<h2>3. Kandidaten aus der Datenbank holen</h2>
+
+<p>Aus den Stämmen baut das Plugin eine Anfrage an den Volltextindex der Datenbank. Für jedes Suchwort wird nach Wörtern gesucht, die mit dem Stamm <em>beginnen</em>, und – ab vier Buchstaben – nach Wörtern, die damit <em>enden</em>:</p>
+
+<pre><code>Eingabe:  Versand Ausland
+Anfrage:  versand*  qzdnasrev*  ausland*  qzdnalsua*</code></pre>
+
+<p>Der Stern heißt „beginnt mit“. <code>qzdnasrev*</code> ist „versand“ rückwärts und findet damit alles, was auf „versand“ endet.</p>
+
+<p>Die Datenbank liefert die am besten passenden Abschnitte zurück – dreimal so viele, wie Treffer verlangt sind, weil mehrere Abschnitte zur selben Seite gehören können.</p>
+
+<h3>Sonderfall: sehr kurze Wörter</h3>
+
+<p>Wörter mit weniger als drei Buchstaben kann der Volltextindex nicht führen. Besteht eine Suche nur aus solchen Wörtern („Ei“, „EU“), liest das Plugin stattdessen alle Abschnitte und sucht das Wort als ganzes Wort – also nicht das „ei“ in „Partei“.</p>
+
+<h2>4. Kurze Wörter als Wortende</h2>
+
+<p>Ein Suchwort mit vier oder mehr Buchstaben im Stamm gilt ohne Weiteres als Ende jedes längeren Wortes. Bei drei Buchstaben geht das schief:</p>
+
+<table>
+	<thead>
+		<tr><th>Suchwort</th><th>Stamm</th><th>Gewollt</th><th>Endet aber auch</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Tür</td><td>tur</td><td>Haustür, Kellertür</td><td>Natur, Kultur, Struktur</td></tr>
+		<tr><td>Essen</td><td>ess</td><td>Abendessen</td><td>Adresse, Prozess, Interesse</td></tr>
+		<tr><td>Rad</td><td>rad</td><td>Fahrrad</td><td>Grad, Kamerad</td></tr>
+		<tr><td>Tee</td><td>tee</td><td>Kräutertee</td><td>Komitee</td></tr>
+	</tbody>
+</table>
+
+<p>Deshalb prüft das Plugin bei kurzen Stämmen den <em>vorderen Teil</em> des Wortes:</p>
+
+<ol class="schritte">
+	<li><strong>Der vordere Teil ist ein eigenes Wort deiner Website.</strong> „Haus“ kommt auf der Website vor – also ist „Haustür“ eine echte Zusammensetzung. „Na“ und „Kul“ kommen nicht vor – „Natur“ und „Kultur“ sind keine. Ein Fugen-s wie in „Arbeit<strong>s</strong>tag“ wird dabei wie eine Endung behandelt.</li>
+	<li><strong>Der vordere Teil ist unbekannt, aber wahrscheinlich ein Wort.</strong> Eine Website kann hundertmal „Mietwagen“ schreiben und nie „Miete“. Hat der vordere Teil mindestens vier Buchstaben und ist das Wortende genau so geschrieben, wie es eingetippt wurde, gilt das Wort als <em>wahrscheinliche</em> Zusammensetzung. Sie zählt weniger. „Natur“ fällt hier heraus, weil es nicht mit dem „ü“ von „Tür“ geschrieben ist, „Prozess“, weil es nicht auf „Essen“ endet.</li>
+	<li><strong>Sonst zählt das Wort nicht.</strong></li>
+</ol>
+
+<p>Welche Zusammensetzungen es auf deiner Website gibt, liest das Plugin aus dem Vokabular und sucht dann gezielt nach ihnen – höchstens nach den 50 häufigsten. Würde es einfach nach „allem, was auf -tur endet“ fragen, könnten auf einer Website mit viel „Kultur“ die echten Treffer aus der Auswahl verdrängt werden.</p>
+
+<h2>5. Bewerten: die Abdeckung</h2>
+
+<p>Die Datenbank sagt nur, welcher Abschnitt unter den gefundenen der beste ist – nicht, ob irgendeiner davon gut ist. Das Plugin prüft deshalb jeden Kandidaten selbst und fragt für jedes Suchwort: <em>Wie</em> kommt es auf dieser Seite vor?</p>
+
+<table>
+	<thead>
+		<tr><th>Fundart</th><th>Beispiel für die Suche „Kosten“ bzw. „Wagen“</th><th class="zahl">Zählt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Als eigenes Wort, in beliebiger Form</td><td>„Kosten“, „Kostens“</td><td class="zahl">1,0</td></tr>
+		<tr><td>Als Ende einer Zusammensetzung</td><td>„Versandkosten“</td><td class="zahl">0,7</td></tr>
+		<tr><td>Als Anfang eines längeren Wortes</td><td>„Kostenvoranschlag“</td><td class="zahl">0,6</td></tr>
+		<tr><td>Als wahrscheinliche Zusammensetzung</td><td>„Mietwagen“, wenn „Miete“ nirgends steht</td><td class="zahl">0,56</td></tr>
+		<tr><td>Irgendwo im Wortinneren (nur als letzter Ausweg)</td><td>„hof“ in „Bahnhofstraße“</td><td class="zahl">0,56</td></tr>
+		<tr><td>Gar nicht</td><td></td><td class="zahl">0</td></tr>
+	</tbody>
+</table>
+
+<p>Der Durchschnitt über alle Suchwörter ist die <strong>Abdeckung</strong> der Seite, eine Zahl zwischen 0 und 1. Daraus ergibt sich die Relevanzstufe:</p>
+
+<table>
+	<thead>
+		<tr><th>Abdeckung</th><th>Stufe</th><th>Beispiel</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>ab 0,75</td><td><span class="stufe stufe--hoch">Sehr passend</span></td><td>Alle Suchwörter als Wort gefunden.</td></tr>
+		<tr><td>ab 0,55</td><td><span class="stufe stufe--mittel">Passend</span></td><td>Zwei von drei Wörtern gefunden, oder ein Wort als Teil eines längeren.</td></tr>
+		<tr><td>darunter</td><td><span class="stufe stufe--schwach">Schwach</span></td><td>Eines von zwei Wörtern gefunden.</td></tr>
+	</tbody>
+</table>
+
+<p>Bewertet wird die <strong>Seite</strong>, nicht der Abschnitt. Fehlt einem der besten 50 Kandidaten ein Suchwort, liest das Plugin den ganzen Text der Seite nach, bevor es urteilt.</p>
+
+<h2>6. Sortieren</h2>
+
+<p>Die Reihenfolge folgt dem, was ein Mensch „den besseren Treffer“ nennen würde. Verglichen wird der Reihe nach:</p>
+
+<ol class="schritte">
+	<li><strong>Abdeckung.</strong> Wer mehr Suchwörter enthält, steht weiter oben.</li>
+	<li><strong>Nähe.</strong> Bei gleicher Abdeckung gewinnt die Seite, auf der die Suchwörter näher beieinander stehen. Direkt nebeneinander zählt am meisten; liegen rund hundert Zeichen dazwischen – etwa ein langer Satz –, zählt es nicht mehr. Titel und Text gelten dabei als getrennte Blöcke.</li>
+	<li><strong>Bewertung der Datenbank.</strong> Sie berücksichtigt, wie oft und wie selten ein Wort ist. Mit „Titel stärker gewichten“ wird sie für Treffer im Titel mit 1,5 multipliziert.</li>
+	<li><strong>Datum.</strong> Unter sonst Gleichen steht die neuere Seite oben.</li>
+</ol>
+
+<h2>7. Forderungen prüfen</h2>
+
+<p>Jetzt kommen die Wortfolgen in Anführungszeichen und die Ausschlüsse mit Minus an die Reihe. Jede Seite der Trefferliste wird gegen ihren <em>ganzen</em> Text geprüft; was eine Forderung nicht erfüllt, fliegt heraus.</p>
+
+<h2>8. Tippfehler korrigieren</h2>
+
+<p>Hat die Suche keinen Treffer der Stufe „Passend“ oder besser geliefert, prüft das Plugin, ob ein Tippfehler vorliegt. Dafür vergleicht es jedes Suchwort mit dem Vokabular der Website und sucht das ähnlichste Wort – eines, das sich durch wenige vertauschte, fehlende oder überzählige Buchstaben unterscheidet.</p>
+
+<p>Findet es eines, sucht es noch einmal mit dem korrigierten Wort. Liefert der zweite Versuch etwas Passendes, wird er verwendet, und die Trefferliste nennt die Korrektur.</p>
+
+<ul>
+	<li>Wörter mit weniger als vier Buchstaben werden nie korrigiert – bei so kurzen Wörtern ist fast jedes andere „ähnlich“.</li>
+	<li>Korrigiert wird nur zu Wörtern, die auf deiner Website tatsächlich vorkommen.</li>
+</ul>
+
+<h2>9. Letzter Ausweg: im Wortinneren suchen</h2>
+
+<p>Hat keine Seite die Suchwörter als Wort, Wortanfang oder Wortende, und ist „Text innerhalb von Wörtern finden“ eingeschaltet, liest das Plugin alle Abschnitte und sucht die Wörter an beliebiger Stelle. Das ist der einzige Fall, in dem der ganze Index gelesen wird – und genau das, was die Suche von WordPress bei <em>jeder</em> Suche tut.</p>
+
+<ul>
+	<li>Gesucht werden nur die drei längsten Suchwörter, jeweils ab drei Buchstaben.</li>
+	<li>Ein kurzes Wort zählt dabei nicht am Wortende. Sonst käme „Natur“ für „Tür“ durch die Hintertür zurück.</li>
+	<li>Findet auch das nichts, wird das zehn Minuten lang gemerkt.</li>
+</ul>
+
+<h2>10. Empfohlene Treffer und Filter</h2>
+
+<p>Zum Schluss setzt das Plugin empfohlene Seiten an die Spitze und prüft jeden Treffer ein letztes Mal: Ist die Seite noch veröffentlicht, noch durchsuchbar, und – auf mehrsprachigen Websites – in der Sprache des Besuchers? Erst dann geht die Liste hinaus.</p>

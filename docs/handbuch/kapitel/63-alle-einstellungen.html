@@ -1,0 +1,142 @@
+<!-- kapitel: Alle Einstellungen auf einen Blick -->
+
+<p class="einleitung">Jede Einstellung mit ihrem Namen auf der Oberfläche, ihrem Schlüssel im Code und ihrem Standardwert. Die Schlüssel brauchst du für Exportdateien und für eigenen Code.</p>
+
+<h2>Inhalte</h2>
+
+<table>
+	<thead>
+		<tr><th>Einstellung</th><th>Schlüssel</th><th>Art</th><th>Standard</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Inhaltstypen</td><td><code>post_types</code></td><td>Liste</td><td><code>post</code>, <code>page</code></td></tr>
+		<tr><td>Neue Inhaltstypen automatisch durchsuchen</td><td><code>auto_post_types</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>(intern: beim letzten Speichern bekannte Typen)</td><td><code>known_post_types</code></td><td>Liste</td><td>leer</td></tr>
+		<tr><td>Kommentare</td><td><code>index_comments</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Kategorien und Schlagwörter</td><td><code>index_terms</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Textauszug durchsuchen</td><td><code>index_excerpt</code></td><td>Schalter</td><td>aus</td></tr>
+		<tr><td>Eigene Felder</td><td><code>custom_fields</code></td><td>Text</td><td>leer</td></tr>
+		<tr><td>Öffentliche Seite lesen, wenn der Inhalt leer ist</td><td><code>fetch_fallback</code></td><td>Schalter</td><td>aus</td></tr>
+	</tbody>
+</table>
+
+<h2>Suche</h2>
+
+<table>
+	<thead>
+		<tr><th>Einstellung</th><th>Schlüssel</th><th>Art</th><th>Standard</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Suchmodus</td><td><code>mode</code></td><td>Auswahl: <code>keyword</code>, <code>semantic</code>, <code>ai</code></td><td><code>keyword</code></td></tr>
+		<tr><td>Standardsuche von WordPress ersetzen</td><td><code>replace_wp_search</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Treffer pro Seite</td><td><code>results_per_page</code></td><td>Zahl, 1–100</td><td>10</td></tr>
+		<tr><td>Treffer pro Suche</td><td><code>max_results</code></td><td>Zahl, 10–2.000</td><td>200</td></tr>
+		<tr><td>Text innerhalb von Wörtern finden</td><td><code>match_inside_words</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Titel stärker gewichten</td><td><code>boost_title</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Bei Unsicherheit das Sprachmodell fragen</td><td><code>ai_judge</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Schwache Treffer ausblenden</td><td><code>hide_weak_results</code></td><td>Schalter</td><td>aus</td></tr>
+		<tr><td>Vorschläge beim Tippen</td><td><code>suggestions</code></td><td>Schalter</td><td>an</td></tr>
+	</tbody>
+</table>
+
+<h2>KI-Anbieter</h2>
+
+<table>
+	<thead>
+		<tr><th>Einstellung</th><th>Schlüssel</th><th>Art</th><th>Standard</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Anbieter</td><td><code>provider</code></td><td>Auswahl: <code>openai</code>, <code>gemini</code>, <code>mistral</code>, <code>custom</code></td><td><code>openai</code></td></tr>
+		<tr><td>Adresse des Endpoints</td><td><code>base_url</code></td><td>Adresse</td><td>leer</td></tr>
+		<tr><td>Modell für die semantische Suche</td><td><code>embedding_model</code></td><td>Text</td><td>leer = Vorgabe des Anbieters</td></tr>
+		<tr><td>Modell für die KI-Antwort</td><td><code>chat_model</code></td><td>Text</td><td>leer = Vorgabe des Anbieters</td></tr>
+		<tr><td>Preis Einbettungen, pro 1 Mio. Token</td><td><code>price_embedding</code></td><td>Kommazahl</td><td>−1 = Listenpreis</td></tr>
+		<tr><td>Preis Eingabe, pro 1 Mio. Token</td><td><code>price_input</code></td><td>Kommazahl</td><td>−1 = Listenpreis</td></tr>
+		<tr><td>Preis Ausgabe, pro 1 Mio. Token</td><td><code>price_output</code></td><td>Kommazahl</td><td>−1 = Listenpreis</td></tr>
+		<tr><td>(intern: Stand der Listenpreise)</td><td><code>prices_updated</code></td><td>Text</td><td>leer</td></tr>
+		<tr><td>Währung</td><td><code>currency</code></td><td>Auswahl: <code>USD</code>, <code>EUR</code></td><td><code>USD</code></td></tr>
+		<tr><td>Monatliches Kostenlimit</td><td><code>monthly_budget</code></td><td>Kommazahl</td><td>0 = kein Limit</td></tr>
+		<tr><td>Suchanfragen zwischenspeichern</td><td><code>cache_enabled</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Zusätzliche Anweisungen für die KI-Antwort</td><td><code>answer_instructions</code></td><td>mehrzeiliger Text</td><td>leer</td></tr>
+	</tbody>
+</table>
+
+<p class="klein">Der API-Schlüssel ist keine Einstellung in diesem Sinn: Er liegt verschlüsselt in einer eigenen Option und ist in keinem Export enthalten.</p>
+
+<h2>Darstellung</h2>
+
+<table>
+	<thead>
+		<tr><th>Einstellung</th><th>Schlüssel</th><th>Art</th><th>Standard</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Einbindung</td><td><code>integration</code></td><td>Auswahl: <code>replace</code>, <code>block</code>, <code>templates</code></td><td><code>replace</code></td></tr>
+		<tr><td>KI-Antwort über den Treffern des Themes anzeigen</td><td><code>auto_answer</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>KI-Antwort schon beim Schreiben anzeigen</td><td><code>stream_answers</code></td><td>Schalter</td><td>aus</td></tr>
+		<tr><td>Filter nach Inhaltstyp anbieten</td><td><code>type_filter</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Treffer an der gefundenen Textstelle öffnen</td><td><code>jump_to_passage</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Quellen unter der KI-Antwort auflisten</td><td><code>show_sources</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Relevanz jedes Treffers anzeigen</td><td><code>show_relevance</code></td><td>Schalter</td><td>an</td></tr>
+	</tbody>
+</table>
+
+<h2>Statistik</h2>
+
+<table>
+	<thead>
+		<tr><th>Einstellung</th><th>Schlüssel</th><th>Art</th><th>Standard</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Suchbegriffe</td><td><code>tracking_enabled</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>KI-Verbrauch</td><td><code>track_usage</code></td><td>Schalter</td><td>an</td></tr>
+		<tr><td>Klicks auf Treffer</td><td><code>track_clicks</code></td><td>Schalter</td><td>aus</td></tr>
+		<tr><td>Antwortzeit</td><td><code>track_duration</code></td><td>Schalter</td><td>aus</td></tr>
+		<tr><td>Aufbewahrung in Tagen</td><td><code>retention_days</code></td><td>Zahl, 1–3.650</td><td>90</td></tr>
+	</tbody>
+</table>
+
+<h2>Werkzeuge</h2>
+
+<table>
+	<thead>
+		<tr><th>Einstellung</th><th>Schlüssel</th><th>Art</th><th>Standard</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Einstellungen ändern</td><td><code>roles_manage</code></td><td>Liste von Rollen</td><td><code>administrator</code></td></tr>
+		<tr><td>Statistik ansehen</td><td><code>roles_stats</code></td><td>Liste von Rollen</td><td><code>administrator</code>, <code>editor</code></td></tr>
+		<tr><td>Daten beim Löschen des Plugins entfernen</td><td><code>delete_data_on_uninstall</code></td><td>Schalter</td><td>aus</td></tr>
+	</tbody>
+</table>
+
+<h2>Einstellungen im Code lesen</h2>
+
+<pre><code><span class="k">use</span> PrstSearch\Plugin;
+<span class="k">use</span> PrstSearch\Settings\Settings;
+
+$settings = Plugin::<span class="k">instance</span>()-&gt;<span class="k">get</span>( Settings::<span class="k">class</span> );
+
+$settings-&gt;<span class="k">string</span>( <span class="s">'mode'</span> );              <span class="c">// "keyword", "semantic" oder "ai"</span>
+$settings-&gt;<span class="k">int</span>( <span class="s">'results_per_page'</span> );     <span class="c">// 10</span>
+$settings-&gt;<span class="k">bool</span>( <span class="s">'hide_weak_results'</span> );   <span class="c">// false</span>
+$settings-&gt;<span class="k">list</span>( <span class="s">'post_types'</span> );          <span class="c">// array( 'post', 'page' )</span></code></pre>
+
+<p>Gespeichert sind alle Einstellungen gemeinsam in der Option <code>prstsearch_settings</code>. Fehlt dort ein Wert, gilt der Standard aus dem Schema.</p>
+
+<h2>Rechte</h2>
+
+<table>
+	<thead>
+		<tr><th>Recht</th><th>Erlaubt</th><th>Wer es hat</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>prstsearch_manage</code></td><td>Einstellungen ändern, Index verwalten</td><td>Administratoren und die Rollen aus „Einstellungen ändern“</td></tr>
+		<tr><td><code>prstsearch_view_stats</code></td><td>Die Statistik sehen</td><td>Wer verwalten darf, und die Rollen aus „Statistik ansehen“</td></tr>
+		<tr><td><code>manage_options</code> (WordPress)</td><td>Anbieter, Endpunkt, Schlüssel, Import, Rollenlisten</td><td>Administratoren</td></tr>
+	</tbody>
+</table>
+
+<p>Die beiden eigenen Rechte werden zur Laufzeit vergeben und nicht in die Rollen geschrieben. Beim Entfernen des Plugins bleibt deshalb nichts zurück.</p>
+
+<pre><code><span class="k">if</span> ( <span class="k">current_user_can</span>( <span class="s">'prstsearch_view_stats'</span> ) ) {
+	<span class="c">// Link zur Statistik anzeigen</span>
+}</code></pre>

@@ -1,0 +1,92 @@
+<!-- kapitel: Tab „Inhalte“ – was durchsucht wird -->
+
+<span id="tab-inhalte"></span>
+
+<p class="einleitung">Hier bestimmst du, welche Teile deiner Website in den Index kommen. Die Voreinstellungen passen für die meisten Websites; ändern solltest du etwas, wenn bestimmte Inhalte nicht auffindbar sein sollen oder wichtige Texte in besonderen Feldern stehen.</p>
+
+<figure>
+	<div class="bild" style="height: 118mm;"><img src="bilder/einstellungen-content.png" alt="Tab Inhalte" style="margin-top: -7%;"></div>
+	<figcaption><strong>Der Tab „Inhalte“.</strong> Links die Einstellungen, rechts der Stand des Index.</figcaption>
+</figure>
+
+<h2>Inhaltstypen</h2>
+
+<div class="einfach">
+	<p>WordPress kennt verschiedene Sorten von Inhalten: Beiträge, Seiten, und was Plugins hinzufügen – Produkte, Termine, Rezepte. Jede Sorte heißt „Inhaltstyp“.</p>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Inhaltstypen</span><span class="einstellung__standard">Standard: Beiträge und Seiten</span></div>
+	<p>Je Inhaltstyp eine Karte mit einem Häkchen. Aufgeführt sind alle öffentlichen Inhaltstypen deiner Website, auch die von Plugins, jeweils mit der Zahl der veröffentlichten und der indexierten Inhalte. Nur was angehakt ist, wird durchsucht.</p>
+	<p>Nimmst du ein Häkchen weg, verschwinden die Inhalte dieses Typs sofort aus dem Index. Setzt du es wieder, werden sie im Hintergrund neu eingelesen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>post_types</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Neue Inhaltstypen automatisch durchsuchen</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Installierst du später ein Plugin, das einen neuen Inhaltstyp mitbringt, wird er durchsucht, ohne dass du hier etwas anhaken musst. Sinnvoll, weil man diesen Schritt sonst leicht vergisst.</p>
+	<p>Schalte es aus, wenn du streng kontrollieren willst, was auffindbar ist – etwa wenn Plugins interne Inhaltstypen anlegen, die öffentlich erreichbar, aber nicht für Besucher gedacht sind.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>auto_post_types</code></div>
+</div>
+
+<h2>Zusätzliche Felder</h2>
+
+<p>Titel und Inhalt werden immer durchsucht. Hier legst du fest, was <em>zusätzlich</em> zählt.</p>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Kommentare</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Freigegebene Kommentare werden zusammen mit dem Inhalt durchsucht, zu dem sie gehören. Der Treffer ist dann dieser Inhalt, nicht der einzelne Kommentar. Pro Inhalt werden höchstens 200 Kommentare berücksichtigt.</p>
+	<p>Wichtig: Auch die KI-Antwort kann aus Kommentaren zitieren. Wenn Kommentare bei dir ohne Prüfung erscheinen, schalte das aus – sonst könnte jemand über einen Kommentar Unsinn in die Antworten schleusen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>index_comments</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Kategorien und Schlagwörter</span><span class="einstellung__standard">Standard: an</span></div>
+	<p>Die Begriffe, die einem Inhalt zugewiesen sind, zählen zum durchsuchten Text. Ein Beitrag in der Kategorie „Reisen“ wird dann bei „Reisen“ gefunden, auch wenn das Wort im Text nicht vorkommt.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>index_terms</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Eigene Felder</span><span class="einstellung__standard">Standard: leer</span></div>
+	<p>Viele Websites speichern Texte in zusätzlichen Feldern, etwa mit dem Plugin „Advanced Custom Fields“ (ACF): einen Untertitel, eine Zusammenfassung, technische Daten. Trage hier die <em>Namen</em> dieser Felder ein, durch Kommas getrennt.</p>
+	<p>Beispiel: <code>untertitel, zusammenfassung</code></p>
+	<p>Nötig ist das nur für Felder, die auf der fertigen Seite <em>nicht</em> sichtbar sind. Was dein Theme ohnehin ausgibt, findet das Plugin von selbst, weil es die fertige Seite liest.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>custom_fields</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Textauszug durchsuchen</span><span class="einstellung__standard">Standard: aus</span></div>
+	<p>WordPress erlaubt, zu jedem Beitrag von Hand einen kurzen Auszug zu schreiben. Mit diesem Schalter zählt er zusätzlich zum Inhalt. Sinnvoll, wenn deine Auszüge eigene Formulierungen enthalten, die im Beitrag selbst nicht stehen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>index_excerpt</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Öffentliche Seite lesen, wenn der Inhalt leer ist</span><span class="einstellung__standard">Standard: aus</span></div>
+	<p>Ein Rettungsanker für Page-Builder, die ihre Inhalte erst beim Anzeigen der Seite zusammensetzen. Findet das Plugin auf dem normalen Weg kaum Text, ruft es die öffentliche Seite ab und liest sie, wie ein Besucher sie sähe.</p>
+	<p>Das ist langsamer und wird deshalb nur dann genutzt, wenn wenig Text gefunden wurde. Schalte es ein, wenn im Tab <em>Werkzeuge</em> Inhalte mit leerem Text gemeldet werden oder Seiten nicht gefunden werden, obwohl sie Text haben.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>fetch_fallback</code></div>
+</div>
+
+<div class="kasten">
+	<span class="kasten__titel">Nach dem Speichern</span>
+	<p>Jede Änderung in diesem Abschnitt bedeutet, dass sich der gespeicherte Text jeder Seite ändern kann. Das Plugin liest deshalb alle Inhalte im Hintergrund neu ein. Bis das erledigt ist, wird der vorherige Stand gefunden.</p>
+</div>
+
+<h2>Ausgeschlossene Inhalte</h2>
+
+<p>Unten auf dem Tab steht eine Liste aller Inhalte, die du von Hand von der Suche ausgeschlossen hast. Über <em>Wieder aufnehmen</em> holst du einen Eintrag zurück.</p>
+
+<p>Ausschließen selbst geschieht nicht hier, sondern direkt beim Inhalt, im Editor. Wie das geht, steht in Kapitel <a href="#im-editor">„Im Editor“</a>.</p>
+
+<h2>Was nie in den Index kommt</h2>
+
+<p>Unabhängig von allen Schaltern nimmt das Plugin vier Dinge grundsätzlich nicht auf:</p>
+
+<ul>
+	<li>Inhalte, die <strong>nicht veröffentlicht</strong> sind: Entwürfe, geplante und private Beiträge, der Papierkorb,</li>
+	<li>Inhalte mit einem <strong>Passwort</strong>,</li>
+	<li>Inhalte eines <strong>nicht angehakten</strong> Inhaltstyps,</li>
+	<li>Inhalte, die du <strong>von Hand</strong> ausgeschlossen hast.</li>
+</ul>
+
+<p>Außerdem liest das Plugin jede Seite so, wie ein <em>nicht angemeldeter</em> Besucher sie sieht. Was nur Mitglieder oder zahlende Kunden zu sehen bekommen, landet deshalb nicht im Index und kann nicht über die Suche nach außen dringen.</p>

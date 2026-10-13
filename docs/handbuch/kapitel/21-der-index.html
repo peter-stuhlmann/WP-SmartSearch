@@ -1,0 +1,122 @@
+<!-- kapitel: Der Index – das Gedächtnis der Suche -->
+
+<p class="einleitung">Alles, was Smart Search findet, findet es im Index. Dieses Kapitel erklärt, wie aus einer WordPress-Seite ein Eintrag im Index wird und wie der Index aktuell bleibt.</p>
+
+<h2>Von der Seite zum Indexeintrag</h2>
+
+<div class="ablauf">
+	<div class="ablauf__schritt"><strong>1 · Erzeugen</strong>Die Seite wird so erzeugt, wie ein Besucher sie sieht.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>2 · Reinigen</strong>Aus dem HTML wird reiner Text.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>3 · Zerlegen</strong>Der Text wird in Abschnitte geteilt.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>4 · Stämme</strong>Zu jedem Abschnitt werden die Wortstämme gespeichert.</div>
+	<div class="ablauf__pfeil">→</div>
+	<div class="ablauf__schritt"><strong>5 · Einbetten</strong>Nur in den KI-Modi: die Einbettung, im Hintergrund.</div>
+</div>
+
+<h3>Schritt 1: Die Seite wird erzeugt</h3>
+
+<p>WordPress speichert Inhalte nicht als fertigen Text, sondern als Bauanleitung: Blöcke, Shortcodes, Platzhalter für Galerien oder Formulare. Erst beim Aufruf der Seite wird daraus lesbarer Inhalt. Das Plugin lässt WordPress diesen Schritt ausführen und liest das Ergebnis.</p>
+
+<p>Das hat zwei wichtige Folgen:</p>
+
+<ul>
+	<li>Es ist egal, womit die Seite gebaut wurde – Block-Editor, klassischer Editor, Page-Builder. Gelesen wird das fertige Ergebnis.</li>
+	<li>Die Seite wird so erzeugt, wie ein <strong>nicht angemeldeter</strong> Besucher sie sieht. Was nur Mitgliedern gezeigt wird, kommt nicht in den Index.</li>
+</ul>
+
+<p>Zum Text der Seite kommen – je nach Einstellung im Tab <em>Inhalte</em> – der Titel, die Kategorien und Schlagwörter, der Textauszug, eigene Felder und freigegebene Kommentare.</p>
+
+<h3>Schritt 2: Aus HTML wird Text</h3>
+
+<p>Überschriften, Absätze, Listenpunkte und Tabellenzellen werden zu je einer Zeile. Alles, was kein Text ist – Formatierung, Skripte, Stilangaben –, fällt weg. Zeichen, die sich aus zwei Teilen zusammensetzen lassen, etwa ein „a“ mit nachgestellten Umlautpunkten, werden zu einem Zeichen vereinheitlicht, damit „ä“ immer gleich „ä“ ist.</p>
+
+<h3>Schritt 3: Zerlegen in Abschnitte</h3>
+
+<p>Der Text wird in Abschnitte von höchstens 1.200 Zeichen geteilt – immer an einer Satzgrenze. Der letzte Satz eines Abschnitts wird am Anfang des nächsten wiederholt, damit eine Aussage, die über die Grenze reicht, auffindbar bleibt. Sehr lange Sätze werden nicht wiederholt, und ein Satz, der allein schon zu lang ist, wird an einer Wortgrenze geteilt.</p>
+
+<div class="einfach">
+	<p>Eine kurze Seite ist ein einziger Abschnitt. Ein langer Ratgeber wird zu zehn oder zwanzig. Die Suche kann dann genau auf den Absatz zeigen, in dem die Antwort steht.</p>
+</div>
+
+<h3>Schritt 4: Wortstämme</h3>
+
+<p>Zu jedem Abschnitt speichert das Plugin eine Liste seiner Wörter – allerdings nicht die Wörter selbst, sondern ihre <strong>Stämme</strong>, und jeden Stamm zusätzlich <strong>rückwärts geschrieben</strong>.</p>
+
+<table>
+	<thead>
+		<tr><th>Im Text steht</th><th>Gespeichert wird</th><th>Wozu</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Versandkosten</td><td><code>versandkost</code></td><td>Der Stamm. Findet „Versandkosten“ und, über den Wortanfang, auch die Suche nach „Versand“.</td></tr>
+		<tr><td></td><td><code>qztsokdnasrev</code></td><td>Der Stamm rückwärts, mit der Markierung <code>qz</code> davor. Findet das Wort über sein <em>Ende</em>: die Suche nach „Kosten“.</td></tr>
+	</tbody>
+</table>
+
+<div class="einfach">
+	<p>Der Trick mit dem Rückwärtsschreiben: Die Datenbank kann blitzschnell Wörter finden, die mit bestimmten Buchstaben <em>anfangen</em>, aber nicht solche, die damit <em>enden</em>. Schreibt man ein Wort rückwärts, wird sein Ende zum Anfang. So kann die Datenbank auch nach Wortenden suchen.</p>
+</div>
+
+<p>Die Markierung <code>qz</code> sorgt dafür, dass ein rückwärts geschriebenes Wort nie mit einem echten verwechselt wird. „Regal“ rückwärts ist „Lager“ – ohne Markierung fände die Suche nach „Lager“ jedes Regal.</p>
+
+<h3>Schritt 5: Einbettungen</h3>
+
+<p>Nur in den Modi „Semantisch“ und „KI-Antwort“. Für jeden Abschnitt lässt das Plugin beim KI-Anbieter eine Einbettung berechnen und speichert sie. Das geschieht im Hintergrund in kleinen Portionen, damit das Speichern einer Seite nicht auf den Anbieter warten muss.</p>
+
+<p>Zu jeder Einbettung speichert das Plugin außerdem eine <strong>Signatur</strong>: eine stark verkürzte Fassung aus 512 Ja/Nein-Werten. Sie macht die Suche auf großen Websites schnell; wie, erklärt Kapitel <a href="#semantik">„Die semantische Suche“</a>.</p>
+
+<h2>Wie der Index aktuell bleibt</h2>
+
+<table>
+	<thead>
+		<tr><th>Ereignis</th><th>Was das Plugin tut</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Ein Inhalt wird veröffentlicht oder geändert</td><td>Sofort neu einlesen. Abschnitte, deren Text gleich geblieben ist, behalten ihre Einbettung.</td></tr>
+		<tr><td>Ein Inhalt wird zurückgezogen, gelöscht oder mit Passwort geschützt</td><td>Aus dem Index entfernen.</td></tr>
+		<tr><td>Ein Kommentar wird freigegeben, geändert oder gelöscht</td><td>Den zugehörigen Inhalt neu einlesen.</td></tr>
+		<tr><td>Die Einstellungen im Tab <em>Inhalte</em> ändern sich</td><td>Alle Inhalte im Hintergrund neu einlesen.</td></tr>
+		<tr><td>Ein Inhaltstyp wird abgewählt</td><td>Seine Inhalte sofort entfernen.</td></tr>
+		<tr><td>Das Modell für Einbettungen wechselt</td><td>Alle Einbettungen im Hintergrund neu berechnen.</td></tr>
+	</tbody>
+</table>
+
+<h2>Hintergrundläufe</h2>
+
+<p>Vier Arbeiten erledigt das Plugin nebenbei, angestoßen von WordPress:</p>
+
+<table>
+	<thead>
+		<tr><th>Lauf</th><th>Aufgabe</th><th>Wann</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><strong>Nachindexieren</strong></td><td>Inhalte einlesen, die noch nie oder nicht mehr aktuell im Index sind.</td><td>nach der Aktivierung und nach Änderungen im Tab <em>Inhalte</em></td></tr>
+		<tr><td><strong>Einbettungen</strong></td><td>Für Abschnitte ohne Einbettung eine berechnen lassen.</td><td>immer, wenn welche fehlen</td></tr>
+		<tr><td><strong>Vervollständigen</strong></td><td>Abschnitte, die eine ältere Plugin-Version gespeichert hat, auf den neuen Stand bringen.</td><td>nach einem Update des Plugins</td></tr>
+		<tr><td><strong>Aufräumen</strong></td><td>Alte Statistik löschen und Indexeinträge entfernen, deren Inhalt es nicht mehr gibt.</td><td>täglich</td></tr>
+	</tbody>
+</table>
+
+<p>Jeder Lauf arbeitet höchstens etwa 20 Sekunden und plant sich dann selbst neu ein, wenn noch etwas übrig ist. So blockiert er den Server nicht, und er übersteht auch die Zeitgrenzen einfacher Hosting-Pakete.</p>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">WP-Cron braucht Besucher</span>
+	<p>WordPress startet Hintergrundarbeiten, wenn jemand die Website aufruft. Auf einer Website ohne Besucher – etwa einer Testinstallation – passiert deshalb lange nichts. Mit dem Knopf <em>Index neu aufbauen</em> im Tab <em>Werkzeuge</em> kannst du die Arbeit von Hand anstoßen; der Balken läuft dann in deinem Browser weiter.</p>
+</div>
+
+<h2>Wenn sich Wortregeln ändern</h2>
+
+<p>Eine neue Plugin-Version kann die Regeln für Wortstämme verbessern. Dann passen die gespeicherten Stämme nicht mehr zu den neuen Regeln. Das Plugin merkt das an seiner internen Versionsnummer der Datenbank, verwirft die gespeicherten Stämme und baut sie im Hintergrund neu auf – ohne die Texte neu zu lesen und ohne die Einbettungen anzufassen. Kosten entstehen dabei nicht.</p>
+
+<h2>Abgeleitete Werte</h2>
+
+<p>Aus dem ganzen Index berechnet das Plugin zwei Hilfswerte:</p>
+
+<ul>
+	<li>das <strong>Vokabular</strong>: die Liste aller Wörter deiner Website mit ihrer Häufigkeit (höchstens die 20.000 häufigsten ab vier Buchstaben). Es dient der Tippfehlerkorrektur und dem Erkennen zusammengesetzter Wörter;</li>
+	<li>den <strong>Mittelwert der Einbettungen</strong>, den die semantische Suche zum Vergleichen braucht.</li>
+</ul>
+
+<p>Beides zu berechnen bedeutet, den ganzen Index einmal zu lesen. Damit kein Besucher darauf warten muss, gilt: Ändert sich der Index, wird der bisherige Wert weiterverwendet, und der neue entsteht erst, nachdem die Seite an den Besucher ausgeliefert ist. Nur beim allerersten Mal wird sofort gerechnet – und zwar von genau einer Anfrage, während gleichzeitig eintreffende kurz auf das Ergebnis warten.</p>

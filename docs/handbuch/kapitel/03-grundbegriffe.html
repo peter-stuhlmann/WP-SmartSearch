@@ -1,0 +1,116 @@
+<!-- kapitel: Grundbegriffe, einfach erklärt -->
+
+<span id="begriffe"></span>
+
+<p class="einleitung">Ein Dutzend Begriffe tauchen im Plugin und in diesem Handbuch immer wieder auf. Hier steht, was sie bedeuten – jeweils mit einem Vergleich aus dem Alltag. Du kannst das Kapitel überspringen und später nachschlagen.</p>
+
+<h2>Index</h2>
+
+<div class="einfach">
+	<p>Das Stichwortverzeichnis deiner Website. Statt bei jeder Suche alle Seiten zu lesen, schaut das Plugin dort nach.</p>
+</div>
+
+<p>Der Index ist eine eigene Tabelle in deiner Datenbank. Er enthält den lesbaren Text jeder Seite, in Abschnitte zerlegt, und zu jedem Abschnitt eine Liste seiner Wörter. Der Index gehört dir und liegt auf deinem Server; er wird nirgendwohin kopiert.</p>
+
+<p>Sobald du einen Inhalt speicherst, aktualisiert das Plugin den passenden Eintrag. Du musst dich nicht darum kümmern.</p>
+
+<h2>Textabschnitt</h2>
+
+<div class="einfach">
+	<p>Ein Stück einer Seite, ungefähr so lang wie ein, zwei Absätze.</p>
+</div>
+
+<p>Lange Seiten zerlegt das Plugin in Abschnitte von höchstens 1.200 Zeichen. Getrennt wird an Satzgrenzen, und benachbarte Abschnitte überlappen sich um einen Satz, damit keine Aussage zerschnitten wird. Der Grund: Ein Treffer soll die <em>Stelle</em> zeigen, an der die Antwort steht – nicht nur sagen „irgendwo auf dieser sehr langen Seite“.</p>
+
+<p>Bewertet wird trotzdem die Seite als Ganzes. Steht „Hähnchen“ im ersten und „Rezept“ im dritten Abschnitt, gilt die Seite als Treffer für „Hähnchen Rezept“.</p>
+
+<h2>Wortstamm</h2>
+
+<div class="einfach">
+	<p>Der Kern eines Wortes, ohne Endung. Aus „Rezepte“, „Rezepten“ und „Rezepts“ wird jeweils „rezept“.</p>
+</div>
+
+<p>Das Plugin speichert im Index nicht die Wörter selbst, sondern ihre Stämme. Dieselbe Kürzung wendet es auf die Suchanfrage an. So treffen sich alle Formen eines Wortes am selben Stamm. Das ist kein Sprachverständnis, sondern eine Handvoll fester Regeln für deutsche und englische Endungen. Kapitel <a href="#keyword-suche">„Die Keyword-Suche Schritt für Schritt“</a> zeigt sie im Einzelnen.</p>
+
+<h2>Einbettung (Embedding)</h2>
+
+<div class="einfach">
+	<p>Die Lage eines Textes auf einer Landkarte der Bedeutungen. Texte, die Ähnliches meinen, liegen nah beieinander – egal, welche Wörter sie benutzen.</p>
+</div>
+
+<p>Eine Einbettung ist eine lange Liste von Zahlen, die ein KI-Modell für einen Text ausrechnet. „Hähnchen anbraten“ und „Geflügel in der Pfanne“ bekommen sehr ähnliche Zahlen, obwohl sie kein Wort gemeinsam haben. Die semantische Suche lässt auch für die Suchanfrage solche Zahlen berechnen und sucht dann die Abschnitte, deren Zahlen am nächsten liegen.</p>
+
+<p>Einbettungen werden einmal pro Textabschnitt berechnet und gespeichert. Erst wenn sich der Text ändert, ist eine neue nötig.</p>
+
+<h2>Sprachmodell</h2>
+
+<div class="einfach">
+	<p>Ein Programm, das Text lesen und schreiben kann. Es formuliert die KI-Antwort.</p>
+</div>
+
+<p>Smart Search gibt dem Sprachmodell die Frage des Besuchers und die besten Textabschnitte deiner Website – und die Anweisung, nur daraus zu antworten. Das Modell kennt deine Website nicht „von sich aus“; es bekommt bei jeder Frage die passenden Stellen vorgelegt.</p>
+
+<h2>KI-Anbieter und API-Schlüssel</h2>
+
+<div class="einfach">
+	<p>Der Anbieter ist die Firma, bei der die KI läuft. Der API-Schlüssel ist dein Ausweis dort – eine lange Zeichenfolge, die du wie ein Passwort behandelst.</p>
+</div>
+
+<p>Das Plugin unterstützt OpenAI, Google Gemini, Mistral und jeden Dienst, der dieselbe Schnittstelle spricht. Dazu gehören auch Programme, die auf einem eigenen Rechner laufen, etwa Ollama. Den Schlüssel speichert das Plugin verschlüsselt.</p>
+
+<h2>Token</h2>
+
+<div class="einfach">
+	<p>Die Maßeinheit, in der KI-Anbieter abrechnen. Ein Token ist ein Wortstück; als Faustregel gelten vier Buchstaben pro Token.</p>
+</div>
+
+<p>Anbieter nennen ihre Preise „pro eine Million Token“. Dabei gibt es drei Arten: Token für Einbettungen, Token für das, was das Sprachmodell zu lesen bekommt (Eingabe), und Token für das, was es schreibt (Ausgabe). Ausgabe ist am teuersten, Einbettungen sind am billigsten.</p>
+
+<h2>Relevanz</h2>
+
+<div class="einfach">
+	<p>Wie gut ein Treffer zur Suche passt. Das Plugin unterscheidet drei Stufen.</p>
+</div>
+
+<p>
+	<span class="stufe stufe--hoch">Sehr passend</span>
+	<span class="stufe stufe--mittel">Passend</span>
+	<span class="stufe stufe--schwach">Schwach</span>
+</p>
+
+<p>Bewusst gibt es keine Prozentzahl. Die Rohwerte dahinter sind keine Prozente und würden nur falsche Genauigkeit vortäuschen.</p>
+
+<h2>Cache (Zwischenspeicher)</h2>
+
+<div class="einfach">
+	<p>Ein Notizzettel für Antworten, die schon einmal ausgerechnet wurden. Kommt dieselbe Frage wieder, liest das Plugin vom Zettel ab.</p>
+</div>
+
+<p>Das spart Zeit und – bei den KI-Modi – Geld. Der Zettel wird von selbst weggeworfen, sobald sich deine Inhalte ändern, damit niemand eine veraltete Antwort bekommt.</p>
+
+<h2>Hintergrundlauf (WP-Cron)</h2>
+
+<div class="einfach">
+	<p>Arbeit, die WordPress nebenbei erledigt, ohne dass jemand darauf warten muss.</p>
+</div>
+
+<p>Das Einlesen vieler Inhalte und das Berechnen der Einbettungen dauern. Damit dabei keine Seite hängt, erledigt das Plugin beides in kleinen Portionen im Hintergrund. WordPress stößt solche Arbeiten an, wenn jemand die Website aufruft. Auf einer Website ohne Besucher kann es deshalb länger dauern.</p>
+
+<h2>Block, Shortcode, Template</h2>
+
+<p>Drei Wege, etwas auf einer WordPress-Seite anzuzeigen:</p>
+
+<ul>
+	<li>Ein <strong>Block</strong> ist ein Baustein im Editor von WordPress, den du mit der Maus einfügst.</li>
+	<li>Ein <strong>Shortcode</strong> ist ein Kürzel in eckigen Klammern, zum Beispiel <code>[prstsearch]</code>. Du tippst es in einen Text, und WordPress ersetzt es durch die Suche.</li>
+	<li>Ein <strong>Template</strong> ist eine Datei, die festlegt, wie etwas aussieht. Entwickler können die Templates des Plugins im Theme überschreiben.</li>
+</ul>
+
+<h2>Hook und REST-API</h2>
+
+<p>Zwei Begriffe für Entwickler, die in Teil C wichtig werden:</p>
+
+<ul>
+	<li>Ein <strong>Hook</strong> ist eine Stelle, an der fremder Code mitreden darf, ohne das Plugin zu verändern – etwa „entscheide selbst, ob dieser Beitrag durchsucht wird“.</li>
+	<li>Die <strong>REST-API</strong> ist eine Adresse, unter der andere Programme die Suche benutzen können, zum Beispiel eine App.</li>
+</ul>

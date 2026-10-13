@@ -1,0 +1,57 @@
+<!-- kapitel: Mehrsprachige Websites -->
+
+<p class="einleitung">Smart Search arbeitet mit den beiden verbreiteten Plugins für Mehrsprachigkeit zusammen, Polylang und WPML, ohne dass du etwas einstellen musst. Besucher der deutschen Fassung bekommen deutsche Treffer, Besucher der englischen Fassung englische.</p>
+
+<h2>Wie es funktioniert</h2>
+
+<p>Der Index enthält die Inhalte <strong>aller</strong> Sprachen. Die Sprache spielt erst im Moment der Suche eine Rolle: Bevor die Trefferliste hinausgeht, entfernt das Plugin alle Treffer, die einer anderen Sprache angehören als der, die der Besucher gerade sieht.</p>
+
+<table>
+	<thead>
+		<tr><th>Ein Inhalt …</th><th>… erscheint in der Trefferliste</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>in der Sprache des Besuchers</td><td>ja</td></tr>
+		<tr><td>in einer anderen Sprache</td><td>nein</td></tr>
+		<tr><td>ohne zugewiesene Sprache</td><td>ja – in jeder Sprache</td></tr>
+	</tbody>
+</table>
+
+<p>Dieselbe Regel gilt für Vorschläge beim Tippen und für die Quellen einer KI-Antwort. Eine deutsche Frage bekommt deshalb keine Antwort aus englischen Seiten.</p>
+
+<h2>Der Such-Block und die Sprache</h2>
+
+<p>Der Such-Block holt seine Treffer über eine eigene Adresse im Hintergrund. Dort weiß WordPress nicht von selbst, in welcher Sprachfassung der Besucher gerade ist. Das Skript des Blocks schickt deshalb die Sprache der Seite mit, und das Plugin wertet sie aus.</p>
+
+<h2>Die Sprache der Wortregeln</h2>
+
+<p>Die Regeln für Wortformen und Füllwörter kennen <strong>Deutsch und Englisch</strong>. Sie werden auf alle Inhalte angewendet, gleich welcher Sprache.</p>
+
+<table>
+	<thead>
+		<tr><th>Sprache</th><th>Was zu erwarten ist</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Deutsch, Englisch</td><td>Wortformen, Zusammensetzungen und Füllwörter werden erkannt.</td></tr>
+		<tr><td>Andere Sprachen mit lateinischer Schrift (Französisch, Spanisch, Niederländisch …)</td><td>Die Suche funktioniert als Wortsuche mit Wortanfängen, Wortenden und Tippfehlerkorrektur. Wortformen werden nur so weit erkannt, wie die Endungen zufällig denen des Deutschen oder Englischen gleichen. Getestet ist das nicht.</td></tr>
+		<tr><td>Sprachen mit anderer Schrift, in denen Wörter durch Leerzeichen getrennt sind (Russisch, Griechisch, Hebräisch …)</td><td>Wortsuche ohne Wortformen. Nicht getestet.</td></tr>
+		<tr><td>Sprachen ohne Leerzeichen zwischen den Wörtern (Chinesisch, Japanisch, Thai)</td><td>Das Plugin kann die Wörter nicht trennen. Für solche Inhalte ist die Keyword-Suche ungeeignet; die semantische Suche funktioniert dagegen unabhängig von der Schrift.</td></tr>
+	</tbody>
+</table>
+
+<div class="kasten kasten--tipp">
+	<span class="kasten__titel">Die semantische Suche hilft über Sprachgrenzen</span>
+	<p>Einbettungen moderner Modelle erfassen die Bedeutung weitgehend unabhängig von der Sprache. Auf mehrsprachigen Websites gleicht der Modus „Semantisch“ deshalb vieles aus, was die Wortregeln für eine Sprache nicht leisten.</p>
+</div>
+
+<h2>Die Sprache der KI-Antwort</h2>
+
+<p>Das Sprachmodell antwortet in der Sprache der Frage. Besteht die Frage nur aus einem Wort oder ist ihre Sprache unklar, antwortet es in der Sprache der Website.</p>
+
+<h2>Die Oberfläche des Plugins</h2>
+
+<p>Die Einstellungsseite und alle Texte im Frontend – Beschriftungen, Meldungen, „Weitere Treffer anzeigen“ – liegen auf Deutsch und Englisch vor. WordPress wählt die Fassung nach der Sprache der Website beziehungsweise des angemeldeten Benutzers. Weitere Sprachen lassen sich wie bei jedem WordPress-Plugin über Übersetzungsdateien ergänzen; die Vorlage dafür liegt unter <code>languages/smart-search.pot</code>.</p>
+
+<h2>Multisite</h2>
+
+<p>In einem WordPress-Netzwerk hat jede Website ihren eigenen Index, ihre eigene Statistik und ihre eigenen Einstellungen. Beim Löschen des Plugins räumt es jede Website einzeln auf. Der Betrieb in einem Netzwerk ist allerdings nicht eigens getestet.</p>

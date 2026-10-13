@@ -1,0 +1,238 @@
+<!-- kapitel: Hooks – das Verhalten per Code ändern -->
+
+<span id="hooks"></span>
+
+<p class="einleitung">Über neun Hooks kannst du das Plugin an deine Website anpassen, ohne eine seiner Dateien anzufassen. Jeder Hook wird hier mit einem Beispiel gezeigt, das du kopieren kannst.</p>
+
+<div class="einfach">
+	<p>Ein Hook ist eine Stelle, an der das Plugin fragt: „Möchte jemand mitreden?“ Du hängst eine kleine Funktion ein, die einen Wert entgegennimmt und – verändert oder unverändert – zurückgibt. Alle Hooks dieses Plugins sind solche <em>Filter</em>.</p>
+</div>
+
+<div class="kasten">
+	<span class="kasten__titel">Wohin mit dem Code?</span>
+	<p>In die <code>functions.php</code> deines <strong>Child-Themes</strong> oder – besser, weil unabhängig vom Theme – in ein kleines eigenes Plugin. Nicht in die Dateien von Smart Search: Dort würde das nächste Update deine Änderung überschreiben.</p>
+</div>
+
+<h2>Übersicht</h2>
+
+<table>
+	<thead>
+		<tr><th>Hook</th><th>Zweck</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>prstsearch_is_indexable</code></td><td>Pro Inhalt entscheiden, ob er durchsucht wird.</td></tr>
+		<tr><td><code>prstsearch_post_text</code></td><td>Den Text ändern, der für einen Inhalt in den Index kommt.</td></tr>
+		<tr><td><code>prstsearch_hits</code></td><td>Die Treffer einer Suche filtern oder umsortieren.</td></tr>
+		<tr><td><code>prstsearch_template</code></td><td>Den Pfad eines Templates ändern.</td></tr>
+		<tr><td><code>prstsearch_requests_per_minute</code></td><td>Die Begrenzung der Anfragen ändern.</td></tr>
+		<tr><td><code>prstsearch_visitor_address</code></td><td>Hinter einem Proxy die echte Adresse des Besuchers nennen.</td></tr>
+		<tr><td><code>prstsearch_centered_similarity_thresholds</code></td><td>Die Schwellen der semantischen Suche ändern.</td></tr>
+		<tr><td><code>prstsearch_similarity_thresholds</code></td><td>Dasselbe für sehr kleine Websites.</td></tr>
+		<tr><td><code>prstsearch_ai_client</code></td><td>Einen eigenen KI-Client einsetzen.</td></tr>
+	</tbody>
+</table>
+
+<h2>prstsearch_is_indexable</h2>
+
+<p>Entscheidet für jeden Inhalt, ob er in den Index gehört. Der erste Wert ist die Entscheidung des Plugins, der zweite der Inhalt.</p>
+
+<span class="datei">Beiträge einer Kategorie von der Suche ausnehmen</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_is_indexable'</span>,
+	<span class="k">static function</span> ( bool $indexable, WP_Post $post ): bool {
+		<span class="k">if</span> ( <span class="k">has_category</span>( <span class="s">'intern'</span>, $post ) ) {
+			<span class="k">return false</span>;
+		}
+
+		<span class="k">return</span> $indexable;
+	},
+	<span class="s">10</span>,
+	<span class="s">2</span>
+);</code></pre>
+
+<span class="datei">Produkte ohne Lagerbestand ausnehmen (WooCommerce)</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_is_indexable'</span>,
+	<span class="k">static function</span> ( bool $indexable, WP_Post $post ): bool {
+		<span class="k">if</span> ( <span class="s">'product'</span> !== $post-&gt;post_type || ! <span class="k">function_exists</span>( <span class="s">'wc_get_product'</span> ) ) {
+			<span class="k">return</span> $indexable;
+		}
+
+		$product = <span class="k">wc_get_product</span>( $post-&gt;ID );
+
+		<span class="k">return</span> $indexable &amp;&amp; $product &amp;&amp; $product-&gt;<span class="k">is_in_stock</span>();
+	},
+	<span class="s">10</span>,
+	<span class="s">2</span>
+);</code></pre>
+
+<p>Der Hook wird beim Einlesen <em>und</em> bei jeder Suche gefragt. Eine Regel wirkt deshalb sofort auf die Trefferliste, auch wenn der Index noch den alten Stand hat. Inhalte, die eine solche Regel ausschließt, zeigen im Editor „Durch eine eigene Regel ausgeschlossen.“</p>
+
+<div class="kasten kasten--achtung">
+	<p>Der Hook kann Inhalte auch <em>aufnehmen</em>, die das Plugin ausschließen würde, etwa passwortgeschützte. Gib nur dann <code>true</code> zurück, wenn du das wirklich willst – der Text landet dann in Trefferlisten und kann in KI-Antworten zitiert werden.</p>
+</div>
+
+<h2>prstsearch_post_text</h2>
+
+<p>Der fertige Text eines Inhalts, bevor er zerlegt und gespeichert wird. Du kannst etwas anhängen oder entfernen.</p>
+
+<span class="datei">Die Artikelnummer eines Produkts durchsuchbar machen</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_post_text'</span>,
+	<span class="k">static function</span> ( string $text, WP_Post $post ): string {
+		$sku = <span class="k">get_post_meta</span>( $post-&gt;ID, <span class="s">'_sku'</span>, <span class="k">true</span> );
+
+		<span class="k">return</span> $sku ? $text . <span class="s">"\nArtikelnummer: "</span> . $sku : $text;
+	},
+	<span class="s">10</span>,
+	<span class="s">2</span>
+);</code></pre>
+
+<span class="datei">Einen wiederkehrenden Textbaustein aus dem Index heraushalten</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_post_text'</span>,
+	<span class="k">static fn</span> ( string $text ): string =&gt; <span class="k">str_replace</span>( <span class="s">'Jetzt Newsletter abonnieren und nichts verpassen!'</span>, <span class="s">''</span>, $text )
+);</code></pre>
+
+<p>Nach dem Einbau einer solchen Regel musst du den Index neu aufbauen (Tab <em>Werkzeuge</em>), damit sie für bestehende Inhalte gilt.</p>
+
+<h2>prstsearch_hits</h2>
+
+<p>Die Treffer einer Suche als Liste von <code>SearchHit</code>-Objekten, beste zuerst. Der Hook gilt für die Trefferliste, die Vorschläge beim Tippen und die Quellen der KI-Antwort gleichermaßen – was du hier entfernst, taucht nirgends mehr auf.</p>
+
+<span class="datei">Inhalte nur angemeldeten Mitgliedern zeigen</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_hits'</span>,
+	<span class="k">static function</span> ( array $hits ): array {
+		<span class="k">if</span> ( <span class="k">is_user_logged_in</span>() ) {
+			<span class="k">return</span> $hits;
+		}
+
+		<span class="k">return</span> <span class="k">array_filter</span>(
+			$hits,
+			<span class="k">static fn</span> ( $hit ): bool =&gt; ! <span class="k">has_term</span>( <span class="s">'mitglieder'</span>, <span class="s">'category'</span>, $hit-&gt;post_id )
+		);
+	}
+);</code></pre>
+
+<span class="datei">Seiten immer vor Beiträgen zeigen</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_hits'</span>,
+	<span class="k">static function</span> ( array $hits ): array {
+		<span class="c">// usort() ist stabil: innerhalb der Gruppen bleibt die Reihenfolge der Suche.</span>
+		<span class="k">usort</span>(
+			$hits,
+			<span class="k">static fn</span> ( $a, $b ): int =&gt;
+				( <span class="s">'page'</span> === <span class="k">get_post_type</span>( $b-&gt;post_id ) ) &lt;=&gt; ( <span class="s">'page'</span> === <span class="k">get_post_type</span>( $a-&gt;post_id ) )
+		);
+
+		<span class="k">return</span> $hits;
+	}
+);</code></pre>
+
+<div class="kasten kasten--achtung">
+	<p>Der Text ausgeschlossener Seiten bleibt im Index. Für Inhalte, die niemals in einer KI-Antwort zitiert werden dürfen, ist <code>prstsearch_is_indexable</code> die sicherere Wahl. Und: In den KI-Modi werden Antworten zwischengespeichert – abhängig von ihren Quellen. Weil der Hook die Quellen bestimmt, bekommen Besucher mit unterschiedlichen Rechten auch unterschiedliche Antworten.</p>
+</div>
+
+<h2>prstsearch_template</h2>
+
+<p>Der absolute Pfad eines Templates und sein Dateiname. Nützlich, wenn die Templates nicht im Theme, sondern in einem eigenen Plugin liegen sollen.</p>
+
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_template'</span>,
+	<span class="k">static function</span> ( string $file, string $name ): string {
+		$own = <span class="k">__DIR__</span> . <span class="s">'/suche/'</span> . $name;
+
+		<span class="k">return</span> <span class="k">is_readable</span>( $own ) ? $own : $file;
+	},
+	<span class="s">10</span>,
+	<span class="s">2</span>
+);</code></pre>
+
+<h2>prstsearch_requests_per_minute</h2>
+
+<p>Die Grenzen für Anfragen pro Minute. Der erste Wert ist ein Array mit <code>site</code> und <code>visitor</code>, der zweite die Art: <code>chat</code>, <code>embedding</code> oder <code>log</code>. Der Wert 0 schaltet eine Grenze ab.</p>
+
+<span class="datei">Mehr KI-Antworten für eine gut besuchte Website</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_requests_per_minute'</span>,
+	<span class="k">static function</span> ( array $limits, string $kind ): array {
+		<span class="k">if</span> ( <span class="s">'chat'</span> === $kind ) {
+			$limits[<span class="s">'site'</span>]    = <span class="s">120</span>;
+			$limits[<span class="s">'visitor'</span>] = <span class="s">10</span>;
+		}
+
+		<span class="k">return</span> $limits;
+	},
+	<span class="s">10</span>,
+	<span class="s">2</span>
+);</code></pre>
+
+<p>Die Standardwerte stehen im Kapitel <a href="#kosten">„Kosten, Budget und Begrenzungen“</a>. Höhere Grenzen bedeuten höhere mögliche Kosten pro Minute.</p>
+
+<h2>prstsearch_visitor_address</h2>
+
+<p>Die Adresse, anhand derer Besucher für die Begrenzung unterschieden werden. Nur nötig, wenn deine Website hinter einem Proxy oder CDN läuft und der Webserver deshalb bei allen Besuchern dieselbe Adresse meldet.</p>
+
+<span class="datei">Hinter Cloudflare</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_visitor_address'</span>,
+	<span class="k">static function</span> ( string $address ): string {
+		$forwarded = $_SERVER[<span class="s">'HTTP_CF_CONNECTING_IP'</span>] ?? <span class="s">''</span>;
+
+		<span class="k">return</span> <span class="k">filter_var</span>( $forwarded, FILTER_VALIDATE_IP ) ? $forwarded : $address;
+	}
+);</code></pre>
+
+<div class="kasten kasten--achtung">
+	<p>Das Plugin liest solche Kopfzeilen bewusst nicht von selbst. Wo kein Proxy sie setzt, kann jeder Besucher sie fälschen und sich damit als immer neuer Besucher ausgeben. Verwende den Hook nur, wenn der Proxy die Kopfzeile verlässlich setzt und dein Server von außen nicht an ihm vorbei erreichbar ist.</p>
+</div>
+
+<h2>prstsearch_centered_similarity_thresholds</h2>
+
+<p>Die Schwellen, ab denen ein Treffer der semantischen Suche als „Sehr passend“, „Passend“ oder überhaupt als Treffer gilt. Der zweite Wert ist der Name des Modells.</p>
+
+<span class="datei">Strenger sein: weniger, aber sicherere Treffer nach Bedeutung</span>
+<pre><code><span class="k">add_filter</span>(
+	<span class="s">'prstsearch_centered_similarity_thresholds'</span>,
+	<span class="k">static fn</span> ( array $thresholds ): array =&gt; <span class="k">array</span>(
+		<span class="s">'high'</span>    =&gt; <span class="s">0.40</span>,  <span class="c">// Standard 0.35</span>
+		<span class="s">'medium'</span>  =&gt; <span class="s">0.28</span>,  <span class="c">// Standard 0.22</span>
+		<span class="s">'minimum'</span> =&gt; <span class="s">0.25</span>,  <span class="c">// Standard 0.20</span>
+	)
+);</code></pre>
+
+<p>Die passenden Werte hängen vom Modell und von deinen Inhalten ab. Probiere Änderungen mit „Suche ausprobieren“ im Tab <em>Suche</em> aus – am besten mit Suchen, die etwas finden sollen, und mit Unsinn, der nichts finden soll.</p>
+
+<h2>prstsearch_similarity_thresholds</h2>
+
+<p>Dieselbe Idee für Websites mit weniger als zehn Abschnitten, auf denen das Plugin die rohen Ähnlichkeitswerte vergleicht. Das Array kennt hier nur <code>high</code> und <code>medium</code>; die Standardwerte unterscheiden sich je nach Anbieter.</p>
+
+<h2>prstsearch_ai_client</h2>
+
+<p>Ersetzt den Client, der mit dem KI-Anbieter spricht. Damit lässt sich ein Dienst anbinden, dessen Schnittstelle nicht der von OpenAI entspricht. Dieser Hook hat ein eigenes Kapitel: <a href="#eigener-anbieter">„Einen eigenen KI-Anbieter anbinden“</a>.</p>
+
+<h2>Hooks von WordPress, auf die das Plugin hört</h2>
+
+<p>Kein Eingriff, aber gut zu wissen, wenn du Inhalte per Code änderst:</p>
+
+<table>
+	<thead>
+		<tr><th>Hook von WordPress</th><th>Reaktion des Plugins</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>wp_after_insert_post</code></td><td>Liest den Inhalt neu ein. Feuert nach dem Speichern von Zusatzfeldern und Begriffen, auch bei Importen.</td></tr>
+		<tr><td><code>before_delete_post</code></td><td>Entfernt den Inhalt aus dem Index.</td></tr>
+		<tr><td><code>wp_insert_comment</code>, <code>edit_comment</code>, <code>deleted_comment</code>, <code>transition_comment_status</code></td><td>Liest den zugehörigen Inhalt neu ein.</td></tr>
+		<tr><td><code>posts_pre_query</code></td><td>Liefert bei der Hauptsuche die Treffer aus dem Index.</td></tr>
+	</tbody>
+</table>
+
+<div class="kasten kasten--code">
+	<span class="kasten__titel">Einen Inhalt per Code neu einlesen</span>
+	<p>Änderst du Inhalte an WordPress vorbei – etwa direkt in der Datenbank –, bekommt das Plugin davon nichts mit. So stößt du das Einlesen selbst an:</p>
+<pre><code><span class="k">use</span> PrstSearch\Plugin;
+<span class="k">use</span> PrstSearch\Index\Indexer;
+
+Plugin::<span class="k">instance</span>()-&gt;<span class="k">get</span>( Indexer::<span class="k">class</span> )-&gt;<span class="k">index_post</span>( $post_id );</code></pre>
+</div>

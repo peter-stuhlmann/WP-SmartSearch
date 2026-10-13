@@ -10,6 +10,8 @@ Replaces the WordPress search with an index of its own. Three stages build on ea
 
 If the provider is unreachable, the monthly budget is used up or a request limit is hit, the search continues as a keyword search.
 
+A manual in German for site owners and developers is in [docs/Smart-Search-Handbuch.pdf](docs/Smart-Search-Handbuch.pdf); its sources and the script that builds it are in `docs/handbuch/`.
+
 Requires WordPress 6.6 and PHP 8.1. Global identifiers use the prefix `prstsearch`, PHP classes live in the namespace `PrstSearch`.
 
 ## How it works

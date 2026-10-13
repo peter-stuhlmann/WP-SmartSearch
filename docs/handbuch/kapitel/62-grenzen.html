@@ -1,0 +1,113 @@
+<!-- kapitel: Grenzen des Plugins -->
+
+<span id="grenzen"></span>
+
+<p class="einleitung">Kein Werkzeug kann alles. Dieses Kapitel sammelt, was Smart Search bewusst nicht tut, was es nur eingeschränkt kann und was bisher nicht geprüft wurde – damit du es weißt, bevor du dich darauf verlässt.</p>
+
+<h2>Was die Keyword-Suche nicht findet</h2>
+
+<table>
+	<thead>
+		<tr><th>Fall</th><th>Beispiel</th><th>Warum</th><th>Ausweg</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Ganz andere Wörter mit derselben Bedeutung</td><td>„Geflügel“ für „Hähnchen“</td><td>Die Regeln kennen Wortformen, keine Bedeutungen. Eine Synonymliste gibt es bewusst nicht.</td><td>Modus „Semantisch“, oder eine Empfehlung für den Suchbegriff.</td></tr>
+		<tr><td>Unregelmäßige Wortformen</td><td>„ging“ für „gehen“, „Mäuse“ → „maus“ klappt, „Atlanten“ für „Atlas“ nicht</td><td>Es werden Endungen abgeschnitten, keine Stämme umgebaut.</td><td>Modus „Semantisch“.</td></tr>
+		<tr><td>Kurze Wortenden, deren vorderer Teil kurz und unbekannt ist</td><td>„Rad“ in „Einrad“, wenn „Ein“ nicht als Wort gilt</td><td>Schutz vor falschen Treffern wie „Grad“.</td><td>Der letzte Ausweg „im Wortinneren“ greift hier nicht, weil das Wort am Ende steht.</td></tr>
+		<tr><td>Text in der Mitte eines Wortes, solange es andere Treffer gibt</td><td>„hof“ in „Bahnhofstraße“, wenn auch „Hof“ vorkommt</td><td>Im Wortinneren wird nur gesucht, wenn sonst nichts gefunden wurde.</td><td>–</td></tr>
+		<tr><td>Wörter aus zwei Buchstaben als Teil anderer Wörter</td><td>„Ei“ in „Eierspeise“</td><td>Zwei Buchstaben stecken in zu vielen Wörtern.</td><td>–</td></tr>
+		<tr><td>Text, der nicht als Text auf der Seite steht</td><td>Schrift in Bildern, Inhalte von PDF-Dateien, Videos</td><td>Der Index liest den sichtbaren Text der Seite.</td><td>Den Inhalt als Text auf die Seite schreiben.</td></tr>
+		<tr><td>Inhalte, die erst per JavaScript nachgeladen werden</td><td>Manche Tabs, Filterlisten, eingebettete Fremdinhalte</td><td>Beim Einlesen läuft kein Browser.</td><td>Hook <code>prstsearch_post_text</code>.</td></tr>
+	</tbody>
+</table>
+
+<h2>Sprachen</h2>
+
+<ul>
+	<li>Die Wortregeln sind für <strong>Deutsch und Englisch</strong> gemacht. Für andere Sprachen sind sie nicht geprüft.</li>
+	<li>Für Sprachen <strong>ohne Leerzeichen</strong> zwischen den Wörtern (Chinesisch, Japanisch, Thai) ist die Keyword-Suche ungeeignet.</li>
+	<li>Umlaute und ihre Grundvokale gelten als gleich. Das hilft bei „Osterreich“, macht aber „Mull“ und „Müll“ zum selben Wort.</li>
+</ul>
+
+<h2>Feste Obergrenzen</h2>
+
+<table>
+	<thead>
+		<tr><th>Grenze</th><th class="zahl">Wert</th><th>Einstellbar</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Länge einer Suchanfrage</td><td class="zahl">200 Zeichen</td><td>nein</td></tr>
+		<tr><td>Suchwörter pro Anfrage</td><td class="zahl">12</td><td>nein</td></tr>
+		<tr><td>Wortfolgen und Ausschlüsse pro Anfrage</td><td class="zahl">je 8</td><td>nein</td></tr>
+		<tr><td>Treffer pro Suche</td><td class="zahl">200</td><td>ja, 10 bis 2.000</td></tr>
+		<tr><td>Treffer pro Seite über die REST-API</td><td class="zahl">50</td><td>nein</td></tr>
+		<tr><td>Vorschläge beim Tippen</td><td class="zahl">6</td><td>nein</td></tr>
+		<tr><td>Quellen einer KI-Antwort</td><td class="zahl">5</td><td>nein</td></tr>
+		<tr><td>Zusammensetzungen, nach denen für ein kurzes Suchwort gesucht wird</td><td class="zahl">50</td><td>nein</td></tr>
+		<tr><td>Wörter im Vokabular für die Tippfehlerkorrektur</td><td class="zahl">20.000</td><td>nein</td></tr>
+		<tr><td>Kommentare pro Inhalt im Index</td><td class="zahl">200</td><td>nein</td></tr>
+		<tr><td>Länge eines Textabschnitts</td><td class="zahl">1.200 Zeichen</td><td>nein</td></tr>
+	</tbody>
+</table>
+
+<h2>Die KI</h2>
+
+<ul>
+	<li>Die KI-Antwort stützt sich auf höchstens fünf Abschnitte. Fragen, deren Antwort über viele Seiten verteilt ist, beantwortet sie unvollständig.</li>
+	<li>Sprachmodelle können sich irren, auch wenn die Quelle richtig ist. Deshalb die Quellenangaben.</li>
+	<li>Die Zweitmeinung des Sprachmodells ist nicht bei jeder Wiederholung gleich. Für dieselbe Frage kann sie – nach Ablauf des Zwischenspeichers – eine andere Auswahl treffen.</li>
+	<li>Der Schutz vor untergeschobenen Anweisungen ist gründlich, aber bei keinem Sprachmodell lückenlos.</li>
+	<li>Das Monatsbudget beruht auf Schätzungen und greift nur, wenn Preise hinterlegt sind.</li>
+	<li>Bricht eine Antwort ab, werden die Kosten aus der Textlänge geschätzt, weil der Anbieter die genaue Zahl erst am Ende meldet.</li>
+</ul>
+
+<h2>Größe</h2>
+
+<ul>
+	<li>Gemessen ist die Suche mit rund 3.000 Inhalten. Das Plugin ist für mehrere tausend ausgelegt; für Zehntausende gibt es keine Messung.</li>
+	<li>Bei Suchwörtern, die in fast jedem Inhalt vorkommen, steigt die Antwortzeit mit der Größe des Index.</li>
+	<li>Die semantische Suche wechselt ab 2.000 Abschnitten auf eine Vorauswahl. Dieser Weg ist getestet, aber nicht mit einem echten großen Bestand gemessen.</li>
+	<li>Der letzte Ausweg „im Wortinneren suchen“ liest den ganzen Index. Auf sehr großen Websites sollte er ausgeschaltet werden.</li>
+</ul>
+
+<h2>Umgebung</h2>
+
+<table>
+	<thead>
+		<tr><th>Geprüft</th><th>Nicht geprüft</th></tr>
+	</thead>
+	<tbody>
+		<tr>
+			<td>
+				<ul>
+					<li>WordPress auf einem Entwicklungsrechner mit PHP 8.2 und MariaDB</li>
+					<li>Polylang mit drei Sprachen</li>
+					<li>Chrome: Live-Suche, Vorschläge, Einlaufen der Antwort, Tastatur, schmale Bildschirme, ohne JavaScript</li>
+					<li>Automatische Barrierefreiheits-Prüfung (axe) für Such-Block und Einstellungsseite</li>
+				</ul>
+			</td>
+			<td>
+				<ul>
+					<li>PHP 8.1, 8.3 und neuer; MySQL 8</li>
+					<li>Die angegebene Mindestversion WordPress 6.6</li>
+					<li>Multisite, WPML</li>
+					<li>Firefox, Safari, mobile Browser</li>
+					<li>Echte Screenreader</li>
+					<li>Hoster mit ungewöhnlichen Beschränkungen</li>
+					<li>Der Betrieb mit echten Besuchern</li>
+				</ul>
+			</td>
+		</tr>
+	</tbody>
+</table>
+
+<h2>Was das Plugin bewusst nicht tut</h2>
+
+<ul>
+	<li><strong>Keine Synonymlisten.</strong> Sie müssten für jede Website von Hand gepflegt werden. Dafür gibt es die empfohlenen Treffer für Einzelfälle und die semantische Suche für den Rest.</li>
+	<li><strong>Keine Personalisierung.</strong> Alle Besucher bekommen für dieselbe Suche dieselben Treffer. Das Plugin weiß nichts über einzelne Personen und soll es nicht.</li>
+	<li><strong>Kein Gewichten nach Beliebtheit.</strong> Klicks werden gezählt, beeinflussen die Reihenfolge aber nicht.</li>
+	<li><strong>Keine Suche in Dateien.</strong> PDF, Word und Ähnliches werden nicht gelesen.</li>
+	<li><strong>Keine Facetten.</strong> Es gibt den Filter nach Inhaltstyp, aber keine Filter nach Preis, Datum oder eigenen Merkmalen.</li>
+	<li><strong>Keine automatischen Updates.</strong> Das Plugin wird nicht über wordpress.org verteilt.</li>
+</ul>

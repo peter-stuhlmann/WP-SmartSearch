@@ -1,0 +1,177 @@
+<!-- kapitel: Template-Funktionen und eigene Templates -->
+
+<span id="templates"></span>
+
+<p class="einleitung">Wenn dir Block und Shortcodes nicht reichen, bestimmst du die Ausgabe selbst: mit vier PHP-Funktionen in den Dateien deines Themes, mit überschriebenen Templates – oder mit ganz eigenem Markup aus den rohen Treffern.</p>
+
+<h2>Die vier Funktionen</h2>
+
+<table>
+	<thead>
+		<tr><th>Funktion</th><th>Gibt aus</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>prstsearch_form( array $options = [] )</code></td><td>Das Suchfeld. <code>$options</code> kennt <code>label</code>, <code>placeholder</code> und <code>button_label</code>.</td></tr>
+		<tr><td><code>prstsearch_results()</code></td><td>Die Treffer der aktuellen Suche mit dem Markup des Plugins.</td></tr>
+		<tr><td><code>prstsearch_answer()</code></td><td>Den Bereich der KI-Antwort zur aktuellen Suche.</td></tr>
+		<tr><td><code>prstsearch_get_results()</code></td><td>Gibt nichts aus, sondern liefert die Treffer als Objekt – oder <code>null</code>, wenn die aktuelle Anfrage keine Suche ist.</td></tr>
+	</tbody>
+</table>
+
+<h3>Beispiel: eine eigene Suchergebnisseite</h3>
+
+<div class="einfach">
+	<p>WordPress zeigt Suchergebnisse mit der Datei <code>search.php</code> deines Themes an. Legst du sie in deinem Child-Theme an, bestimmst du das Aussehen der Ergebnisseite.</p>
+</div>
+
+<span class="datei">wp-content/themes/dein-child-theme/search.php</span>
+<pre><code><span class="k">&lt;?php</span> <span class="k">get_header</span>(); <span class="k">?&gt;</span>
+
+&lt;main class=<span class="s">"suche"</span>&gt;
+	&lt;h1&gt;Suche&lt;/h1&gt;
+
+	<span class="k">&lt;?php</span>
+	<span class="c">// Das Suchfeld, mit eigenen Texten.</span>
+	<span class="k">prstsearch_form</span>(
+		<span class="k">array</span>(
+			<span class="s">'label'</span>        =&gt; <span class="s">'Wonach suchst du?'</span>,
+			<span class="s">'placeholder'</span>  =&gt; <span class="s">'Land, Ort oder Reiseart'</span>,
+			<span class="s">'button_label'</span> =&gt; <span class="s">'Finden'</span>,
+		)
+	);
+
+	<span class="k">prstsearch_answer</span>();   <span class="c">// die KI-Antwort, falls der Modus aktiv ist</span>
+	<span class="k">prstsearch_results</span>();  <span class="c">// die Trefferliste</span>
+	<span class="k">?&gt;</span>
+&lt;/main&gt;
+
+<span class="k">&lt;?php</span> <span class="k">get_footer</span>(); <span class="k">?&gt;</span></code></pre>
+
+<p>Schalte in diesem Fall im Tab <em>Darstellung</em> „KI-Antwort über den Treffern des Themes anzeigen“ aus, sonst erscheint die Antwort doppelt.</p>
+
+<h3>Beispiel: ganz eigenes Markup</h3>
+
+<p><code>prstsearch_get_results()</code> liefert ein Objekt der Klasse <code>SearchResults</code>:</p>
+
+<table>
+	<thead>
+		<tr><th>Eigenschaft / Methode</th><th>Inhalt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>$results-&gt;query</code></td><td>Die Suchanfrage.</td></tr>
+		<tr><td><code>$results-&gt;hits</code></td><td>Die Treffer der aktuellen Seite, je ein <code>SearchHit</code>.</td></tr>
+		<tr><td><code>$results-&gt;total</code></td><td>Anzahl der Treffer über alle Seiten.</td></tr>
+		<tr><td><code>$results-&gt;page</code>, <code>$results-&gt;per_page</code></td><td>Aktuelle Seite und Treffer pro Seite.</td></tr>
+		<tr><td><code>$results-&gt;page_count()</code></td><td>Anzahl der Seiten.</td></tr>
+		<tr><td><code>$results-&gt;post_ids()</code></td><td>Die IDs der Treffer in ihrer Reihenfolge.</td></tr>
+		<tr><td><code>$results-&gt;ranking-&gt;corrected_query</code></td><td>Die korrigierte Schreibweise, falls ein Tippfehler erkannt wurde, sonst leer.</td></tr>
+	</tbody>
+</table>
+
+<p>Ein <code>SearchHit</code> trägt:</p>
+
+<table>
+	<thead>
+		<tr><th>Eigenschaft / Methode</th><th>Inhalt</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>$hit-&gt;post_id</code></td><td>Der Inhalt.</td></tr>
+		<tr><td><code>$hit-&gt;relevance</code></td><td>Die Stufe als Enum; <code>$hit-&gt;relevance-&gt;value</code> ist <code>high</code>, <code>medium</code> oder <code>low</code>.</td></tr>
+		<tr><td><code>$hit-&gt;score</code></td><td>Der Rohwert hinter der Stufe.</td></tr>
+		<tr><td><code>$hit-&gt;by_keyword</code>, <code>$hit-&gt;by_meaning</code>, <code>$hit-&gt;by_ai</code></td><td>Wodurch der Treffer gefunden wurde.</td></tr>
+		<tr><td><code>$hit-&gt;in_title</code></td><td>Ob ein Suchwort im Titel steht.</td></tr>
+		<tr><td><code>$hit-&gt;is_recommended</code></td><td>Ob es ein empfohlener Treffer ist.</td></tr>
+		<tr><td><code>$hit-&gt;explanation()</code></td><td>Ein Satz, warum der Treffer gefunden wurde.</td></tr>
+	</tbody>
+</table>
+
+<span class="datei">search.php – Treffer als Karten</span>
+<pre><code><span class="k">&lt;?php</span>
+$results = <span class="k">prstsearch_get_results</span>();
+
+<span class="k">if</span> ( <span class="k">null</span> === $results || <span class="s">0</span> === $results-&gt;total ) {
+	<span class="k">echo</span> <span class="s">'&lt;p&gt;Leider nichts gefunden.&lt;/p&gt;'</span>;
+	<span class="k">return</span>;
+}
+
+<span class="k">printf</span>( <span class="s">'&lt;p&gt;%d Treffer&lt;/p&gt;'</span>, $results-&gt;total );
+
+<span class="k">echo</span> <span class="s">'&lt;div class="karten"&gt;'</span>;
+
+<span class="k">foreach</span> ( $results-&gt;hits <span class="k">as</span> $hit ) {
+	<span class="k">printf</span>(
+		<span class="s">'&lt;a class="karte karte--%s" href="%s"&gt;%s&lt;h2&gt;%s&lt;/h2&gt;&lt;/a&gt;'</span>,
+		<span class="k">esc_attr</span>( $hit-&gt;relevance-&gt;value ),
+		<span class="k">esc_url</span>( <span class="k">get_permalink</span>( $hit-&gt;post_id ) ),
+		<span class="k">get_the_post_thumbnail</span>( $hit-&gt;post_id, <span class="s">'medium'</span> ),
+		<span class="k">esc_html</span>( <span class="k">get_the_title</span>( $hit-&gt;post_id ) )
+	);
+}
+
+<span class="k">echo</span> <span class="s">'&lt;/div&gt;'</span>;</code></pre>
+
+<div class="kasten">
+	<span class="kasten__titel">Die normale Schleife geht auch</span>
+	<p>Bei „Standardsuche von WordPress ersetzen“ stehen die Treffer ohnehin in der Hauptabfrage. Die gewohnte Schleife mit <code>have_posts()</code> und <code>the_post()</code> liefert sie in der richtigen Reihenfolge – nur ohne Relevanz und Begründung.</p>
+</div>
+
+<h2>Templates überschreiben</h2>
+
+<div class="einfach">
+	<p>Das Plugin gibt sein Markup über kleine Dateien aus. Legst du in deinem Theme eine Datei mit demselben Namen an, nimmt das Plugin deine. Ein Update des Plugins überschreibt sie nicht.</p>
+</div>
+
+<ol class="schritte">
+	<li>Lege in deinem (Child-)Theme den Ordner <code>smart-search</code> an.</li>
+	<li>Kopiere die gewünschte Datei aus <code>wp-content/plugins/smart-search/templates/</code> dorthin.</li>
+	<li>Ändere die Kopie.</li>
+</ol>
+
+<table>
+	<thead>
+		<tr><th>Datei</th><th>Gibt aus</th><th>Daten in <code>$args</code></th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>search-form.php</code></td><td>Das Suchfeld</td><td><code>id</code>, <code>action</code>, <code>query</code>, <code>label</code>, <code>placeholder</code>, <code>button_label</code>, <code>suggestions</code></td></tr>
+		<tr><td><code>results.php</code></td><td>Den Rahmen der Trefferliste</td><td><code>results</code>, <code>summary</code>, <code>types_html</code>, <code>items_html</code>, <code>has_more</code>, <code>more_url</code></td></tr>
+		<tr><td><code>result.php</code></td><td>Einen einzelnen Treffer</td><td><code>item</code> mit <code>id</code>, <code>title</code>, <code>url</code>, <code>type</code>, <code>excerpt</code>, <code>relevance</code>, <code>relevance_label</code>, <code>score</code>, <code>explanation</code>; dazu <code>show_relevance</code></td></tr>
+		<tr><td><code>type-filter.php</code></td><td>Den Filter nach Inhaltstyp</td><td><code>types</code>, je mit <code>type</code>, <code>label</code>, <code>count</code>, <code>url</code>, <code>is_current</code></td></tr>
+		<tr><td><code>answer.php</code></td><td>Die fertige KI-Antwort</td><td><code>paragraphs</code>, <code>sources</code> (je <code>title</code>, <code>url</code>), <code>show_sources</code></td></tr>
+		<tr><td><code>answer-placeholder.php</code></td><td>Den Platzhalter, bis die Antwort geladen ist</td><td><code>query</code>, <code>log_token</code></td></tr>
+	</tbody>
+</table>
+
+<h3>Beispiel: ein Treffer mit Beitragsbild</h3>
+
+<span class="datei">wp-content/themes/dein-child-theme/smart-search/result.php</span>
+<pre><code><span class="k">&lt;?php</span>
+<span class="k">defined</span>( <span class="s">'ABSPATH'</span> ) || <span class="k">exit</span>;
+
+$item = $args[<span class="s">'item'</span>];
+<span class="k">?&gt;</span>
+&lt;li class=<span class="s">"prstsearch-result"</span>&gt;
+	<span class="k">&lt;?php echo</span> <span class="k">get_the_post_thumbnail</span>( $item[<span class="s">'id'</span>], <span class="s">'thumbnail'</span> ); <span class="k">?&gt;</span>
+
+	&lt;h3 class=<span class="s">"prstsearch-result__title"</span>&gt;
+		&lt;a href=<span class="s">"&lt;?php echo esc_url( $item['url'] ); ?&gt;"</span>&gt;
+			<span class="k">&lt;?php echo</span> <span class="k">esc_html</span>( $item[<span class="s">'title'</span>] ); <span class="k">?&gt;</span>
+		&lt;/a&gt;
+	&lt;/h3&gt;
+
+	&lt;p class=<span class="s">"prstsearch-result__excerpt"</span>&gt;
+		<span class="k">&lt;?php echo</span> <span class="k">wp_kses</span>( $item[<span class="s">'excerpt'</span>], <span class="k">array</span>( <span class="s">'mark'</span> =&gt; <span class="k">array</span>() ) ); <span class="k">?&gt;</span>
+	&lt;/p&gt;
+&lt;/li&gt;</code></pre>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Drei Dinge, die du beibehalten solltest</span>
+	<ul>
+		<li><strong>Maskieren.</strong> Titel mit <code>esc_html()</code>, Adressen mit <code>esc_url()</code>. Der Auszug enthält bereits <code>&lt;mark&gt;</code> um die Suchwörter und ist sonst maskiert – gib ihn mit <code>wp_kses()</code> aus, das nur <code>mark</code> erlaubt.</li>
+		<li><strong>Die Attribute <code>data-prstsearch-…</code>.</strong> An ihnen findet das Skript des Plugins die Liste, den Link „Weitere Treffer“ und den Filter. Fehlen sie, funktioniert das Nachladen nicht mehr.</li>
+		<li><strong>Die Adresse aus <code>$item['url']</code>.</strong> Sie enthält den Sprung zur Textstelle.</li>
+	</ul>
+</div>
+
+<h2>Den Pfad eines Templates ändern</h2>
+
+<p>Der Hook <code>prstsearch_template</code> erlaubt, ein Template von einem beliebigen Ort zu laden – etwa aus einem eigenen Plugin. Ein Beispiel steht im Kapitel <a href="#hooks">„Hooks“</a>.</p>

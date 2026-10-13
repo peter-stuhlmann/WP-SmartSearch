@@ -1,0 +1,202 @@
+<!-- kapitel: REST-API – die Suche für Apps und eigene Oberflächen -->
+
+<p class="einleitung">Alles, was der Such-Block kann, steht auch anderen Programmen offen: einer App, einem Frontend in React oder Vue, einem Sprachassistenten. Die Schnittstelle liefert Treffer als Daten und, wenn gewünscht, als fertiges HTML.</p>
+
+<div class="einfach">
+	<p>Eine REST-API ist eine Internetadresse, die statt einer Seite für Menschen Daten für Programme ausliefert. Man ruft sie mit einer Frage auf und bekommt eine Antwort im Format JSON.</p>
+</div>
+
+<h2>Grundlagen</h2>
+
+<table>
+	<tbody>
+		<tr><td><strong>Basisadresse</strong></td><td><code>https://deine-website.de/wp-json/prstsearch/v1</code></td></tr>
+		<tr><td><strong>Format</strong></td><td>JSON</td></tr>
+		<tr><td><strong>Öffentliche Routen</strong></td><td>ohne Anmeldung nutzbar. Sie liefern nichts, was ein Besucher nicht auch auf der veröffentlichten Website lesen könnte.</td></tr>
+		<tr><td><strong>Verwaltungsrouten</strong></td><td>nur für angemeldete Benutzer mit dem Recht, das Plugin zu verwalten, und mit gültiger Nonce (<code>X-WP-Nonce</code>).</td></tr>
+		<tr><td><strong>Mehrsprachigkeit</strong></td><td>Der Parameter <code>lang</code> (zum Beispiel <code>de</code>) wählt bei Polylang die Sprache der Treffer.</td></tr>
+	</tbody>
+</table>
+
+<h2>Öffentliche Routen</h2>
+
+<table>
+	<thead>
+		<tr><th>Route</th><th>Zweck</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>GET /search</code></td><td>Eine Seite Treffer.</td></tr>
+		<tr><td><code>GET /suggestions</code></td><td>Seitentitel zur bisherigen Eingabe.</td></tr>
+		<tr><td><code>GET /answer</code></td><td>Die KI-Antwort zu einer Frage, in einem Stück.</td></tr>
+		<tr><td><code>GET /answer/stream</code></td><td>Dieselbe Antwort als Ereignisstrom, während sie entsteht.</td></tr>
+		<tr><td><code>POST /click</code></td><td>Meldet, welcher Treffer geöffnet wurde.</td></tr>
+	</tbody>
+</table>
+
+<h2>GET /search</h2>
+
+<table>
+	<thead>
+		<tr><th>Parameter</th><th>Bedeutung</th><th>Standard</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>q</code></td><td>Die Suchanfrage. Pflicht.</td><td>–</td></tr>
+		<tr><td><code>page</code></td><td>Seite der Trefferliste.</td><td>1</td></tr>
+		<tr><td><code>per_page</code></td><td>Treffer pro Seite, höchstens 50.</td><td>Einstellung „Treffer pro Seite“</td></tr>
+		<tr><td><code>type</code></td><td>Nur Treffer dieses Inhaltstyps, zum Beispiel <code>page</code>.</td><td>alle</td></tr>
+		<tr><td><code>refine</code>, <code>token</code></td><td>Für den zweiten Schritt, siehe unten.</td><td>–</td></tr>
+		<tr><td><code>preview</code></td><td>Suche nicht in die Statistik schreiben. Wirkt nur für Benutzer, die das Plugin verwalten dürfen.</td><td>aus</td></tr>
+	</tbody>
+</table>
+
+<span class="datei">Antwort (gekürzt)</span>
+<pre><code>{
+  <span class="s">"query"</span>: <span class="s">"Rundreise Portugal"</span>,
+  <span class="s">"total"</span>: 6,
+  <span class="s">"page"</span>: 1,
+  <span class="s">"pages"</span>: 1,
+  <span class="s">"mode"</span>: <span class="s">"keyword"</span>,
+  <span class="s">"degraded"</span>: false,
+  <span class="s">"corrected"</span>: <span class="s">""</span>,
+  <span class="s">"token"</span>: <span class="s">"412.5e0c…"</span>,
+  <span class="s">"pending"</span>: false,
+  <span class="s">"summary"</span>: <span class="s">"6 Treffer für „Rundreise Portugal“"</span>,
+  <span class="s">"results"</span>: [
+    {
+      <span class="s">"id"</span>: 1042,
+      <span class="s">"title"</span>: <span class="s">"Rundreise Portugal: die große Runde – Lissabon und Algarve (8 Tage)"</span>,
+      <span class="s">"url"</span>: <span class="s">"https://…/rundreise-portugal…/#:~:text=…"</span>,
+      <span class="s">"type"</span>: <span class="s">"Beitrag"</span>,
+      <span class="s">"excerpt"</span>: <span class="s">"Mit dieser &lt;mark&gt;Rundreise&lt;/mark&gt; lernen Sie &lt;mark&gt;Portugal&lt;/mark&gt; …"</span>,
+      <span class="s">"relevance"</span>: <span class="s">"high"</span>,
+      <span class="s">"relevance_label"</span>: <span class="s">"Sehr passend"</span>,
+      <span class="s">"score"</span>: 1,
+      <span class="s">"explanation"</span>: <span class="s">"Ein Suchwort steht im Titel."</span>
+    }
+  ],
+  <span class="s">"html"</span>: <span class="s">"&lt;div class=\"prstsearch-results\"&gt;…"</span>,
+  <span class="s">"items_html"</span>: <span class="s">"&lt;li class=\"prstsearch-result\"&gt;…"</span>,
+  <span class="s">"answer_html"</span>: <span class="s">""</span>
+}</code></pre>
+
+<table>
+	<thead>
+		<tr><th>Feld</th><th>Bedeutung</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>mode</code></td><td>Der Modus, der tatsächlich lief.</td></tr>
+		<tr><td><code>degraded</code></td><td><code>true</code>, wenn die semantische Suche gewünscht, aber nicht möglich war und nur die Keyword-Suche lief.</td></tr>
+		<tr><td><code>corrected</code></td><td>Die korrigierte Schreibweise, falls ein Tippfehler erkannt wurde.</td></tr>
+		<tr><td><code>token</code></td><td>Signiertes Kennzeichen dieser Suche. Wird für <code>/click</code>, <code>/answer</code> und den zweiten Schritt gebraucht. Leer, wenn nicht aufgezeichnet wird.</td></tr>
+		<tr><td><code>pending</code></td><td><code>true</code>, wenn das Sprachmodell die Liste noch ergänzen kann.</td></tr>
+		<tr><td><code>results</code></td><td>Die Treffer als Daten. <code>excerpt</code> ist maskiertes HTML, das nur <code>&lt;mark&gt;</code> enthält.</td></tr>
+		<tr><td><code>html</code></td><td>Die ganze Trefferliste, gerendert mit den Templates. Nur auf Seite 1.</td></tr>
+		<tr><td><code>items_html</code></td><td>Nur die Listeneinträge dieser Seite – zum Anhängen beim Nachladen.</td></tr>
+		<tr><td><code>answer_html</code></td><td>Der Platzhalter für die KI-Antwort, wenn eine zu erwarten ist.</td></tr>
+	</tbody>
+</table>
+
+<h3>Der zweite Schritt: verfeinern</h3>
+
+<p>Ist <code>pending</code> wahr, hat die Suche nichts klar Passendes gefunden und das Sprachmodell wurde noch nicht gefragt. Die erste Antwort kommt sofort; die ergänzte Liste holst du mit einem zweiten Aufruf:</p>
+
+<pre><code>GET /search?q=Geflügel&amp;refine=1&amp;token=412.5e0c…</code></pre>
+
+<p>Wer das nicht braucht, ignoriert <code>pending</code> einfach.</p>
+
+<h3>Beispiel in JavaScript</h3>
+
+<pre><code><span class="k">async function</span> suche( text ) {
+	<span class="k">const</span> adresse = <span class="k">new</span> URL( <span class="s">'/wp-json/prstsearch/v1/search'</span>, location.origin );
+
+	adresse.searchParams.set( <span class="s">'q'</span>, text );
+
+	<span class="k">const</span> antwort = <span class="k">await</span> fetch( adresse );
+
+	<span class="k">if</span> ( ! antwort.ok ) {
+		<span class="k">throw new</span> Error( <span class="s">'Die Suche ist gerade nicht erreichbar.'</span> );
+	}
+
+	<span class="k">const</span> daten = <span class="k">await</span> antwort.json();
+
+	<span class="k">return</span> daten.results.map( ( treffer ) =&gt; ( {
+		titel: treffer.title,
+		adresse: treffer.url,
+		stufe: treffer.relevance,
+	} ) );
+}</code></pre>
+
+<h2>GET /suggestions</h2>
+
+<p>Parameter <code>q</code>. Liefert bis zu sechs Einträge mit <code>title</code> und <code>url</code>; Titel, die mit der Eingabe beginnen, stehen oben. Die Antwort darf fünf Minuten im Browser zwischengespeichert werden. Ist „Vorschläge beim Tippen“ ausgeschaltet, kommt eine leere Liste.</p>
+
+<pre><code>[
+  { <span class="s">"title"</span>: <span class="s">"Familienreise Kuba: Ferien mit Kindern …"</span>, <span class="s">"url"</span>: <span class="s">"https://…"</span> },
+  { <span class="s">"title"</span>: <span class="s">"Badereise Kuba: Sonne, Sand und Meer …"</span>, <span class="s">"url"</span>: <span class="s">"https://…"</span> }
+]</code></pre>
+
+<h2>GET /answer</h2>
+
+<p>Parameter <code>q</code> und, freiwillig, <code>token</code> aus der Suchantwort, damit die Kosten der richtigen Suche zugeordnet werden. Liefert <code>{ "html": "…" }</code> – die fertige Antwort mit Links und Quellen, gerendert mit dem Template <code>answer.php</code>. Leer, wenn es nichts zu antworten gibt oder der Modus nicht „KI-Antwort“ ist.</p>
+
+<h2>GET /answer/stream</h2>
+
+<p>Dieselbe Antwort als Server-Sent Events, wenn „KI-Antwort schon beim Schreiben anzeigen“ eingeschaltet ist. Es gibt zwei Arten von Ereignissen:</p>
+
+<table>
+	<thead>
+		<tr><th>Ereignis</th><th>Daten</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>text</code></td><td>Ein Stück der Antwort als JSON-Zeichenkette – Rohtext, kein HTML.</td></tr>
+		<tr><td><code>done</code></td><td><code>{ "html": "…" }</code> – die fertige Antwort wie bei <code>/answer</code>. Leer, wenn keine zustande kam.</td></tr>
+	</tbody>
+</table>
+
+<pre><code><span class="k">const</span> quelle = <span class="k">new</span> EventSource(
+	<span class="s">'/wp-json/prstsearch/v1/answer/stream?q='</span> + encodeURIComponent( frage )
+);
+<span class="k">let</span> rohtext = <span class="s">''</span>;
+
+quelle.addEventListener( <span class="s">'text'</span>, ( ereignis ) =&gt; {
+	rohtext += JSON.parse( ereignis.data );
+	ausgabe.textContent = rohtext;   <span class="c">// als Text einsetzen, nie als HTML</span>
+} );
+
+quelle.addEventListener( <span class="s">'done'</span>, ( ereignis ) =&gt; {
+	ausgabe.innerHTML = JSON.parse( ereignis.data ).html;
+	quelle.close();
+} );
+
+quelle.onerror = () =&gt; quelle.close();   <span class="c">// dann /answer als Ersatz abrufen</span></code></pre>
+
+<h2>POST /click</h2>
+
+<p>Parameter <code>token</code> und <code>post_id</code>. Trägt beim Eintrag der Suche ein, welcher Treffer geöffnet wurde – sofern „Klicks auf Treffer“ eingeschaltet ist. Ohne gültiges <code>token</code> geschieht nichts.</p>
+
+<h2>Verwaltungsrouten</h2>
+
+<table>
+	<thead>
+		<tr><th>Route</th><th>Zugriff</th><th>Zweck</th></tr>
+	</thead>
+	<tbody>
+		<tr><td><code>GET /index</code></td><td>verwalten</td><td>Stand des Index: Zahl der Inhalte, Abschnitte, ausstehende Einbettungen, Fehler.</td></tr>
+		<tr><td><code>DELETE /index</code></td><td>verwalten</td><td>Index leeren.</td></tr>
+		<tr><td><code>POST /index/rebuild</code></td><td>verwalten</td><td>Einen Schritt des Neuaufbaus ausführen; wird wiederholt aufgerufen, bis <code>done</code> wahr ist.</td></tr>
+		<tr><td><code>POST /index/embeddings</code></td><td>verwalten</td><td>Eine Portion Einbettungen berechnen.</td></tr>
+		<tr><td><code>GET /index/pages?q=…</code></td><td>verwalten</td><td>Indexierte Seiten nach Titel – für die Auswahl empfohlener Treffer.</td></tr>
+		<tr><td><code>GET /index/posts/{id}</code></td><td>wer den Inhalt bearbeiten darf</td><td>Zustand eines Inhalts im Index.</td></tr>
+		<tr><td><code>POST /index/posts/{id}</code></td><td>wer den Inhalt bearbeiten darf</td><td>Inhalt neu einlesen oder ausschließen.</td></tr>
+		<tr><td><code>POST /provider/test</code></td><td>verwalten</td><td>Verbindung zum KI-Anbieter testen.</td></tr>
+		<tr><td><code>GET /provider/models</code></td><td>verwalten</td><td>Modelle, die das Konto beim Anbieter nutzen kann.</td></tr>
+	</tbody>
+</table>
+
+<h2>Grenzen der öffentlichen Routen</h2>
+
+<ul>
+	<li>Die Suchanfrage wird nach 200 Zeichen abgeschnitten.</li>
+	<li>KI-Anfragen und Einträge in die Statistik sind pro Minute begrenzt, siehe Kapitel <a href="#kosten">„Kosten, Budget und Begrenzungen“</a>. Die Suche selbst bleibt dabei immer erreichbar.</li>
+	<li>Wer die API von einer anderen Domain aus aufruft, braucht die üblichen CORS-Kopfzeilen von WordPress.</li>
+</ul>
