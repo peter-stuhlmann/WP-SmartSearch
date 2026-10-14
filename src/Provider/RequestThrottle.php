@@ -9,6 +9,8 @@ declare( strict_types=1 );
 
 namespace PrstSearch\Provider;
 
+use PrstSearch\Support\Counters;
+
 /**
  * Caps what visitors can set off per minute, for the whole site and per visitor.
  *
@@ -22,6 +24,9 @@ namespace PrstSearch\Provider;
  * addresses share a group, so a number cannot be traced back to one, and it
  * is another number a minute later. What is stored is a count per group. The
  * address is never stored, and nothing of this reaches the statistics.
+ *
+ * Counting is atomic, see StoredCounters: requests that arrive together are
+ * all counted.
  */
 final class RequestThrottle {
 
@@ -40,9 +45,6 @@ final class RequestThrottle {
 	 */
 	public const LOG = 'log';
 
-	private const CACHE_GROUP = 'prstsearch_throttle';
-
-	private const TRANSIENT = 'prstsearch_rate_';
 
 	/**
 	 * Number of groups visitors are sorted into: 16 to the power of this many hexadecimal digits.
@@ -56,9 +58,6 @@ final class RequestThrottle {
 	 * about a million groups, still some thousand IPv4 addresses each.
 	 */
 	private const SEARCH_GROUP_DIGITS = 5;
-
-	private const SEARCH_TRANSIENT = 'prstsearch_rs_';
-
 	/**
 	 * Requests per minute: for the whole site, and for one visitor.
 	 */
@@ -78,6 +77,11 @@ final class RequestThrottle {
 	);
 
 	/**
+	 * Creates the throttle.
+	 */
+	public function __construct( private readonly Counters $counters ) {}
+
+	/**
 	 * Counts a request and tells whether it may proceed.
 	 *
 	 * @param string $kind One of the class constants.
@@ -93,8 +97,8 @@ final class RequestThrottle {
 		$minute = (int) floor( time() / MINUTE_IN_SECONDS );
 
 		// The visitor is checked first: a blocked visitor must not use up the site's allowance.
-		return $this->is_below( $minute, $kind . '_' . self::visitor_group( $minute, self::GROUP_DIGITS ), (int) ( $limits['visitor'] ?? 0 ) )
-			&& $this->is_below( $minute, $kind . '_site', (int) ( $limits['site'] ?? 0 ) );
+		return $this->is_below( $kind . '_' . self::visitor_group( $minute, self::GROUP_DIGITS ), $minute, MINUTE_IN_SECONDS, (int) ( $limits['visitor'] ?? 0 ) )
+			&& $this->is_below( $kind . '_site', $minute, MINUTE_IN_SECONDS, (int) ( $limits['site'] ?? 0 ) );
 	}
 
 	/**
@@ -110,80 +114,25 @@ final class RequestThrottle {
 		$minute = (int) floor( time() / MINUTE_IN_SECONDS );
 
 		// The visitor is checked first: a blocked visitor must not use up the site's allowance.
-		return $this->is_below_in_period( 'search_' . $bucket . '_' . self::visitor_group( $bucket, self::SEARCH_GROUP_DIGITS ), $per_visitor, $period )
-			&& $this->is_below( $minute, 'search_site', $site_per_minute );
+		return $this->is_below( 'search_' . $period . '_' . self::visitor_group( $bucket, self::SEARCH_GROUP_DIGITS ), $bucket, $period, $per_visitor )
+			&& $this->is_below( 'search_site', $minute, MINUTE_IN_SECONDS, $site_per_minute );
 	}
 
 	/**
-	 * Increments a counter that lives for one period and tells whether it is still within the limit.
+	 * Counts a request in a period and tells whether it is still within the limit.
 	 *
-	 * Each counter is a row of its own. Over an hour or a day a single row for
-	 * all of them would grow with every visitor and be written in full on every search.
+	 * @param string $counter Name of the counter, without the period.
+	 * @param int    $bucket  Number of the period.
+	 * @param int    $period  Length of the period in seconds.
+	 * @param int    $limit   Requests allowed in the period. 0 for no limit.
 	 */
-	private function is_below_in_period( string $counter, int $limit, int $period ): bool {
+	private function is_below( string $counter, int $bucket, int $period, int $limit ): bool {
 		if ( $limit <= 0 ) {
 			return true;
 		}
 
-		if ( wp_using_ext_object_cache() ) {
-			wp_cache_add( $counter, 0, self::CACHE_GROUP, $period );
-
-			return (int) wp_cache_incr( $counter, 1, self::CACHE_GROUP ) <= $limit;
-		}
-
-		$name  = self::SEARCH_TRANSIENT . substr( md5( $counter ), 0, 16 );
-		$count = (int) get_transient( $name );
-
-		if ( $count >= $limit ) {
-			return false;
-		}
-
-		set_transient( $name, $count + 1, $period );
-
-		return true;
-	}
-
-	/**
-	 * Increments a counter of the given minute and tells whether it is still within the limit.
-	 */
-	private function is_below( int $minute, string $counter, int $limit ): bool {
-		if ( $limit <= 0 ) {
-			return true;
-		}
-
-		// With a persistent object cache the increment is atomic, and nothing reaches the database.
-		if ( wp_using_ext_object_cache() ) {
-			$key = $counter . '_' . $minute;
-
-			wp_cache_add( $key, 0, self::CACHE_GROUP, 2 * MINUTE_IN_SECONDS );
-
-			return (int) wp_cache_incr( $key, 1, self::CACHE_GROUP ) <= $limit;
-		}
-
-		/*
-		 * Without one, all counters of a minute share a single database row,
-		 * and the row of the minute before is removed as soon as a new one
-		 * begins. Under heavy parallel load a count can be off by a few, which
-		 * is acceptable for a limit that only has to hold approximately.
-		 */
-		$counts = get_transient( self::TRANSIENT . $minute );
-		$counts = is_array( $counts ) ? $counts : array();
-
-		if ( array() === $counts ) {
-			delete_transient( self::TRANSIENT . ( $minute - 1 ) );
-		}
-
-		$count = (int) ( $counts[ $counter ] ?? 0 );
-
-		if ( $count >= $limit ) {
-			return false;
-		}
-
-		$counts[ $counter ] = $count + 1;
-
-		set_transient( self::TRANSIENT . $minute, $counts, 2 * MINUTE_IN_SECONDS );
-
-		return true;
+		// Kept a minute longer than the period, so that a clock a little off does not end it early.
+		return $this->counters->increment( $counter . '_' . $bucket, ( $bucket + 1 ) * $period + MINUTE_IN_SECONDS ) <= $limit;
 	}
 
 	/**

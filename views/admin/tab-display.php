@@ -118,6 +118,17 @@ $prstsearch_integrations = array(
 				__( 'Visitors see which pages the answer is based on.', 'smart-search' )
 			);
 
+			$fields->select_row(
+				'visitor_address',
+				__( 'Address visitors', 'smart-search' ),
+				__( 'How the texts of the search speak to visitors – for example “Please try again” informally or formally. “Automatic” follows the language of the website: “Deutsch (Sie)” is formal. Also tells the AI answer how to address the reader.', 'smart-search' ),
+				array(
+					'auto'     => __( 'Automatic, by the language of the website', 'smart-search' ),
+					'informal' => __( 'Informal (German “du”)', 'smart-search' ),
+					'formal'   => __( 'Formal (German “Sie”)', 'smart-search' ),
+				)
+			);
+
 			$fields->switch_row(
 				'show_relevance',
 				__( 'Show the relevance of each result', 'smart-search' ),

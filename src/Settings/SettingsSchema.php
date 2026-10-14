@@ -85,6 +85,7 @@ final class SettingsSchema {
 			'jump_to_passage'          => self::field( self::TYPE_BOOL, true, self::TAB_DISPLAY ),
 			'show_sources'             => self::field( self::TYPE_BOOL, true, self::TAB_DISPLAY ),
 			'show_relevance'           => self::field( self::TYPE_BOOL, true, self::TAB_DISPLAY ),
+			'visitor_address'          => self::choice( 'auto', array( 'auto', 'informal', 'formal' ), self::TAB_DISPLAY ),
 
 			// Statistics.
 			'tracking_enabled'         => self::field( self::TYPE_BOOL, true, self::TAB_STATS ),
@@ -97,6 +98,8 @@ final class SettingsSchema {
 			'search_limit'             => self::number( self::TYPE_INT, 20, self::TAB_SECURITY, 0, 100000 ),
 			'search_limit_window'      => self::choice( 'minute', array( 'minute', 'hour', 'day' ), self::TAB_SECURITY ),
 			'search_limit_site'        => self::number( self::TYPE_INT, 0, self::TAB_SECURITY, 0, 1000000 ),
+			'search_limit_action'      => self::choice( 'basic', array( 'basic', 'block' ), self::TAB_SECURITY ),
+			'search_limit_message'     => self::field( self::TYPE_TEXT, '', self::TAB_SECURITY ),
 			'honeypot'                 => self::field( self::TYPE_BOOL, false, self::TAB_SECURITY ),
 
 			// Tools.

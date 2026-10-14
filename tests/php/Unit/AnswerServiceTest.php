@@ -251,6 +251,7 @@ final class AnswerServiceTest extends SearchTestCase {
 		$container->set( \PrstSearch\Database\ChunkStore::class, fn () => $this->store );
 		$container->set( \PrstSearch\Database\SearchLog::class, fn () => $this->log );
 		$container->set( HttpTransport::class, fn () => $this->container->get( HttpTransport::class ) );
+		$container->set( \PrstSearch\Support\Counters::class, static fn () => new MemoryCounters() );
 
 		return $container->get( AnswerService::class );
 	}

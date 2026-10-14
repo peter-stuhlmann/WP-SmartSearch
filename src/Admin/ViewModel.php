@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace PrstSearch\Admin;
 
 use PrstSearch\Database\ChunkStore;
+use PrstSearch\Frontend\VisitorText;
 use PrstSearch\Index\Eligibility;
 use PrstSearch\Index\IndexVersion;
 use PrstSearch\Index\IndexReport;
@@ -44,7 +45,8 @@ final class ViewModel {
 		private readonly SecretStore $secrets,
 		private readonly UsageLedger $ledger,
 		private readonly IndexVersion $version,
-		private readonly Recommendations $recommendations
+		private readonly Recommendations $recommendations,
+		private readonly VisitorText $texts
 	) {}
 
 	/**
@@ -271,6 +273,13 @@ final class ViewModel {
 	 */
 	public function roles(): array {
 		return array_map( 'translate_user_role', wp_roles()->get_names() );
+	}
+
+	/**
+	 * Returns the standard message for too many searches, in the address the website uses.
+	 */
+	public function standard_limit_message(): string {
+		return $this->texts->get( 'too_many' );
 	}
 
 	/**

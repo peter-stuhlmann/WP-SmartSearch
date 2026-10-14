@@ -11,6 +11,7 @@ use Brain\Monkey\Functions;
 use PrstSearch\Database\ChunkStore;
 use PrstSearch\Database\SearchLog;
 use PrstSearch\Provider\HttpTransport;
+use PrstSearch\Support\Counters;
 use PrstSearch\Settings\Settings;
 use PrstSearch\Support\Container;
 use WP_Post;
@@ -56,6 +57,7 @@ abstract class SearchTestCase extends WordPressTestCase {
 		$this->container->set( ChunkStore::class, fn (): ChunkStore => $this->store );
 		$this->container->set( SearchLog::class, fn (): SearchLog => $this->log );
 		$this->container->set( HttpTransport::class, fn (): HttpTransport => $this->provider );
+		$this->container->set( Counters::class, static fn (): Counters => new MemoryCounters() );
 
 		Functions\stubTranslationFunctions();
 		Functions\when( 'wp_strip_all_tags' )->alias( 'strip_tags' );

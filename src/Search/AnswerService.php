@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace PrstSearch\Search;
 
 use PrstSearch\Database\ChunkStore;
+use PrstSearch\Frontend\VisitorText;
 use PrstSearch\Provider\ClientFactory;
 use PrstSearch\Provider\ProviderConfig;
 use PrstSearch\Provider\ProviderException;
@@ -42,7 +43,8 @@ final class AnswerService {
 		private readonly RequestThrottle $throttle,
 		private readonly Settings $settings,
 		private readonly SearchLogger $logger,
-		private readonly Cache $cache
+		private readonly Cache $cache,
+		private readonly VisitorText $texts
 	) {}
 
 	/**
@@ -162,6 +164,11 @@ final class AnswerService {
 			wp_strip_all_tags( get_bloginfo( 'name' ) ),
 			get_locale()
 		);
+
+		// The answer speaks to the visitor as the rest of the website does.
+		if ( $this->texts->is_formal() ) {
+			$instructions .= ' Address the reader formally, for example with "Sie" in German.';
+		}
 
 		$custom = $this->settings->string( 'answer_instructions' );
 

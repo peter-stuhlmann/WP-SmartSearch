@@ -93,6 +93,32 @@ final class SearchService {
 	}
 
 	/**
+	 * Returns one page of results of the basic search: what costs little and nothing else.
+	 *
+	 * For visitors over the search limit, see SearchGuard. Only the keyword
+	 * search runs, without the provider, without the spelling correction,
+	 * without reading the whole index for text inside words, and the search is
+	 * not recorded in the statistics. Quotation marks and excluded words still
+	 * apply, and so does everything that decides what a visitor may see.
+	 *
+	 * @param string   $query      The search phrase.
+	 * @param int      $page       Page number, starting at 1.
+	 * @param int|null $per_page   Hits per page, or null for the configured number.
+	 * @param string[] $post_types Limit the hits to these post types. Empty for all indexed types.
+	 */
+	public function basic( string $query, int $page = 1, ?int $per_page = null, array $post_types = array() ): SearchResults {
+		$query    = self::normalize( $query );
+		$per_page = max( 1, $per_page ?? $this->settings->int( 'results_per_page' ) );
+		$terms    = QueryTerms::from_phrase( $query );
+		$hits     = $terms->is_empty() ? array() : $this->merge( $this->keyword->search( $terms, $this->max_hits(), false ), array() );
+
+		// Marked as degraded: the full search would have done more.
+		$ranking = new Ranking( $this->demands->met_by( $hits, $terms ), $terms, SearchMode::Keyword, true, new TokenUsage() );
+
+		return $this->page_of( $ranking, $query, max( 1, $page ), $per_page, $post_types, '', false );
+	}
+
+	/**
 	 * Returns the first page of results after the language model had its say.
 	 *
 	 * The second step of a quick search, see search(). The search is already

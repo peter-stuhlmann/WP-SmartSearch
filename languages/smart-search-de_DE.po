@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-12T20:56:10+02:00\n"
-"PO-Revision-Date: 2026-10-14T12:50:50+00:00\n"
+"PO-Revision-Date: 2026-10-14T13:30:23+00:00\n"
 "Language: de_DE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: smart-search\n"
@@ -18,7 +18,7 @@ msgstr ""
 #: smart-search.php:3
 #: src/Admin/AdminPage.php:67
 #: src/Admin/AdminPage.php:68
-#: src/Privacy/PrivacyPolicy.php:36
+#: src/Privacy/PrivacyPolicy.php:39
 #: views/admin/page.php:28
 msgid "Smart Search"
 msgstr "Smart Search"
@@ -339,198 +339,266 @@ msgstr "Tag"
 msgid "AI costs per day"
 msgstr "KI-Kosten pro Tag"
 
-#: src/Admin/ViewModel.php:87
+#: src/Admin/ViewModel.php:89
 msgid "Index is empty"
 msgstr "Index ist leer"
 
 #. translators: %s: number of items.
-#: src/Admin/ViewModel.php:91
+#: src/Admin/ViewModel.php:93
 #, php-format
 msgid "%s item with an error"
 msgid_plural "%s items with errors"
 msgstr[0] "%s Inhalt mit Fehler"
 msgstr[1] "%s Inhalte mit Fehlern"
 
-#: src/Admin/ViewModel.php:94
+#: src/Admin/ViewModel.php:96
 msgid "Index is being updated"
 msgstr "Index wird aktualisiert"
 
-#: src/Admin/ViewModel.php:95
+#: src/Admin/ViewModel.php:97
 msgid "Index is up to date"
 msgstr "Index ist aktuell"
 
 #. translators: %s: human-readable time difference, e.g. "2 minutes".
-#: src/Admin/ViewModel.php:105
+#: src/Admin/ViewModel.php:107
 #, php-format
 msgid "%s ago"
 msgstr "vor %s"
 
-#: src/Admin/ViewModel.php:138
-#: src/Admin/ViewModel.php:232
+#: src/Admin/ViewModel.php:140
+#: src/Admin/ViewModel.php:234
 msgid "Custom endpoint"
 msgstr "Eigener Endpoint"
 
 #. translators: 1: number of published items, 2: number of items in the index.
-#: src/Admin/ViewModel.php:166
+#: src/Admin/ViewModel.php:168
 #, php-format
 msgid "%1$s published, %2$s in the index."
 msgstr "%1$s veröffentlicht, %2$s im Index."
 
-#: src/Admin/ViewModel.php:170
+#: src/Admin/ViewModel.php:172
 msgid "Is searched"
 msgstr "Wird durchsucht"
 
-#: src/Admin/ViewModel.php:170
+#: src/Admin/ViewModel.php:172
 msgid "Not searched"
 msgstr "Wird nicht durchsucht"
 
-#: src/Admin/ViewModel.php:218
+#: src/Admin/ViewModel.php:220
 msgid "US provider with a large choice of models."
 msgstr "US-Anbieter mit großer Auswahl an Modellen."
 
-#: src/Admin/ViewModel.php:219
+#: src/Admin/ViewModel.php:221
 msgid "The models by Google."
 msgstr "Die Modelle von Google."
 
-#: src/Admin/ViewModel.php:220
+#: src/Admin/ViewModel.php:222
 msgid "European provider with servers in the EU."
 msgstr "Europäischer Anbieter mit Servern in der EU."
 
-#: src/Admin/ViewModel.php:221
+#: src/Admin/ViewModel.php:223
 msgid "Any service that follows the OpenAI standard, such as Ollama on your own server."
 msgstr "Jeder Dienst, der dem OpenAI-Standard folgt, zum Beispiel Ollama auf deinem eigenen Server."
 
-#: src/Admin/ViewModel.php:235
+#: src/Admin/ViewModel.php:237
 #: views/admin/sidebar.php:91
 msgid "Configured"
 msgstr "Eingerichtet"
 
-#: src/Admin/ViewModel.php:236
+#: src/Admin/ViewModel.php:238
 msgid "Address of your choice"
 msgstr "Adresse deiner Wahl"
 
-#: src/Admin/ViewModel.php:237
+#: src/Admin/ViewModel.php:239
 msgid "Not configured"
 msgstr "Nicht eingerichtet"
 
-#: src/Admin/ViewModel.php:287
+#: src/Admin/ViewModel.php:296
 msgid "The API key is defined in wp-config.php"
 msgstr "Der API-Schlüssel steht in der wp-config.php"
 
-#: src/Admin/ViewModel.php:288
+#: src/Admin/ViewModel.php:297
 msgid "It is not stored in the database, so a copy of the database does not contain it."
 msgstr "Er ist nicht in der Datenbank gespeichert, eine Kopie der Datenbank enthält ihn also nicht."
 
-#: src/Admin/ViewModel.php:292
+#: src/Admin/ViewModel.php:301
 msgid "The API key is stored encrypted"
 msgstr "Der API-Schlüssel ist verschlüsselt gespeichert"
 
-#: src/Admin/ViewModel.php:293
+#: src/Admin/ViewModel.php:302
 msgid "Encrypted with XSalsa20-Poly1305 under a key derived from the salts of WordPress. A copy of the database alone does not reveal it. Who can also read wp-config.php can decrypt it – that is unavoidable for a key the server has to send. Defining it as PRSTSEARCH_API_KEY in wp-config.php keeps it out of the database entirely."
 msgstr "Verschlüsselt mit XSalsa20-Poly1305 unter einem Schlüssel, der aus den Sicherheitsschlüsseln von WordPress abgeleitet ist. Eine Kopie der Datenbank allein verrät ihn nicht. Wer zusätzlich die wp-config.php lesen kann, kann ihn entschlüsseln – das lässt sich bei einem Schlüssel, den der Server mitschicken muss, nicht vermeiden. Als PRSTSEARCH_API_KEY in der wp-config.php festgelegt, bleibt er ganz aus der Datenbank heraus."
 
-#: src/Admin/ViewModel.php:297
+#: src/Admin/ViewModel.php:306
 msgid "No API key is stored"
 msgstr "Es ist kein API-Schlüssel gespeichert"
 
-#: src/Admin/ViewModel.php:298
+#: src/Admin/ViewModel.php:307
 msgid "The keyword search needs none. A key entered for the AI modes is stored encrypted."
 msgstr "Die Keyword-Suche braucht keinen. Ein Schlüssel für die KI-Modi wird verschlüsselt gespeichert."
 
-#: src/Admin/ViewModel.php:306
+#: src/Admin/ViewModel.php:315
 msgid "The salts of WordPress are in wp-config.php"
 msgstr "Die Sicherheitsschlüssel von WordPress stehen in der wp-config.php"
 
-#: src/Admin/ViewModel.php:307
+#: src/Admin/ViewModel.php:316
 msgid "The key that encrypts the API key is derived from them and is not in the database."
 msgstr "Der Schlüssel, mit dem der API-Schlüssel verschlüsselt ist, wird daraus abgeleitet und steht nicht in der Datenbank."
 
-#: src/Admin/ViewModel.php:311
+#: src/Admin/ViewModel.php:320
 msgid "The salts of WordPress are kept in the database"
 msgstr "Die Sicherheitsschlüssel von WordPress liegen in der Datenbank"
 
-#: src/Admin/ViewModel.php:312
+#: src/Admin/ViewModel.php:321
 msgid "AUTH_KEY and AUTH_SALT are missing from wp-config.php, so WordPress generated them and stores them in the database – next to the encrypted API key. A copy of the database is then enough to decrypt it. Add the two lines to wp-config.php; the API key has to be entered again afterwards."
 msgstr "AUTH_KEY und AUTH_SALT fehlen in der wp-config.php. WordPress hat sie deshalb selbst erzeugt und speichert sie in der Datenbank – neben dem verschlüsselten API-Schlüssel. Eine Kopie der Datenbank genügt dann, um ihn zu entschlüsseln. Ergänze die beiden Zeilen in der wp-config.php; den API-Schlüssel musst du danach neu eingeben."
 
-#: src/Admin/ViewModel.php:323
+#: src/Admin/ViewModel.php:332
 msgid "The provider is reached over HTTPS"
 msgstr "Der Anbieter wird über HTTPS erreicht"
 
-#: src/Admin/ViewModel.php:324
+#: src/Admin/ViewModel.php:333
 msgid "API key, search queries and content travel encrypted. Redirects are not followed, so the key cannot be passed on to another server."
 msgstr "API-Schlüssel, Suchanfragen und Inhalte werden verschlüsselt übertragen. Weiterleitungen folgt das Plugin nicht, der Schlüssel kann also nicht an einen anderen Server weitergereicht werden."
 
-#: src/Admin/ViewModel.php:329
+#: src/Admin/ViewModel.php:338
 msgid "The provider runs on this server"
 msgstr "Der Anbieter läuft auf diesem Server"
 
-#: src/Admin/ViewModel.php:330
+#: src/Admin/ViewModel.php:339
 msgid "The connection does not leave the server, so it needs no encryption."
 msgstr "Die Verbindung verlässt den Server nicht und braucht deshalb keine Verschlüsselung."
 
-#: src/Admin/ViewModel.php:335
+#: src/Admin/ViewModel.php:344
 msgid "The provider is reached without encryption"
 msgstr "Der Anbieter wird unverschlüsselt erreicht"
 
-#: src/Admin/ViewModel.php:336
+#: src/Admin/ViewModel.php:345
 msgid "The address starts with http://. API key, search queries and content travel readable through the network. Use an https:// address if the provider offers one."
 msgstr "Die Adresse beginnt mit http://. API-Schlüssel, Suchanfragen und Inhalte gehen lesbar durchs Netz. Verwende eine https://-Adresse, wenn der Anbieter eine anbietet."
 
 #. translators: %d: number of suggestions.
-#: src/Frontend/FrontendAssets.php:131
+#: src/Frontend/FrontendAssets.php:132
 #, php-format
 msgid "%d suggestions available. Use the arrow keys to choose one."
 msgstr "%d Vorschläge verfügbar. Wähle mit den Pfeiltasten einen aus."
 
-#: src/Frontend/FrontendAssets.php:132
+#: src/Frontend/FrontendAssets.php:133
 msgid "1 suggestion available. Use the arrow keys to choose it."
 msgstr "1 Vorschlag verfügbar. Mit den Pfeiltasten auswählen."
 
-#: src/Frontend/FrontendAssets.php:133
-msgid "The search is not available at the moment. Please try again."
-msgstr "Die Suche ist gerade nicht verfügbar. Bitte versuche es noch einmal."
-
-#: src/Frontend/FrontendAssets.php:134
-msgid "More results could not be loaded. Please try again."
-msgstr "Weitere Treffer konnten nicht geladen werden. Bitte versuche es erneut."
-
-#: src/Frontend/FrontendAssets.php:135
+#: src/Frontend/FrontendAssets.php:136
 #: assets/src/admin/test-search.js:26
 msgid "Searching …"
 msgstr "Suche läuft …"
 
-#: src/Frontend/FrontendAssets.php:136
+#: src/Frontend/FrontendAssets.php:137
 msgid "Looking for further matching pages …"
 msgstr "Suche nach weiteren passenden Seiten …"
 
 #. translators: %s: search phrase.
-#: src/Frontend/ResultRenderer.php:71
+#: src/Frontend/ResultRenderer.php:72
 #, php-format
 msgid "No results for “%s”."
 msgstr "Keine Treffer für „%s“."
 
 #. translators: 1: number of results, 2: search phrase.
-#: src/Frontend/ResultRenderer.php:76
+#: src/Frontend/ResultRenderer.php:77
 #, php-format
 msgid "%1$s result for “%2$s”"
 msgid_plural "%1$s results for “%2$s”"
 msgstr[0] "%1$s Treffer für „%2$s“"
 msgstr[1] "%1$s Treffer für „%2$s“"
 
-#: src/Frontend/ResultRenderer.php:115
+#: src/Frontend/ResultRenderer.php:116
 msgid "Recommended"
 msgstr "Empfohlen"
 
-#: src/Frontend/ResultRenderer.php:165
+#: src/Frontend/ResultRenderer.php:166
 msgid "All"
 msgstr "Alle"
 
 #. translators: 1: citation number, 2: page title.
-#: src/Frontend/ResultRenderer.php:324
+#: src/Frontend/ResultRenderer.php:328
 #, php-format
 msgid "Source %1$d: %2$s"
 msgstr "Quelle %1$d: %2$s"
+
+#: src/Frontend/VisitorText.php:61
+msgctxt "formal address"
+msgid "The search is not available at the moment. Please try again."
+msgstr "Die Suche ist gerade nicht verfügbar. Bitte versuchen Sie es noch einmal."
+
+#: src/Frontend/VisitorText.php:62
+msgid "The search is not available at the moment. Please try again."
+msgstr "Die Suche ist gerade nicht verfügbar. Bitte versuche es noch einmal."
+
+#: src/Frontend/VisitorText.php:64
+msgctxt "formal address"
+msgid "More results could not be loaded. Please try again."
+msgstr "Weitere Treffer konnten nicht geladen werden. Bitte versuchen Sie es erneut."
+
+#: src/Frontend/VisitorText.php:65
+msgid "More results could not be loaded. Please try again."
+msgstr "Weitere Treffer konnten nicht geladen werden. Bitte versuche es erneut."
+
+#: src/Frontend/VisitorText.php:67
+msgctxt "formal address"
+msgid "You have searched very often in a short time. Please wait a moment and try again."
+msgstr "Sie haben in kurzer Zeit sehr oft gesucht. Bitte warten Sie einen Moment und versuchen Sie es dann noch einmal."
+
+#: src/Frontend/VisitorText.php:68
+msgid "You have searched very often in a short time. Please wait a moment and try again."
+msgstr "Du hast in kurzer Zeit sehr oft gesucht. Bitte warte einen Moment und versuche es dann noch einmal."
+
+#: src/Frontend/VisitorText.php:70
+msgctxt "formal address"
+msgid "This answer was generated by AI from the content of this website. Please check important details against the sources."
+msgstr "Diese Antwort wurde von einer KI aus den Inhalten dieser Website erstellt. Bitte prüfen Sie wichtige Angaben anhand der Quellen."
+
+#: src/Frontend/VisitorText.php:71
+msgid "This answer was generated by AI from the content of this website. Please check important details against the sources."
+msgstr "Diese Antwort wurde von einer KI aus den Inhalten dieser Website erstellt. Bitte prüfe wichtige Angaben anhand der Quellen."
+
+#. translators: %s: corrected search phrase.
+#: src/Frontend/VisitorText.php:74
+#, php-format
+msgctxt "formal address"
+msgid "Nothing was found for your spelling. Showing results for “%s”."
+msgstr "Für Ihre Schreibweise wurde nichts gefunden. Angezeigt werden Treffer für „%s“."
+
+#. translators: %s: corrected search phrase.
+#: src/Frontend/VisitorText.php:76
+#, php-format
+msgid "Nothing was found for your spelling. Showing results for “%s”."
+msgstr "Für deine Schreibweise wurde nichts gefunden. Angezeigt werden Treffer für „%s“."
+
+#: src/Frontend/VisitorText.php:78
+msgctxt "formal address"
+msgid "Try fewer or more general words, or check the spelling."
+msgstr "Versuchen Sie es mit weniger oder allgemeineren Wörtern, oder prüfen Sie die Schreibweise."
+
+#: src/Frontend/VisitorText.php:79
+msgid "Try fewer or more general words, or check the spelling."
+msgstr "Versuche es mit weniger oder allgemeineren Wörtern oder prüfe die Schreibweise."
+
+#: src/Frontend/VisitorText.php:81
+msgctxt "formal address"
+msgid "When you use the search on this website, we store the search phrase, the time, the number of results and, where applicable, which result was opened. We use this to improve the search and our content. We do not store your IP address or any other data that identifies you."
+msgstr "Wenn Sie die Suche auf dieser Website nutzen, speichern wir den Suchbegriff, den Zeitpunkt, die Anzahl der Treffer und gegebenenfalls, welcher Treffer geöffnet wurde. Damit verbessern wir die Suche und unsere Inhalte. Wir speichern weder Ihre IP-Adresse noch andere Daten, mit denen Sie identifiziert werden können."
+
+#: src/Frontend/VisitorText.php:82
+msgid "When you use the search on this website, we store the search phrase, the time, the number of results and, where applicable, which result was opened. We use this to improve the search and our content. We do not store your IP address or any other data that identifies you."
+msgstr "Wenn du die Suche auf dieser Website nutzt, speichern wir den Suchbegriff, den Zeitpunkt, die Anzahl der Treffer und gegebenenfalls, welcher Treffer geöffnet wurde. Damit verbessern wir die Suche und unsere Inhalte. Wir speichern weder deine IP-Adresse noch andere Daten, mit denen du identifiziert werden kannst."
+
+#: src/Frontend/VisitorText.php:84
+msgctxt "formal address"
+msgid "If semantic search or AI answers are enabled, your search phrase and excerpts of our public content are transmitted to the AI provider we use, in order to find matching content and to write an answer."
+msgstr "Sind die semantische Suche oder KI-Antworten aktiviert, werden Ihr Suchbegriff und Auszüge unserer öffentlichen Inhalte an den von uns genutzten KI-Anbieter übertragen, um passende Inhalte zu finden und eine Antwort zu schreiben."
+
+#: src/Frontend/VisitorText.php:85
+msgid "If semantic search or AI answers are enabled, your search phrase and excerpts of our public content are transmitted to the AI provider we use, in order to find matching content and to write an answer."
+msgstr "Sind die semantische Suche oder KI-Antworten aktiviert, werden dein Suchbegriff und Auszüge unserer öffentlichen Inhalte an den von uns genutzten KI-Anbieter übertragen, um passende Inhalte zu finden und eine Antwort zu schreiben."
 
 #: src/Index/Eligibility.php:44
 msgid "This content type is not included in the search."
@@ -593,14 +661,6 @@ msgstr "Der Inhalt konnte nicht in den Index aufgenommen werden."
 #: src/Index/IndexStatus.php:42
 msgid "This content does not appear in search results."
 msgstr "Dieser Inhalt erscheint nicht in den Suchergebnissen."
-
-#: src/Privacy/PrivacyPolicy.php:31
-msgid "When you use the search on this website, we store the search phrase, the time, the number of results and, where applicable, which result was opened. We use this to improve the search and our content. We do not store your IP address or any other data that identifies you."
-msgstr "Wenn du die Suche auf dieser Website nutzt, speichern wir den Suchbegriff, den Zeitpunkt, die Anzahl der Treffer und gegebenenfalls, welcher Treffer geöffnet wurde. Damit verbessern wir die Suche und unsere Inhalte. Wir speichern weder deine IP-Adresse noch andere Daten, mit denen du identifiziert werden kannst."
-
-#: src/Privacy/PrivacyPolicy.php:32
-msgid "If semantic search or AI answers are enabled, your search phrase and excerpts of our public content are transmitted to the AI provider we use, in order to find matching content and to write an answer."
-msgstr "Sind die semantische Suche oder KI-Antworten aktiviert, werden dein Suchbegriff und Auszüge unserer öffentlichen Inhalte an den von uns genutzten KI-Anbieter übertragen, um passende Inhalte zu finden und eine Antwort zu schreiben."
 
 #: src/Rest/IndexRoutes.php:259
 msgid "This content does not exist."
@@ -666,15 +726,16 @@ msgstr "Semantisch"
 msgid "AI answer"
 msgstr "KI-Antwort"
 
-#: src/Security/SearchGuard.php:109
+#: src/Security/SearchGuard.php:136
 msgid "Too many searches"
 msgstr "Zu viele Suchen"
 
-#: src/Security/SearchGuard.php:168
-msgid "You have searched very often in a short time. Please wait a moment and try again."
-msgstr "Du hast in kurzer Zeit sehr oft gesucht. Bitte warte einen Moment und versuche es dann noch einmal."
+#: src/Security/SearchGuard.php:210
+#: views/admin/tab-security.php:72
+msgid "Message when the search is blocked"
+msgstr "Meldung, wenn die Suche gesperrt wird"
 
-#: src/Security/SearchGuard.php:192
+#: src/Security/SearchGuard.php:234
 msgid "Website"
 msgstr "Website"
 
@@ -690,25 +751,11 @@ msgstr "Antwort wird geschrieben …"
 msgid "Sources"
 msgstr "Quellen"
 
-#: templates/answer.php:40
-msgid "This answer was generated by AI from the content of this website. Please check important details against the sources."
-msgstr "Diese Antwort wurde von einer KI aus den Inhalten dieser Website erstellt. Bitte prüfe wichtige Angaben anhand der Quellen."
-
 #: templates/results.php:17
 msgid "Search results"
 msgstr "Suchergebnisse"
 
-#. translators: %s: corrected search phrase.
-#: templates/results.php:25
-#, php-format
-msgid "Nothing was found for your spelling. Showing results for “%s”."
-msgstr "Für deine Schreibweise wurde nichts gefunden. Angezeigt werden Treffer für „%s“."
-
-#: templates/results.php:34
-msgid "Try fewer or more general words, or check the spelling."
-msgstr "Versuche es mit weniger oder allgemeineren Wörtern oder prüfe die Schreibweise."
-
-#: templates/results.php:46
+#: templates/results.php:39
 msgid "Show more results"
 msgstr "Weitere Treffer anzeigen"
 
@@ -910,11 +957,11 @@ msgid "For page builders that only output their content on the finished page. Sl
 msgstr "Für Page-Builder, die ihre Inhalte erst auf der fertigen Seite ausgeben. Langsamer, deshalb nur genutzt, wenn wenig Text gefunden wurde."
 
 #: views/admin/tab-content.php:80
-#: views/admin/tab-display.php:130
+#: views/admin/tab-display.php:141
 #: views/admin/tab-provider.php:192
 #: views/admin/tab-search.php:120
 #: views/admin/tab-search.php:156
-#: views/admin/tab-security.php:92
+#: views/admin/tab-security.php:110
 #: views/admin/tab-stats.php:265
 #: views/admin/tab-tools.php:174
 msgid "Save changes"
@@ -1084,10 +1131,30 @@ msgid "Visitors see which pages the answer is based on."
 msgstr "Besucher sehen, auf welchen Seiten die Antwort beruht."
 
 #: views/admin/tab-display.php:123
+msgid "Address visitors"
+msgstr "Ansprache der Besucher"
+
+#: views/admin/tab-display.php:124
+msgid "How the texts of the search speak to visitors – for example “Please try again” informally or formally. “Automatic” follows the language of the website: “Deutsch (Sie)” is formal. Also tells the AI answer how to address the reader."
+msgstr "Wie die Texte der Suche Besucher ansprechen – etwa „Bitte versuche es erneut“ oder „Bitte versuchen Sie es erneut“. „Automatisch“ richtet sich nach der Sprache der Website: „Deutsch (Sie)“ spricht förmlich an. Gilt auch für die KI-Antwort."
+
+#: views/admin/tab-display.php:126
+msgid "Automatic, by the language of the website"
+msgstr "Automatisch, nach der Sprache der Website"
+
+#: views/admin/tab-display.php:127
+msgid "Informal (German “du”)"
+msgstr "Du"
+
+#: views/admin/tab-display.php:128
+msgid "Formal (German “Sie”)"
+msgstr "Sie"
+
+#: views/admin/tab-display.php:134
 msgid "Show the relevance of each result"
 msgstr "Relevanz jedes Treffers anzeigen"
 
-#: views/admin/tab-display.php:124
+#: views/admin/tab-display.php:135
 msgid "A label such as “Very relevant” next to each result of the block."
 msgstr "Ein Hinweis wie „Sehr passend“ neben jedem Treffer des Blocks."
 
@@ -1371,88 +1438,110 @@ msgstr "Test-Suchanfrage"
 msgid "For example: shipping costs abroad"
 msgstr "Zum Beispiel: Versandkosten ins Ausland"
 
-#: views/admin/tab-security.php:19
+#: views/admin/tab-security.php:20
 msgid "In order"
 msgstr "In Ordnung"
 
-#: views/admin/tab-security.php:20
+#: views/admin/tab-security.php:21
 msgid "Note"
 msgstr "Hinweis"
 
-#: views/admin/tab-security.php:21
+#: views/admin/tab-security.php:22
 msgid "Recommendation"
 msgstr "Empfehlung"
 
-#: views/admin/tab-security.php:30
+#: views/admin/tab-security.php:31
 msgid "Limit searches"
 msgstr "Suchen begrenzen"
 
-#: views/admin/tab-security.php:31
+#: views/admin/tab-security.php:32
 msgid "A search costs the server more than an ordinary page, and in the AI modes it costs money. These limits stop scripts that search in a loop. They apply to every search on the website, also through the search field of your theme. Whoever may manage the plugin is never limited."
 msgstr "Eine Suche kostet den Server mehr als eine gewöhnliche Seite, und in den KI-Modi kostet sie Geld. Diese Grenzen stoppen Skripte, die in einer Schleife suchen. Sie gelten für jede Suche auf der Website, auch über das Suchfeld deines Themes. Wer das Plugin verwalten darf, wird nie begrenzt."
 
-#: views/admin/tab-security.php:37
+#: views/admin/tab-security.php:38
 msgid "Searches per visitor"
 msgstr "Suchen pro Besucher"
 
-#: views/admin/tab-security.php:38
+#: views/admin/tab-security.php:39
 msgid "How many searches one visitor may start in the period below. Paging through the results does not count. 0 means no limit."
 msgstr "Wie viele Suchen ein Besucher im darunter gewählten Zeitraum starten darf. Das Blättern durch die Treffer zählt nicht. 0 bedeutet keine Grenze."
 
-#: views/admin/tab-security.php:50
+#: views/admin/tab-security.php:51
 #: views/admin/tab-stats.php:24
 msgid "Period"
 msgstr "Zeitraum"
 
-#: views/admin/tab-security.php:51
+#: views/admin/tab-security.php:52
 msgid "The period the searches per visitor are counted in. After it, the count starts again."
 msgstr "Der Zeitraum, in dem die Suchen eines Besuchers gezählt werden. Danach beginnt die Zählung von vorn."
 
-#: views/admin/tab-security.php:53
+#: views/admin/tab-security.php:54
 msgid "per minute"
 msgstr "pro Minute"
 
-#: views/admin/tab-security.php:54
+#: views/admin/tab-security.php:55
 msgid "per hour"
 msgstr "pro Stunde"
 
-#: views/admin/tab-security.php:55
+#: views/admin/tab-security.php:56
 msgid "per day"
 msgstr "pro Tag"
 
-#: views/admin/tab-security.php:61
+#: views/admin/tab-security.php:62
+msgid "When the limit is reached"
+msgstr "Wenn die Grenze erreicht ist"
+
+#: views/admin/tab-security.php:63
+msgid "With the basic search visitors can always search: they get the keyword search alone, without AI, without spelling correction and without searching inside words, and the search is not recorded. What is expensive stops. Blocking stops every further search until the period is over – the stronger protection against scripts."
+msgstr "Mit der einfachen Suche können Besucher immer suchen: Sie bekommen nur die Keyword-Suche, ohne KI, ohne Tippfehlerkorrektur und ohne Suche im Wortinneren, und die Suche wird nicht aufgezeichnet. Was teuer ist, hört auf. Sperren stoppt jede weitere Suche, bis der Zeitraum vorbei ist – der stärkere Schutz gegen Skripte."
+
+#: views/admin/tab-security.php:65
+msgid "Go on with the basic search"
+msgstr "Mit der einfachen Suche weitermachen"
+
+#: views/admin/tab-security.php:66
+msgid "Block the search"
+msgstr "Suche sperren"
+
+#. translators: %s: the standard message.
+#: views/admin/tab-security.php:74
+#, php-format
+msgid "What a visitor reads when the search is blocked. Leave it empty for the standard text, which follows the address set in the tab “Display”: “%s” On a multilingual website the text can be translated with Polylang or WPML."
+msgstr "Was ein Besucher liest, wenn die Suche gesperrt wird. Leer lassen für den Standardtext, der sich nach der Ansprache im Tab „Darstellung“ richtet: „%s“ Auf mehrsprachigen Websites lässt sich der Text mit Polylang oder WPML übersetzen."
+
+#: views/admin/tab-security.php:79
 msgid "Searches of the whole website per minute"
 msgstr "Suchen der ganzen Website pro Minute"
 
-#: views/admin/tab-security.php:62
+#: views/admin/tab-security.php:80
 msgid "An upper limit for all visitors together, against many scripts at once. Set it well above what your website sees on its busiest days. 0 means no limit."
 msgstr "Eine Obergrenze für alle Besucher zusammen, gegen viele Skripte auf einmal. Setze sie deutlich über das, was deine Website an ihren stärksten Tagen erlebt. 0 bedeutet keine Grenze."
 
-#: views/admin/tab-security.php:74
-msgid "Whoever exceeds a limit gets the message “You have searched very often in a short time. Please wait a moment and try again.” Visitors are told apart without storing anything that identifies them: the IP address is only used to form one of about a million group numbers, which changes with every period."
-msgstr "Wer eine Grenze überschreitet, bekommt die Meldung „Du hast in kurzer Zeit sehr oft gesucht. Bitte warte einen Moment und versuche es dann noch einmal.“ Besucher werden unterschieden, ohne dass etwas gespeichert wird, das sie erkennbar macht: Aus der IP-Adresse wird nur eine von rund einer Million Gruppennummern gebildet, die mit jedem Zeitraum wechselt."
+#: views/admin/tab-security.php:92
+msgid "Visitors are told apart without storing anything that identifies them: the IP address is only used to form one of about a million group numbers, which changes with every period."
+msgstr "Besucher werden unterschieden, ohne dass etwas gespeichert wird, das sie erkennbar macht: Aus der IP-Adresse wird nur eine von rund einer Million Gruppennummern gebildet, die mit jedem Zeitraum wechselt."
 
-#: views/admin/tab-security.php:78
+#: views/admin/tab-security.php:96
 msgid "Keep bots out"
 msgstr "Bots abwehren"
 
-#: views/admin/tab-security.php:79
+#: views/admin/tab-security.php:97
 msgid "A trap for programs that fill in forms automatically."
 msgstr "Eine Falle für Programme, die Formulare automatisch ausfüllen."
 
-#: views/admin/tab-security.php:85
+#: views/admin/tab-security.php:103
 msgid "Hidden trap field in search forms"
 msgstr "Verstecktes Fallen-Feld in Suchformularen"
 
-#: views/admin/tab-security.php:86
+#: views/admin/tab-security.php:104
 msgid "Adds a field no person sees to every search form – the one of your theme, the search block of WordPress and the one of this plugin. A bot that fills it in gets an empty result and is not recorded in the statistics. It does not help against scripts that call the search address directly; the limits above are for those."
 msgstr "Fügt jedem Suchformular ein Feld hinzu, das kein Mensch sieht – dem deines Themes, dem Such-Block von WordPress und dem dieses Plugins. Ein Bot, der es ausfüllt, bekommt ein leeres Ergebnis und erscheint nicht in der Statistik. Gegen Skripte, die die Suchadresse direkt aufrufen, hilft es nicht; dafür sind die Grenzen oben da."
 
-#: views/admin/tab-security.php:98
+#: views/admin/tab-security.php:116
 msgid "Key and connection"
 msgstr "Schlüssel und Verbindung"
 
-#: views/admin/tab-security.php:99
+#: views/admin/tab-security.php:117
 msgid "Where the API key of your AI provider is kept and how it travels. Checked each time this page opens."
 msgstr "Wo der API-Schlüssel deines KI-Anbieters liegt und wie er übertragen wird. Wird bei jedem Öffnen dieser Seite geprüft."
 

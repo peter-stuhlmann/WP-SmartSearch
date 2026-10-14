@@ -34,6 +34,20 @@
 	<div class="einstellung__schluessel">Schlüssel: <code>search_limit_site</code> · 0 bis 1.000.000</div>
 </div>
 
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Wenn die Grenze erreicht ist</span><span class="einstellung__standard">Standard: Mit der einfachen Suche weitermachen</span></div>
+	<p><strong>Mit der einfachen Suche weitermachen:</strong> Besucher können immer suchen. Über der Grenze bekommen sie nur noch die Keyword-Suche – ohne KI-Anbieter, ohne KI-Antwort, ohne Tippfehlerkorrektur, ohne Suche im Wortinneren –, und die Suche erscheint nicht in der Statistik. Was teuer ist, hört auf; die Treffer bleiben.</p>
+	<p><strong>Suche sperren:</strong> Jede weitere Suche wird abgewiesen, bis der Zeitraum vorbei ist. Der stärkere Schutz gegen Skripte, denn auch die einfache Suche kostet den Server etwas.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>search_limit_action</code> · <code>basic</code>, <code>block</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Meldung, wenn die Suche gesperrt wird</span><span class="einstellung__standard">Standard: leer</span></div>
+	<p>Was ein Besucher liest, wenn die Suche gesperrt ist. Leer bedeutet: der Standardtext, und zwar in der Ansprache, die im Tab <em>Darstellung</em> eingestellt ist – „Du hast in kurzer Zeit sehr oft gesucht …“ oder „Sie haben in kurzer Zeit sehr oft gesucht …“.</p>
+	<p>Auf mehrsprachigen Websites erscheint ein eigener Text in der Übersetzung von Polylang (<em>Sprachen → Übersetzungen</em>) beziehungsweise WPML (<em>String-Übersetzung</em>) unter „Smart Search“ und lässt sich dort je Sprache übersetzen.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>search_limit_message</code></div>
+</div>
+
 <h3>Wofür die Grenze gilt</h3>
 
 <ul>
@@ -46,16 +60,20 @@
 
 <table>
 	<thead>
-		<tr><th>Weg</th><th>Antwort</th></tr>
+		<tr><th>Weg</th><th>Einfache Suche (Standard)</th><th>Suche sperren</th></tr>
 	</thead>
 	<tbody>
-		<tr><td>Suchfeld des Themes</td><td>Eine schlichte Seite „Zu viele Suchen“ mit dem Text „Du hast in kurzer Zeit sehr oft gesucht. Bitte warte einen Moment und versuche es dann noch einmal.“ und einem Link zurück. Technisch: Status 429 mit der Angabe, nach wie vielen Sekunden es wieder geht.</td></tr>
-		<tr><td>Such-Block</td><td>Derselbe Satz an der Stelle der Treffer.</td></tr>
-		<tr><td>REST-API</td><td>Status 429 mit dem Code <code>prstsearch_too_many_searches</code> und demselben Satz.</td></tr>
+		<tr><td>Suchfeld des Themes</td><td>Die gewohnte Ergebnisseite, mit den Treffern der Keyword-Suche, ohne KI-Antwort.</td><td>Eine schlichte Seite „Zu viele Suchen“ mit der Meldung und einem Link zurück. Technisch: Status 429 mit der Angabe, nach wie vielen Sekunden es wieder geht.</td></tr>
+		<tr><td>Such-Block</td><td>Treffer wie gewohnt, ohne KI-Antwort.</td><td>Die Meldung an der Stelle der Treffer.</td></tr>
+		<tr><td>REST-API</td><td>Status 200 mit <code>"degraded": true</code> und leerem <code>token</code>.</td><td>Status 429 mit dem Code <code>prstsearch_too_many_searches</code> und der Meldung.</td></tr>
 	</tbody>
 </table>
 
-<p>Die abgewiesene Suche läuft nicht und erscheint nicht in der Statistik.</p>
+<p>In beiden Fällen erscheint die Suche nicht in der Statistik und es entstehen keine KI-Kosten.</p>
+
+<h3>Auch gleichzeitige Anfragen werden gezählt</h3>
+
+<p>Ein Skript, das 25 Suchen auf einmal abschickt, bekommt bei einer Grenze von 20 genau 20 vollständige Suchen. Gezählt wird mit einem einzigen Datenbankbefehl, der den Zähler erhöht und den neuen Stand zurückgibt. Würde erst gelesen und dann geschrieben, sähen gleichzeitige Anfragen alle denselben alten Stand und kämen an der Grenze vorbei. Mit einem Objekt-Cache wie Redis zählt dieser.</p>
 
 <h3>Wie Besucher unterschieden werden</h3>
 

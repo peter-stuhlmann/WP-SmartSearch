@@ -103,7 +103,54 @@ final class SearchGuardTest extends RenderingTestCase {
 		self::assertSame( 1, $this->rest_search()->get_data()['total'] );
 	}
 
+	public function test_a_visitor_over_the_limit_goes_on_with_the_basic_search(): void {
+		$this->use_ai();
+		$this->configure(
+			array(
+				'mode'                => 'ai',
+				'search_limit'        => 2,
+				'search_limit_window' => 'hour',
+				'match_inside_words'  => true,
+			)
+		);
+		$this->container->get( \PrstSearch\Settings\Settings::class )->forget();
+
+		$this->rest_search();
+		$this->rest_search( array( 'q' => 'parcels' ) );
+
+		$requests = count( $this->provider->embedded ) + count( $this->provider->chat_requests );
+		$logged   = count( $this->log->entries );
+		$basic    = $this->rest_search( array( 'q' => 'worldwide' ) );
+
+		self::assertNotInstanceOf( WP_Error::class, $basic, 'Visitors can always search.' );
+		self::assertSame( 1, $basic->get_data()['total'] );
+		self::assertTrue( $basic->get_data()['degraded'] );
+		self::assertSame( '', $basic->get_data()['answer_html'], 'No AI answer.' );
+		self::assertSame( $requests, count( $this->provider->embedded ) + count( $this->provider->chat_requests ), 'The provider was not asked.' );
+		self::assertCount( $logged, $this->log->entries, 'Not recorded.' );
+
+		// Nothing found: the whole index is not read for text inside words.
+		$this->rest_search( array( 'q' => 'qwertz' ) );
+
+		self::assertNotContains( 'parts', $this->store->calls );
+	}
+
+	public function test_the_theme_search_goes_on_with_the_basic_search_too(): void {
+		$guard = $this->guard();
+
+		$guard->guard_main_search( null, $this->main_search() );
+		$guard->guard_main_search( null, $this->main_search() );
+
+		self::assertFalse( $guard->is_basic() );
+		self::assertNull( $guard->guard_main_search( null, $this->main_search() ), 'The search runs.' );
+		self::assertTrue( $guard->is_basic(), 'In its basic form.' );
+
+		$guard->refuse();
+	}
+
 	public function test_a_visitor_over_the_limit_gets_429_and_the_search_does_not_run(): void {
+		$this->block_over_the_limit();
+
 		$this->rest_search();
 		$this->rest_search( array( 'q' => 'parcels' ) );
 
@@ -124,6 +171,8 @@ final class SearchGuardTest extends RenderingTestCase {
 	}
 
 	public function test_the_theme_search_is_limited_too_and_answered_with_429(): void {
+		$this->block_over_the_limit();
+
 		$guard = $this->guard();
 
 		self::assertNull( $guard->guard_main_search( null, $this->main_search() ) );
@@ -152,6 +201,7 @@ final class SearchGuardTest extends RenderingTestCase {
 	}
 
 	public function test_whoever_manages_the_plugin_is_never_limited(): void {
+		$this->block_over_the_limit();
 		$this->can_manage = true;
 
 		for ( $search = 0; $search < 5; $search++ ) {
@@ -160,7 +210,9 @@ final class SearchGuardTest extends RenderingTestCase {
 	}
 
 	public function test_zero_means_no_limit(): void {
+		$this->block_over_the_limit();
 		$this->configure( array( 'search_limit' => 0 ) );
+		$this->container->get( \PrstSearch\Settings\Settings::class )->forget();
 
 		for ( $search = 0; $search < 5; $search++ ) {
 			self::assertNotInstanceOf( WP_Error::class, $this->rest_search() );
@@ -170,8 +222,9 @@ final class SearchGuardTest extends RenderingTestCase {
 	public function test_the_limit_of_the_whole_site_applies_to_all_visitors_together(): void {
 		$this->configure(
 			array(
-				'search_limit'      => 0,
-				'search_limit_site' => 2,
+				'search_limit'        => 0,
+				'search_limit_site'   => 2,
+				'search_limit_action' => 'block',
 			)
 		);
 
@@ -181,6 +234,14 @@ final class SearchGuardTest extends RenderingTestCase {
 		$_SERVER['REMOTE_ADDR'] = '192.0.2.1';
 
 		self::assertInstanceOf( WP_Error::class, $this->rest_search() );
+	}
+
+	/**
+	 * Chooses to refuse searches over the limit instead of the basic search.
+	 */
+	private function block_over_the_limit(): void {
+		$this->configure( array( 'search_limit_action' => 'block' ) );
+		$this->container->get( \PrstSearch\Settings\Settings::class )->forget();
 	}
 
 	private function guard(): SearchGuard {

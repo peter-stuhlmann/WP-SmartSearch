@@ -198,11 +198,17 @@ final class SearchRoutes implements Hookable {
 	public function search( WP_REST_Request $request ): WP_REST_Response|WP_Error {
 		$is_new_search = 1 === (int) $request->get_param( 'page' ) && ! $request->get_param( 'refine' ) && ! $request->get_param( 'preview' );
 
+		$verdict = SearchGuard::FULL;
+
 		// A bot gets what an unsuccessful search looks like.
 		if ( $this->guard->is_trap_filled( array( SearchGuard::TRAP => $request->get_param( SearchGuard::TRAP ) ?? '' ) ) ) {
 			$request->set_param( 'q', '' );
-		} elseif ( $is_new_search && ! $this->guard->allows_search() ) {
-			return new WP_Error( 'prstsearch_too_many_searches', SearchGuard::message(), array( 'status' => 429 ) );
+		} elseif ( $is_new_search ) {
+			$verdict = $this->guard->verdict();
+		}
+
+		if ( SearchGuard::REFUSED === $verdict ) {
+			return new WP_Error( 'prstsearch_too_many_searches', $this->guard->message(), array( 'status' => 429 ) );
 		}
 
 		$per_page = $request->get_param( 'per_page' );
@@ -213,6 +219,8 @@ final class SearchRoutes implements Hookable {
 		$types    = '' === $type ? array() : array( $type );
 
 		$results = match ( true ) {
+			// Over the limit: the search goes on, but only in its basic form.
+			SearchGuard::BASIC === $verdict => $this->search->basic( $query, $page, $per_page, $types ),
 			// Test searches from the settings page must not show up in the statistics.
 			$request->get_param( 'preview' ) && current_user_can( Capabilities::MANAGE ) => $this->search->preview( $query ),
 			(bool) $request->get_param( 'refine' ) => $this->search->refined( $query, (string) $request->get_param( 'token' ), $per_page, $types ),
@@ -223,7 +231,8 @@ final class SearchRoutes implements Hookable {
 		$is_first_page = 1 === $results->page;
 		// Not with provisional results: the answer is written from the final list, which the next
 		// request returns. Asking for it now would have the language model consulted twice.
-		$has_answer = $is_first_page && $results->total > 0 && ! $results->is_provisional && $this->answers->is_enabled();
+		// Nor when the search ran without the provider: then the answer would fail as well, or is not wanted.
+		$has_answer = $is_first_page && $results->total > 0 && ! $results->is_provisional && ! $results->ranking->degraded && $this->answers->is_enabled();
 
 		return new WP_REST_Response(
 			array(

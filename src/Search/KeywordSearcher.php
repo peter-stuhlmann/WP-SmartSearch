@@ -74,10 +74,11 @@ final class KeywordSearcher {
 	/**
 	 * Searches the index for the given terms.
 	 *
+	 * @param bool $may_read_all Whether text inside words may be looked for when nothing else is found, which reads the whole index.
 	 * @return array<int, array{chunk_id: int, coverage: float, in_title: bool, proximity: float, score: float}> Best passage per post, keyed
 	 *         by post ID, best first. The coverage is the share of search words the post contains, in whichever of its passages.
 	 */
-	public function search( QueryTerms $terms, int $limit ): array {
+	public function search( QueryTerms $terms, int $limit, bool $may_read_all = true ): array {
 		if ( $terms->is_empty() ) {
 			return array();
 		}
@@ -98,7 +99,7 @@ final class KeywordSearcher {
 
 		$matches = $this->ranked( $rows, $terms, $limit, false );
 
-		if ( array() !== $matches || ! $this->settings->bool( 'match_inside_words' ) ) {
+		if ( array() !== $matches || ! $may_read_all || ! $this->settings->bool( 'match_inside_words' ) ) {
 			return $matches;
 		}
 

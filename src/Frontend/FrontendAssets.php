@@ -33,7 +33,8 @@ final class FrontendAssets implements Hookable {
 	public function __construct(
 		private readonly Assets $assets,
 		private readonly QueryIntegration $integration,
-		private readonly Settings $settings
+		private readonly Settings $settings,
+		private readonly VisitorText $texts
 	) {}
 
 	/**
@@ -130,8 +131,8 @@ final class FrontendAssets implements Hookable {
 				/* translators: %d: number of suggestions. */
 				'suggestions' => __( '%d suggestions available. Use the arrow keys to choose one.', 'smart-search' ),
 				'suggestion'  => __( '1 suggestion available. Use the arrow keys to choose it.', 'smart-search' ),
-				'error'       => __( 'The search is not available at the moment. Please try again.', 'smart-search' ),
-				'moreError'   => __( 'More results could not be loaded. Please try again.', 'smart-search' ),
+				'error'       => $this->texts->get( 'error' ),
+				'moreError'   => $this->texts->get( 'more_error' ),
 				'searching'   => __( 'Searching …', 'smart-search' ),
 				'refining'    => __( 'Looking for further matching pages …', 'smart-search' ),
 			),

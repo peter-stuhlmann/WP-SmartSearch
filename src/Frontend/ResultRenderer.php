@@ -34,7 +34,8 @@ final class ResultRenderer {
 		private readonly TemplateLoader $templates,
 		private readonly ChunkStore $chunks,
 		private readonly Settings $settings,
-		private readonly CompoundEndings $endings
+		private readonly CompoundEndings $endings,
+		private readonly VisitorText $texts
 	) {
 		$this->items = new WeakMap();
 	}
@@ -235,6 +236,8 @@ final class ResultRenderer {
 				'items_html' => $this->render_items( $results ),
 				'has_more'   => $results->page < $results->page_count(),
 				'more_url'   => $this->search_url( $results->query, self::chosen_type( $results ), $results->page + 1 ),
+				'correction' => '' === $results->ranking->corrected_query ? '' : sprintf( $this->texts->get( 'corrected' ), $results->ranking->corrected_query ),
+				'hint'       => $this->texts->get( 'no_results' ),
 			)
 		);
 	}
@@ -293,6 +296,7 @@ final class ResultRenderer {
 				'paragraphs'   => $this->answer_paragraphs( $answer->text, $sources ),
 				'sources'      => $sources,
 				'show_sources' => $this->settings->bool( 'show_sources' ),
+				'note'         => $this->texts->get( 'answer_note' ),
 			)
 		);
 	}

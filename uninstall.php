@@ -27,15 +27,16 @@ function prstsearch_uninstall_site(): void {
 	// An API key has no business outliving the plugin that used it.
 	delete_option( PrstSearch\Security\SecretStore::OPTION );
 
-	// Transients and locks are disposable in any case.
+	// Transients, locks and counters are disposable in any case.
 	// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery, WordPress.DB.DirectDatabaseQuery.NoCaching -- One-off cleanup of the plugin's own rows.
 	$wpdb->query(
 		$wpdb->prepare(
-			'DELETE FROM %i WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s',
+			'DELETE FROM %i WHERE option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s OR option_name LIKE %s',
 			$wpdb->options,
 			$wpdb->esc_like( '_transient_' . PrstSearch\Support\Cache::PREFIX ) . '%',
 			$wpdb->esc_like( '_transient_timeout_' . PrstSearch\Support\Cache::PREFIX ) . '%',
-			$wpdb->esc_like( 'prstsearch_lock_' ) . '%'
+			$wpdb->esc_like( 'prstsearch_lock_' ) . '%',
+			$wpdb->esc_like( 'prstsearch_count_' ) . '%'
 		)
 	);
 

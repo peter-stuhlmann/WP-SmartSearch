@@ -14,6 +14,7 @@ use PrstSearch\Database\ChunkStore;
 use PrstSearch\Provider\ProviderConfig;
 use PrstSearch\Search\SearchResults;
 use PrstSearch\Search\SearchService;
+use PrstSearch\Security\SearchGuard;
 use PrstSearch\Settings\Settings;
 use WP_Post;
 use WP_Query;
@@ -38,7 +39,8 @@ final class QueryIntegration implements Hookable {
 		private readonly SearchService $search,
 		private readonly ChunkStore $chunks,
 		private readonly ProviderConfig $config,
-		private readonly Settings $settings
+		private readonly Settings $settings,
+		private readonly SearchGuard $guard
 	) {}
 
 	/**
@@ -77,13 +79,16 @@ final class QueryIntegration implements Hookable {
 			return $posts;
 		}
 
-		$per_page = (int) $query->get( 'posts_per_page' );
-		$results  = $this->search->search(
+		$per_page  = (int) $query->get( 'posts_per_page' );
+		$arguments = array(
 			(string) $query->get( 's' ),
 			max( 1, (int) $query->get( 'paged' ) ),
 			$per_page > 0 ? $per_page : $this->search->max_hits(),
-			self::requested_post_types( $query )
+			self::requested_post_types( $query ),
 		);
+
+		// A visitor over the search limit gets the basic search, see SearchGuard.
+		$results = $this->guard->is_basic() ? $this->search->basic( ...$arguments ) : $this->search->search( ...$arguments );
 
 		// An index that was never built must not make the site's search go blank.
 		if ( 0 === $results->total && $this->is_index_empty() ) {

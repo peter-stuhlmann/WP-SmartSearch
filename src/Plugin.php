@@ -43,7 +43,9 @@ use PrstSearch\Security\SearchGuard;
 use PrstSearch\Stats\LogCleaner;
 use PrstSearch\Support\Assets;
 use PrstSearch\Support\Container;
+use PrstSearch\Support\Counters;
 use PrstSearch\Support\Lock;
+use PrstSearch\Support\StoredCounters;
 use wpdb;
 
 /**
@@ -113,6 +115,8 @@ final class Plugin {
 		$plugin->upgrade();
 
 		add_action( 'init', array( self::class, 'load_textdomain' ) );
+		add_filter( 'plugin_locale', array( self::class, 'informal_locale' ), 10, 2 );
+		add_filter( 'load_script_translation_file', array( self::class, 'informal_script_translations' ), 10, 3 );
 
 		$services = is_admin() ? array_merge( self::HOOKED_SERVICES, self::ADMIN_SERVICES ) : self::HOOKED_SERVICES;
 
@@ -165,6 +169,41 @@ final class Plugin {
 	}
 
 	/**
+	 * Loads the translation of the informal locale where the formal one has none of its own.
+	 *
+	 * The plugin ships one German translation that holds both forms of address,
+	 * see VisitorText. Without this, a website in "Deutsch (Sie)" would get English.
+	 *
+	 * @param string $locale The locale, such as "de_DE_formal".
+	 * @param string $domain The text domain.
+	 */
+	public static function informal_locale( $locale, $domain ): string {
+		$locale = (string) $locale;
+
+		if ( 'smart-search' !== $domain || ! str_ends_with( $locale, '_formal' ) || is_readable( dirname( PRSTSEARCH_FILE ) . '/languages/smart-search-' . $locale . '.mo' ) ) {
+			return $locale;
+		}
+
+		return substr( $locale, 0, -strlen( '_formal' ) );
+	}
+
+	/**
+	 * Does the same for the translations of the scripts.
+	 *
+	 * @param string|false $file   Path of the translation file.
+	 * @param string       $handle Script handle.
+	 * @param string       $domain The text domain.
+	 * @return string|false
+	 */
+	public static function informal_script_translations( $file, $handle, $domain ) {
+		if ( 'smart-search' !== $domain || ! is_string( $file ) || is_readable( $file ) ) {
+			return $file;
+		}
+
+		return str_replace( '_formal-', '-', $file );
+	}
+
+	/**
 	 * Creates the tables and queues the first indexing run.
 	 */
 	public static function activate(): void {
@@ -188,6 +227,7 @@ final class Plugin {
 		$container = new Container();
 
 		$container->set( wpdb::class, static fn (): wpdb => $GLOBALS['wpdb'] );
+		$container->set( Counters::class, static fn ( Container $c ): Counters => new StoredCounters( $c->get( wpdb::class ) ) );
 		$container->set( HttpTransport::class, static fn (): HttpTransport => new WpHttpTransport() );
 
 		$container->set(

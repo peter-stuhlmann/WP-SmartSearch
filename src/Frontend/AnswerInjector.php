@@ -56,6 +56,11 @@ final class AnswerInjector implements Hookable {
 			return;
 		}
 
+		// A search that ran without the provider gets no answer either: it would fail, or is not wanted.
+		if ( $this->integration->results()->ranking->degraded ) {
+			return;
+		}
+
 		$this->is_printed = true;
 
 		if ( $this->settings->bool( 'auto_answer' ) ) {

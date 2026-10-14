@@ -14,8 +14,9 @@ use PrstSearch\Settings\SettingsSchema;
 
 defined( 'ABSPATH' ) || exit;
 
-$prstsearch_findings = $view->security_findings();
-$prstsearch_states   = array(
+$prstsearch_findings         = $view->security_findings();
+$prstsearch_standard_message = $view->standard_limit_message();
+$prstsearch_states           = array(
 	'ok'      => __( 'In order', 'smart-search' ),
 	'info'    => __( 'Note', 'smart-search' ),
 	'warning' => __( 'Recommendation', 'smart-search' ),
@@ -56,6 +57,23 @@ $prstsearch_states   = array(
 				)
 			);
 
+			$fields->select_row(
+				'search_limit_action',
+				__( 'When the limit is reached', 'smart-search' ),
+				__( 'With the basic search visitors can always search: they get the keyword search alone, without AI, without spelling correction and without searching inside words, and the search is not recorded. What is expensive stops. Blocking stops every further search until the period is over – the stronger protection against scripts.', 'smart-search' ),
+				array(
+					'basic' => __( 'Go on with the basic search', 'smart-search' ),
+					'block' => __( 'Block the search', 'smart-search' ),
+				)
+			);
+
+			$fields->textarea_row(
+				'search_limit_message',
+				__( 'Message when the search is blocked', 'smart-search' ),
+				/* translators: %s: the standard message. */
+				sprintf( __( 'What a visitor reads when the search is blocked. Leave it empty for the standard text, which follows the address set in the tab “Display”: “%s” On a multilingual website the text can be translated with Polylang or WPML.', 'smart-search' ), $prstsearch_standard_message )
+			);
+
 			$fields->input_row(
 				'search_limit_site',
 				__( 'Searches of the whole website per minute', 'smart-search' ),
@@ -71,7 +89,7 @@ $prstsearch_states   = array(
 			?>
 		</div>
 
-		<p class="prstsearch-panel__description prstsearch-panel__description--after"><?php esc_html_e( 'Whoever exceeds a limit gets the message “You have searched very often in a short time. Please wait a moment and try again.” Visitors are told apart without storing anything that identifies them: the IP address is only used to form one of about a million group numbers, which changes with every period.', 'smart-search' ); ?></p>
+		<p class="prstsearch-panel__description prstsearch-panel__description--after"><?php esc_html_e( 'Visitors are told apart without storing anything that identifies them: the IP address is only used to form one of about a million group numbers, which changes with every period.', 'smart-search' ); ?></p>
 	</section>
 
 	<section class="prstsearch-panel" aria-labelledby="prstsearch-bots-title">

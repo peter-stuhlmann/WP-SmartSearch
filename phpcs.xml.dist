@@ -57,22 +57,24 @@
 		</properties>
 	</rule>
 
-	<!-- The repositories exist to run direct queries on the plugin's own tables, the status store to read post meta in bulk, the lock to write a row the options API cannot write safely. -->
+	<!-- The repositories exist to run direct queries on the plugin's own tables, the status store to read post meta in bulk, the lock and the counters to write rows the options API cannot write safely. -->
 	<rule ref="WordPress.DB.DirectDatabaseQuery">
 		<exclude-pattern>src/Database/*</exclude-pattern>
 		<exclude-pattern>src/Index/IndexStatusStore.php</exclude-pattern>
 		<exclude-pattern>src/Support/Lock.php</exclude-pattern>
+		<exclude-pattern>src/Support/StoredCounters.php</exclude-pattern>
 	</rule>
 
 	<!--
-		The sniff only recognises prepare() on a variable called $wpdb. The repositories
-		and the status store receive wpdb as a dependency and prepare every query, with
+		The sniff only recognises prepare() on a variable called $wpdb. The repositories,
+		the status store, the lock and the counters receive wpdb as a dependency and prepare every query, with
 		%i for identifiers.
 	-->
 	<rule ref="WordPress.DB.PreparedSQL.NotPrepared">
 		<exclude-pattern>src/Database/*</exclude-pattern>
 		<exclude-pattern>src/Index/IndexStatusStore.php</exclude-pattern>
 		<exclude-pattern>src/Support/Lock.php</exclude-pattern>
+		<exclude-pattern>src/Support/StoredCounters.php</exclude-pattern>
 		<exclude-pattern>tests/*</exclude-pattern>
 	</rule>
 

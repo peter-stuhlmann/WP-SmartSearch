@@ -10,6 +10,7 @@ declare( strict_types=1 );
 namespace PrstSearch\Security;
 
 use PrstSearch\Contracts\Hookable;
+use PrstSearch\Frontend\VisitorText;
 use PrstSearch\Provider\RequestThrottle;
 use PrstSearch\Settings\Settings;
 use WP_Query;
@@ -23,6 +24,11 @@ use WP_Query;
  * front end, through the search field of the theme as well as through the
  * plugin's block, and whether or not the plugin replaces the WordPress search.
  *
+ * Over the limit the search goes on in a basic form by default: the keyword
+ * search alone, without the AI, without reading the whole index and without
+ * an entry in the statistics. Visitors can always search; what is expensive
+ * stops. A website can choose to refuse the search instead.
+ *
  * The trap is a field no person sees. Bots that fill in every field of a
  * form fill in this one too, and get an empty result for it.
  */
@@ -34,6 +40,21 @@ final class SearchGuard implements Hookable {
 	public const TRAP = 'prstsearch_hp';
 
 	/**
+	 * The search may run in full.
+	 */
+	public const FULL = 'full';
+
+	/**
+	 * The limit is reached: only the basic search runs, see SearchService::basic().
+	 */
+	public const BASIC = 'basic';
+
+	/**
+	 * The limit is reached and the website refuses further searches.
+	 */
+	public const REFUSED = 'refused';
+
+	/**
 	 * Seconds each choice of the setting "per" stands for.
 	 */
 	private const PERIODS = array(
@@ -43,16 +64,17 @@ final class SearchGuard implements Hookable {
 	);
 
 	/**
-	 * Whether the main search of this request was refused.
+	 * What was decided about the main search of this request.
 	 */
-	private bool $is_refused = false;
+	private string $main_verdict = self::FULL;
 
 	/**
 	 * Creates the service.
 	 */
 	public function __construct(
 		private readonly Settings $settings,
-		private readonly RequestThrottle $throttle
+		private readonly RequestThrottle $throttle,
+		private readonly VisitorText $texts
 	) {}
 
 	/**
@@ -62,6 +84,8 @@ final class SearchGuard implements Hookable {
 		// Before the plugin answers the search itself, so a refused search is neither run nor logged.
 		add_filter( 'posts_pre_query', array( $this, 'guard_main_search' ), 5, 2 );
 		add_action( 'template_redirect', array( $this, 'refuse' ), 1 );
+
+		add_action( 'admin_init', array( $this, 'register_message' ) );
 
 		add_filter( 'get_search_form', array( $this, 'with_trap' ) );
 		add_filter( 'render_block_core/search', array( $this, 'with_trap' ) );
@@ -85,27 +109,30 @@ final class SearchGuard implements Hookable {
 		}
 
 		// Paging through the results of a search is not another search.
-		if ( (int) $query->get( 'paged' ) > 1 || $this->allows_search() ) {
-			return $posts;
-		}
+		$this->main_verdict = (int) $query->get( 'paged' ) > 1 ? self::FULL : $this->verdict();
 
-		$this->is_refused = true;
+		return self::REFUSED === $this->main_verdict ? array() : $posts;
+	}
 
-		return array();
+	/**
+	 * Tells whether the main search of this request has to be the basic one.
+	 */
+	public function is_basic(): bool {
+		return self::BASIC === $this->main_verdict;
 	}
 
 	/**
 	 * Answers a refused search with "429 Too Many Requests" instead of the results page.
 	 */
 	public function refuse(): void {
-		if ( ! $this->is_refused ) {
+		if ( self::REFUSED !== $this->main_verdict ) {
 			return;
 		}
 
 		header( 'Retry-After: ' . $this->period() );
 
 		wp_die(
-			esc_html( self::message() ),
+			esc_html( $this->message() ),
 			esc_html__( 'Too many searches', 'smart-search' ),
 			array(
 				'response'  => 429,
@@ -115,20 +142,28 @@ final class SearchGuard implements Hookable {
 	}
 
 	/**
-	 * Counts a search and tells whether the current visitor may start it.
+	 * Counts a search and decides how it may run.
 	 *
 	 * Those who may manage the plugin are never limited: they test it.
+	 *
+	 * @return string FULL, BASIC or REFUSED.
 	 */
-	public function allows_search(): bool {
+	public function verdict(): string {
 		if ( current_user_can( Capabilities::MANAGE ) ) {
-			return true;
+			return self::FULL;
 		}
 
-		return $this->throttle->allow_searches(
+		$allowed = $this->throttle->allow_searches(
 			$this->settings->int( 'search_limit' ),
 			$this->period(),
 			$this->settings->int( 'search_limit_site' )
 		);
+
+		if ( $allowed ) {
+			return self::FULL;
+		}
+
+		return 'block' === $this->settings->string( 'search_limit_action' ) ? self::REFUSED : self::BASIC;
 	}
 
 	/**
@@ -162,10 +197,17 @@ final class SearchGuard implements Hookable {
 	}
 
 	/**
-	 * Returns the message for a visitor who searched too often.
+	 * Returns the message for a visitor who searched too often: the one written in the settings, or the standard one.
 	 */
-	public static function message(): string {
-		return __( 'You have searched very often in a short time. Please wait a moment and try again.', 'smart-search' );
+	public function message(): string {
+		return $this->texts->own( 'search_limit_message', $this->texts->get( 'too_many' ) );
+	}
+
+	/**
+	 * Offers the message written in the settings to the string translation of Polylang and WPML.
+	 */
+	public function register_message(): void {
+		$this->texts->register_own( 'search_limit_message', __( 'Message when the search is blocked', 'smart-search' ) );
 	}
 
 	/**
