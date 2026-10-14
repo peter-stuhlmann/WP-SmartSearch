@@ -64,7 +64,20 @@ export async function getJson( route, params, signal ) {
 	} );
 
 	if ( ! response.ok ) {
-		throw new Error( `Request failed with status ${ response.status }` );
+		const error = new Error(
+			`Request failed with status ${ response.status }`
+		);
+
+		// What the server says to the visitor, e.g. that there were too many searches.
+		error.status = response.status;
+		error.serverMessage = await response
+			.json()
+			.then( ( body ) =>
+				typeof body?.message === 'string' ? body.message : ''
+			)
+			.catch( () => '' );
+
+		throw error;
 	}
 
 	return response.json();

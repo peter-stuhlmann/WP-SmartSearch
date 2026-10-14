@@ -166,6 +166,17 @@ export function enhanceLiveSearch( container, rendered = null ) {
 	};
 
 	/**
+	 * Returns the hidden trap field of the form, if a bot filled it in, so the server can tell.
+	 *
+	 * @return {Object<string, string>} The parameter to send along, or nothing.
+	 */
+	const trapValue = () => {
+		const trap = form.querySelector( '[name="prstsearch_hp"]' );
+
+		return trap?.value ? { prstsearch_hp: trap.value } : {};
+	};
+
+	/**
 	 * Searches and shows the results.
 	 *
 	 * @param {string}  query        The search phrase.
@@ -182,7 +193,7 @@ export function enhanceLiveSearch( container, rendered = null ) {
 		try {
 			const data = await getJson(
 				'/search',
-				{ q: query, type },
+				{ q: query, type, ...trapValue() },
 				current.signal
 			);
 
@@ -201,14 +212,21 @@ export function enhanceLiveSearch( container, rendered = null ) {
 			if ( data.pending ) {
 				refine( data );
 			}
-		} catch {
+		} catch ( error ) {
 			if ( current.signal.aborted ) {
 				return;
 			}
 
 			// The alert is announced by itself.
 			announce( '' );
-			output.replaceChildren( errorMessage( settings().strings.error ) );
+			output.replaceChildren(
+				errorMessage(
+					// Too many searches: the visitor needs to know that waiting helps.
+					error?.status === 429 && error.serverMessage
+						? error.serverMessage
+						: settings().strings.error
+				)
+			);
 			end( current );
 		}
 	};

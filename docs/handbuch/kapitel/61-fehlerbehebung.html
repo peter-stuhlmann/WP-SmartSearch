@@ -112,6 +112,18 @@
 	<p>Das hängt vom Browser ab und davon, ob der Text auf der Zielseite genau so vorkommt. Steht er dort in einem eingeklappten Bereich oder wird er erst per JavaScript eingefügt, findet der Browser ihn nicht und öffnet die Seite oben.</p>
 </div>
 
+<h2>Sicherheit</h2>
+
+<div class="frage">
+	<h3>Besucher bekommen „Zu viele Suchen“, obwohl sie kaum suchen.</h3>
+	<p>Deine Website läuft vermutlich hinter einem Proxy oder CDN, und alle Besucher kommen mit derselben Adresse an. Setze im Tab <em>Sicherheit</em> „Suchen pro Besucher“ auf 0 und nutze nur die Grenze der ganzen Website – oder lass die echte Adresse über den Hook <code>prstsearch_visitor_address</code> durchreichen. Prüfe außerdem, ob der Zeitraum versehentlich auf „pro Tag“ steht.</p>
+</div>
+
+<div class="frage">
+	<h3>Ich teste viel und werde selbst begrenzt.</h3>
+	<p>Wer das Plugin verwalten darf, wird nur begrenzt, wenn er nicht angemeldet ist. Melde dich an, oder teste mit „Suche ausprobieren“ im Tab <em>Suche</em>.</p>
+</div>
+
 <h2>Statistik und Kosten</h2>
 
 <div class="frage">

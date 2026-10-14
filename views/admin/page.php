@@ -14,7 +14,7 @@ use PrstSearch\Settings\SettingsSchema;
 defined( 'ABSPATH' ) || exit;
 
 $prstsearch_hero        = $data['hero'];
-$prstsearch_has_sidebar = ! in_array( $data['current'], array( SettingsSchema::TAB_STATS, SettingsSchema::TAB_TOOLS ), true );
+$prstsearch_has_sidebar = ! in_array( $data['current'], array( SettingsSchema::TAB_STATS, SettingsSchema::TAB_SECURITY, SettingsSchema::TAB_TOOLS ), true );
 ?>
 <div class="wrap prstsearch-admin">
 	<hr class="wp-header-end" />

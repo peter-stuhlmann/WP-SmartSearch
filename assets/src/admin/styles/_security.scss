@@ -1,0 +1,82 @@
+// Security: what is found about the API key and the connection.
+
+.prstsearch-panel__description--after {
+	margin-top: var(--prstsearch-space-4);
+}
+
+.prstsearch-findings {
+	display: grid;
+	gap: var(--prstsearch-space-3);
+	margin: var(--prstsearch-space-4) 0 0;
+	padding: 0;
+	list-style: none;
+}
+
+.prstsearch-finding {
+	display: flex;
+	gap: var(--prstsearch-space-4);
+	align-items: flex-start;
+	margin: 0;
+	padding: var(--prstsearch-space-4);
+	background: var(--prstsearch-surface-muted);
+	border-left: 4px solid var(--prstsearch-neutral);
+	border-radius: var(--prstsearch-radius-m);
+
+	// The state is said in words; the colour only repeats it.
+	&__state {
+		flex: none;
+		min-width: 7.5em;
+		padding: 2px var(--prstsearch-space-2);
+		font-size: var(--prstsearch-font-size-s);
+		font-weight: 600;
+		text-align: center;
+		border-radius: var(--prstsearch-radius-full);
+	}
+
+	&__title {
+		margin: 0 0 var(--prstsearch-space-1);
+		font-weight: 600;
+	}
+
+	&__description {
+		margin: 0;
+		color: var(--prstsearch-text-secondary);
+	}
+
+	&--ok {
+		border-left-color: var(--prstsearch-success);
+
+		.prstsearch-finding__state {
+			color: var(--prstsearch-success-text);
+			background: var(--prstsearch-success-surface);
+		}
+	}
+
+	&--info {
+		border-left-color: var(--prstsearch-accent);
+
+		.prstsearch-finding__state {
+			color: var(--prstsearch-accent-strong);
+			background: var(--prstsearch-accent-surface-strong);
+		}
+	}
+
+	&--warning {
+		border-left-color: var(--prstsearch-warning);
+
+		.prstsearch-finding__state {
+			color: var(--prstsearch-text);
+			background: var(--prstsearch-warning-surface);
+			box-shadow: inset 0 0 0 1px var(--prstsearch-warning);
+		}
+	}
+
+	@media (max-width: 600px) {
+		flex-direction: column;
+		gap: var(--prstsearch-space-2);
+	}
+
+	@media (forced-colors: active) {
+		border-left-color: CanvasText;
+	}
+}

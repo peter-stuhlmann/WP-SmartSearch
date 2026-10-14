@@ -16,10 +16,12 @@ use PrstSearch\Search\AnswerService;
 use PrstSearch\Search\HitFilter;
 use PrstSearch\Search\SearchService;
 use PrstSearch\Security\Capabilities;
+use PrstSearch\Security\SearchGuard;
 use PrstSearch\Settings\Settings;
 use PrstSearch\Stats\SearchLogger;
 use PrstSearch\Support\Cache;
 use PrstSearch\Support\PostTitle;
+use WP_Error;
 use WP_REST_Request;
 use WP_REST_Response;
 use WP_REST_Server;
@@ -50,7 +52,8 @@ final class SearchRoutes implements Hookable {
 		private readonly SearchLogger $logger,
 		private readonly Settings $settings,
 		private readonly HitFilter $filter,
-		private readonly Cache $cache
+		private readonly Cache $cache,
+		private readonly SearchGuard $guard
 	) {}
 
 	/**
@@ -192,7 +195,16 @@ final class SearchRoutes implements Hookable {
 	 *
 	 * @param WP_REST_Request $request The request.
 	 */
-	public function search( WP_REST_Request $request ): WP_REST_Response {
+	public function search( WP_REST_Request $request ): WP_REST_Response|WP_Error {
+		$is_new_search = 1 === (int) $request->get_param( 'page' ) && ! $request->get_param( 'refine' ) && ! $request->get_param( 'preview' );
+
+		// A bot gets what an unsuccessful search looks like.
+		if ( $this->guard->is_trap_filled( array( SearchGuard::TRAP => $request->get_param( SearchGuard::TRAP ) ?? '' ) ) ) {
+			$request->set_param( 'q', '' );
+		} elseif ( $is_new_search && ! $this->guard->allows_search() ) {
+			return new WP_Error( 'prstsearch_too_many_searches', SearchGuard::message(), array( 'status' => 429 ) );
+		}
+
 		$per_page = $request->get_param( 'per_page' );
 		$per_page = null === $per_page ? null : (int) $per_page;
 		$query    = (string) $request->get_param( 'q' );

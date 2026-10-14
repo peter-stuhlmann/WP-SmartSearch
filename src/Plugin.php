@@ -39,6 +39,7 @@ use PrstSearch\Rest\IndexRoutes;
 use PrstSearch\Rest\ProviderRoutes;
 use PrstSearch\Rest\SearchRoutes;
 use PrstSearch\Security\Capabilities;
+use PrstSearch\Security\SearchGuard;
 use PrstSearch\Stats\LogCleaner;
 use PrstSearch\Support\Assets;
 use PrstSearch\Support\Container;
@@ -58,6 +59,7 @@ final class Plugin {
 		IndexHooks::class,
 		BackgroundJobs::class,
 		LogCleaner::class,
+		SearchGuard::class,
 		QueryIntegration::class,
 		LanguageFilter::class,
 		FrontendAssets::class,

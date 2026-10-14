@@ -1,0 +1,123 @@
+<!-- kapitel: Tab „Sicherheit“ – Missbrauch abwehren -->
+
+<span id="tab-sicherheit"></span>
+
+<p class="einleitung">Eine Suche kostet den Server mehr als das Aufrufen einer gewöhnlichen Seite, und in den KI-Modi kostet sie Geld. Hier legst du fest, wie oft gesucht werden darf, stellst Bots eine Falle und siehst, wie sicher dein API-Schlüssel aufbewahrt ist.</p>
+
+<figure>
+	<div class="bild" style="height: 150mm;"><img src="bilder/einstellungen-security.png" alt="Tab Sicherheit"></div>
+	<figcaption><strong>Der Tab „Sicherheit“.</strong> Oben die Grenzen, darunter die Falle für Bots und die Prüfung von Schlüssel und Verbindung.</figcaption>
+</figure>
+
+<h2>Suchen begrenzen</h2>
+
+<div class="einfach">
+	<p>Ein Mensch sucht ein paar Mal in der Minute. Ein Skript, das in einer Schleife sucht, tut es hunderte Male – und bremst damit die Website für alle anderen aus. Die Grenze lässt Menschen ungestört und stoppt das Skript.</p>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Suchen pro Besucher</span><span class="einstellung__standard">Standard: 20</span></div>
+	<p>Wie viele Suchen ein Besucher im gewählten Zeitraum starten darf. Das Blättern durch die Treffer zählt nicht, ebenso wenig das Nachladen der Ergänzung durch das Sprachmodell. 0 bedeutet keine Grenze.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>search_limit</code> · 0 bis 100.000</div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Zeitraum</span><span class="einstellung__standard">Standard: pro Minute</span></div>
+	<p>Der Zeitraum, in dem gezählt wird: pro Minute, pro Stunde oder pro Tag. Danach beginnt die Zählung von vorn.</p>
+	<p>„20 pro Minute“ stoppt Skripte, ohne je einen Menschen zu treffen. „100 pro Tag“ ist strenger und kann auch jemanden treffen, der ausgiebig stöbert.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>search_limit_window</code> · <code>minute</code>, <code>hour</code>, <code>day</code></div>
+</div>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Suchen der ganzen Website pro Minute</span><span class="einstellung__standard">Standard: 0 (keine Grenze)</span></div>
+	<p>Eine Obergrenze für alle Besucher zusammen. Sie hilft gegen viele Skripte auf einmal, die jedes für sich unter der Grenze pro Besucher bleiben. Setze sie deutlich über das, was deine Website an ihren stärksten Tagen erlebt – sonst trifft sie echte Besucher.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>search_limit_site</code> · 0 bis 1.000.000</div>
+</div>
+
+<h3>Wofür die Grenze gilt</h3>
+
+<ul>
+	<li>Für <strong>jede Suche im Frontend</strong>: über das Suchfeld deines Themes, den Such-Block, die Shortcodes und die REST-API. Auch dann, wenn „Standardsuche von WordPress ersetzen“ ausgeschaltet ist.</li>
+	<li><strong>Nicht</strong> für Benutzer, die das Plugin verwalten dürfen – sie sollen in Ruhe testen können.</li>
+	<li><strong>Nicht</strong> für Vorschläge beim Tippen.</li>
+</ul>
+
+<h3>Was ein Besucher erlebt, der die Grenze überschreitet</h3>
+
+<table>
+	<thead>
+		<tr><th>Weg</th><th>Antwort</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Suchfeld des Themes</td><td>Eine schlichte Seite „Zu viele Suchen“ mit dem Text „Du hast in kurzer Zeit sehr oft gesucht. Bitte warte einen Moment und versuche es dann noch einmal.“ und einem Link zurück. Technisch: Status 429 mit der Angabe, nach wie vielen Sekunden es wieder geht.</td></tr>
+		<tr><td>Such-Block</td><td>Derselbe Satz an der Stelle der Treffer.</td></tr>
+		<tr><td>REST-API</td><td>Status 429 mit dem Code <code>prstsearch_too_many_searches</code> und demselben Satz.</td></tr>
+	</tbody>
+</table>
+
+<p>Die abgewiesene Suche läuft nicht und erscheint nicht in der Statistik.</p>
+
+<h3>Wie Besucher unterschieden werden</h3>
+
+<p>Wie bei der Begrenzung der KI-Anfragen bleibt niemand erkennbar: Die IP-Adresse wird zusammen mit dem laufenden Zeitraum zu einer von rund einer Million Gruppennummern verrechnet. Gespeichert wird nur ein Zähler pro Gruppennummer, und zwar höchstens so lange, wie der Zeitraum dauert. Mit dem nächsten Zeitraum ist es eine andere Nummer.</p>
+
+<div class="kasten kasten--achtung">
+	<span class="kasten__titel">Hinter einem Proxy oder CDN</span>
+	<p>Dort sieht WordPress bei allen Besuchern dieselbe Adresse. Die Grenze pro Besucher gilt dann für alle zusammen und schlägt sehr schnell zu. Setze sie in diesem Fall auf 0 und nutze nur die Grenze der ganzen Website – oder lass einen Entwickler mit dem Hook <code>prstsearch_visitor_address</code> die echte Adresse durchreichen.</p>
+</div>
+
+<h2>Bots abwehren</h2>
+
+<div class="einstellung">
+	<div class="einstellung__kopf"><span class="einstellung__name">Verstecktes Fallen-Feld in Suchformularen</span><span class="einstellung__standard">Standard: aus</span></div>
+	<p>Fügt jedem Suchformular ein zusätzliches Feld hinzu, das kein Mensch sieht: dem Formular deines Themes, dem Such-Block von WordPress und dem Such-Block dieses Plugins. Programme, die Formulare automatisch ausfüllen, füllen auch dieses Feld aus – und verraten sich damit.</p>
+	<div class="einstellung__schluessel">Schlüssel: <code>honeypot</code></div>
+</div>
+
+<div class="einfach">
+	<p>Ein Honigtopf lockt Bienen an, die Menschen gar nicht bemerken. Genauso das Feld: Für Besucher ist es unsichtbar und mit der Tastatur nicht erreichbar, Screenreader überspringen es. Ein Bot sieht nur ein Feld namens „Website“ und füllt es aus.</p>
+</div>
+
+<h3>Was mit einem ertappten Bot geschieht</h3>
+
+<p>Er bekommt eine ganz normale Seite ohne Treffer – so, als hätte seine Suche nichts gefunden. Er erfährt nicht, dass er erkannt wurde. Seine Suche läuft nicht, kostet nichts und erscheint nicht in der Statistik.</p>
+
+<h3>Was das Feld nicht kann</h3>
+
+<p>Es fängt nur Programme, die ein Formular ausfüllen. Ein Skript, das die Adresse der Suche direkt aufruft – etwa <code>/?s=…</code> –, füllt kein Formular aus und geht der Falle nicht ins Netz. Dagegen helfen die Grenzen oben. Beides zusammen ergibt den besten Schutz.</p>
+
+<p>Ist JavaScript eingeschaltet, sorgt ein winziges Skript dafür, dass das leere Feld nicht in der Adresse der Ergebnisseite auftaucht. Ohne JavaScript steht dort ein leeres <code>&amp;prstsearch_hp=</code> – harmlos, aber sichtbar.</p>
+
+<h2>Schlüssel und Verbindung</h2>
+
+<p>Der untere Teil des Tabs prüft bei jedem Öffnen, wie es um den API-Schlüssel deines KI-Anbieters steht, und sagt es in Worten: <span class="stufe stufe--hoch">In Ordnung</span>, <span class="stufe stufe--mittel">Hinweis</span> oder <span class="stufe stufe--gelb">Empfehlung</span>.</p>
+
+<table>
+	<thead>
+		<tr><th>Geprüft wird</th><th>In Ordnung</th><th>Empfehlung, wenn …</th></tr>
+	</thead>
+	<tbody>
+		<tr><td>Wo der API-Schlüssel liegt</td><td>In der <code>wp-config.php</code> oder verschlüsselt in der Datenbank</td><td>–</td></tr>
+		<tr><td>Wo die Sicherheitsschlüssel von WordPress liegen</td><td>In der <code>wp-config.php</code></td><td>sie fehlen dort. Dann hat WordPress sie in der Datenbank gespeichert – neben dem verschlüsselten API-Schlüssel, und eine Kopie der Datenbank genügt, um ihn zu entschlüsseln.</td></tr>
+		<tr><td>Wie der Anbieter erreicht wird</td><td>Über <code>https://</code>, oder auf demselben Server</td><td>die Adresse mit <code>http://</code> beginnt und der Anbieter woanders läuft. Dann gehen Schlüssel, Suchanfragen und Inhalte lesbar durchs Netz.</td></tr>
+	</tbody>
+</table>
+
+<h3>Wie der API-Schlüssel verschlüsselt ist</h3>
+
+<ul>
+	<li><strong>Verfahren:</strong> XSalsa20-Poly1305 aus der Bibliothek libsodium. Das ist eine <em>authentifizierte</em> Verschlüsselung: Wer den gespeicherten Wert verändert, erhält keinen falschen Schlüssel, sondern gar keinen.</li>
+	<li><strong>Zufall:</strong> Jedes Speichern verwendet eine neue Zufallszahl. Derselbe Schlüssel sieht in der Datenbank jedes Mal anders aus.</li>
+	<li><strong>Schlüssel zum Schlüssel:</strong> Er wird aus dem Sicherheitsschlüssel <code>AUTH_KEY</code>/<code>AUTH_SALT</code> von WordPress abgeleitet, und zwar eigens für diesen Zweck. Er ist nicht dasselbe, was anderer Code aus diesem Salz ableitet, und verrät nichts über das Salz.</li>
+	<li><strong>Anzeige:</strong> Die Einstellungsseite zeigt nur die letzten vier Zeichen. In keinem Export ist der Schlüssel enthalten, und beim Löschen des Plugins wird er immer entfernt.</li>
+	<li><strong>Übertragung:</strong> Weiterleitungen folgt das Plugin nicht. Der Schlüssel landet nie bei einem Server, den niemand eingetragen hat.</li>
+</ul>
+
+<p>Ein Schlüssel, den die Version 1.0.0 gespeichert hat, wird beim ersten Lesen unbemerkt auf das neue Verfahren umgestellt.</p>
+
+<div class="kasten">
+	<span class="kasten__titel">Die ehrliche Grenze</span>
+	<p>Wer nur an die Datenbank kommt – über eine Sicherungskopie oder eine Sicherheitslücke –, kann den Schlüssel nicht lesen. Wer zusätzlich die <code>wp-config.php</code> lesen kann, kann es. Das lässt sich bei keinem Schlüssel vermeiden, den der Server bei jeder Anfrage an den Anbieter mitschicken muss. Den besten Schutz bietet es, den Schlüssel gar nicht in der Datenbank zu speichern, sondern in der <code>wp-config.php</code>:</p>
+<pre><code><span class="k">define</span>( <span class="s">'PRSTSEARCH_API_KEY'</span>, <span class="s">'dein-schluessel'</span> );</code></pre>
+	<p>Zusätzlich empfiehlt es sich, beim Anbieter ein Ausgabenlimit zu setzen und dem Schlüssel nur die Rechte zu geben, die das Plugin braucht.</p>
+</div>

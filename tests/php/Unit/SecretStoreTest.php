@@ -57,6 +57,38 @@ final class SecretStoreTest extends WordPressTestCase {
 		self::assertNotSame( $first, $this->options[ SecretStore::OPTION ] );
 	}
 
+	public function test_a_key_stored_by_version_1_0_0_is_read_and_moved_to_the_current_key(): void {
+		// What version 1.0.0 wrote: the plain hash of the salt as key, no version mark.
+		$nonce = random_bytes( SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
+		$key   = sodium_crypto_generichash( $this->salt, '', SODIUM_CRYPTO_SECRETBOX_KEYBYTES );
+
+		$this->options[ SecretStore::OPTION ] = base64_encode( $nonce . sodium_crypto_secretbox( self::KEY, $nonce, $key ) );
+
+		self::assertSame( self::KEY, ( new SecretStore() )->get() );
+		self::assertStringStartsWith( 'v2:', $this->options[ SecretStore::OPTION ], 'Stored again under the current key.' );
+		self::assertSame( self::KEY, ( new SecretStore() )->get() );
+	}
+
+	public function test_the_key_is_not_encrypted_with_the_plain_hash_of_the_salt(): void {
+		( new SecretStore() )->set( self::KEY );
+
+		$raw   = (string) base64_decode( substr( (string) $this->options[ SecretStore::OPTION ], 3 ), true );
+		$nonce = substr( $raw, 0, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES );
+		$plain = sodium_crypto_secretbox_open( substr( $raw, SODIUM_CRYPTO_SECRETBOX_NONCEBYTES ), $nonce, sodium_crypto_generichash( $this->salt, '', SODIUM_CRYPTO_SECRETBOX_KEYBYTES ) );
+
+		self::assertFalse( $plain, 'The key is derived for this one purpose, not shared with anything else hashing the salt.' );
+	}
+
+	public function test_it_tells_where_the_key_comes_from(): void {
+		$store = new SecretStore();
+
+		self::assertSame( 'none', $store->source() );
+
+		$store->set( self::KEY );
+
+		self::assertSame( 'database', $store->source() );
+	}
+
 	public function test_a_key_is_unreadable_after_the_salts_of_the_site_changed(): void {
 		$store = new SecretStore();
 

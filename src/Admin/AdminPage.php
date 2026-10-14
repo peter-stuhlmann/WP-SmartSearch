@@ -221,7 +221,8 @@ final class AdminPage implements Hookable {
 		}
 
 		if ( current_user_can( Capabilities::MANAGE ) ) {
-			$tabs[ SettingsSchema::TAB_TOOLS ] = __( 'Tools', 'smart-search' );
+			$tabs[ SettingsSchema::TAB_SECURITY ] = __( 'Security', 'smart-search' );
+			$tabs[ SettingsSchema::TAB_TOOLS ]    = __( 'Tools', 'smart-search' );
 		}
 
 		return $tabs;

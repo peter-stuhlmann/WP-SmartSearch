@@ -51,6 +51,15 @@ final class RequestThrottle {
 	private const GROUP_DIGITS = 3;
 
 	/**
+	 * The same for counting searches over longer periods. Over an hour or a day
+	 * many more visitors come, and two of them must rarely share a count:
+	 * about a million groups, still some thousand IPv4 addresses each.
+	 */
+	private const SEARCH_GROUP_DIGITS = 5;
+
+	private const SEARCH_TRANSIENT = 'prstsearch_rs_';
+
+	/**
 	 * Requests per minute: for the whole site, and for one visitor.
 	 */
 	private const LIMITS = array(
@@ -84,8 +93,54 @@ final class RequestThrottle {
 		$minute = (int) floor( time() / MINUTE_IN_SECONDS );
 
 		// The visitor is checked first: a blocked visitor must not use up the site's allowance.
-		return $this->is_below( $minute, $kind . '_' . self::visitor_group( $minute ), (int) ( $limits['visitor'] ?? 0 ) )
+		return $this->is_below( $minute, $kind . '_' . self::visitor_group( $minute, self::GROUP_DIGITS ), (int) ( $limits['visitor'] ?? 0 ) )
 			&& $this->is_below( $minute, $kind . '_site', (int) ( $limits['site'] ?? 0 ) );
+	}
+
+	/**
+	 * Counts a search and tells whether it may proceed.
+	 *
+	 * @param int $per_visitor     Searches one visitor may start in the period. 0 for no limit.
+	 * @param int $period          Length of the period in seconds: a minute, an hour or a day.
+	 * @param int $site_per_minute Searches the whole site may start in a minute. 0 for no limit.
+	 */
+	public function allow_searches( int $per_visitor, int $period, int $site_per_minute ): bool {
+		$period = max( MINUTE_IN_SECONDS, $period );
+		$bucket = (int) floor( time() / $period );
+		$minute = (int) floor( time() / MINUTE_IN_SECONDS );
+
+		// The visitor is checked first: a blocked visitor must not use up the site's allowance.
+		return $this->is_below_in_period( 'search_' . $bucket . '_' . self::visitor_group( $bucket, self::SEARCH_GROUP_DIGITS ), $per_visitor, $period )
+			&& $this->is_below( $minute, 'search_site', $site_per_minute );
+	}
+
+	/**
+	 * Increments a counter that lives for one period and tells whether it is still within the limit.
+	 *
+	 * Each counter is a row of its own. Over an hour or a day a single row for
+	 * all of them would grow with every visitor and be written in full on every search.
+	 */
+	private function is_below_in_period( string $counter, int $limit, int $period ): bool {
+		if ( $limit <= 0 ) {
+			return true;
+		}
+
+		if ( wp_using_ext_object_cache() ) {
+			wp_cache_add( $counter, 0, self::CACHE_GROUP, $period );
+
+			return (int) wp_cache_incr( $counter, 1, self::CACHE_GROUP ) <= $limit;
+		}
+
+		$name  = self::SEARCH_TRANSIENT . substr( md5( $counter ), 0, 16 );
+		$count = (int) get_transient( $name );
+
+		if ( $count >= $limit ) {
+			return false;
+		}
+
+		set_transient( $name, $count + 1, $period );
+
+		return true;
 	}
 
 	/**
@@ -132,9 +187,12 @@ final class RequestThrottle {
 	}
 
 	/**
-	 * Returns the group the current visitor belongs to in the given minute.
+	 * Returns the group the current visitor belongs to in the given period.
+	 *
+	 * @param int $period Number of the period, so that the group changes with it.
+	 * @param int $digits Hexadecimal digits of the group number.
 	 */
-	private static function visitor_group( int $minute ): string {
+	private static function visitor_group( int $period, int $digits ): string {
 		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized, WordPress.Security.ValidatedSanitizedInput.MissingUnslash -- Only hashed, never stored or output.
 		$address = isset( $_SERVER['REMOTE_ADDR'] ) ? (string) $_SERVER['REMOTE_ADDR'] : '';
 
@@ -151,6 +209,6 @@ final class RequestThrottle {
 		 */
 		$address = (string) apply_filters( 'prstsearch_visitor_address', $address );
 
-		return substr( wp_hash( 'prstsearch_visitor|' . $minute . '|' . $address ), 0, self::GROUP_DIGITS );
+		return substr( wp_hash( 'prstsearch_visitor|' . $period . '|' . $address ), 0, $digits );
 	}
 }

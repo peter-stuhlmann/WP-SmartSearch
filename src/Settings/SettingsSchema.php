@@ -28,6 +28,7 @@ final class SettingsSchema {
 	public const TAB_PROVIDER = 'provider';
 	public const TAB_DISPLAY  = 'display';
 	public const TAB_STATS    = 'stats';
+	public const TAB_SECURITY = 'security';
 	public const TAB_TOOLS    = 'tools';
 
 	/**
@@ -91,6 +92,12 @@ final class SettingsSchema {
 			'track_clicks'             => self::field( self::TYPE_BOOL, false, self::TAB_STATS ),
 			'track_duration'           => self::field( self::TYPE_BOOL, false, self::TAB_STATS ),
 			'retention_days'           => self::number( self::TYPE_INT, 90, self::TAB_STATS, 1, 3650 ),
+
+			// Security.
+			'search_limit'             => self::number( self::TYPE_INT, 20, self::TAB_SECURITY, 0, 100000 ),
+			'search_limit_window'      => self::choice( 'minute', array( 'minute', 'hour', 'day' ), self::TAB_SECURITY ),
+			'search_limit_site'        => self::number( self::TYPE_INT, 0, self::TAB_SECURITY, 0, 1000000 ),
+			'honeypot'                 => self::field( self::TYPE_BOOL, false, self::TAB_SECURITY ),
 
 			// Tools.
 			'roles_manage'             => self::field( self::TYPE_LIST, array( 'administrator' ), self::TAB_TOOLS ),

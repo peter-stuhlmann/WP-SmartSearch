@@ -134,6 +134,67 @@ if ( ! class_exists( 'WP_REST_Request' ) ) {
 		public function get_param( string $name ): mixed {
 			return $this->params[ $name ] ?? null;
 		}
+
+		public function set_param( string $name, mixed $value ): void {
+			$this->params[ $name ] = $value;
+		}
+	}
+}
+
+if ( ! class_exists( 'WP_Query' ) ) {
+	/**
+	 * The main query of a request, reduced to what the plugin asks of it.
+	 */
+	class WP_Query {
+
+		/**
+		 * @param array<string, mixed> $query_vars Query variables.
+		 */
+		public function __construct( private array $query_vars = array() ) {}
+
+		public function get( string $name ): mixed {
+			return $this->query_vars[ $name ] ?? '';
+		}
+
+		public function set( string $name, mixed $value ): void {
+			$this->query_vars[ $name ] = $value;
+		}
+
+		public function is_main_query(): bool {
+			return true;
+		}
+
+		public function is_search(): bool {
+			return isset( $this->query_vars['s'] );
+		}
+	}
+}
+
+if ( ! class_exists( 'WP_Error' ) ) {
+	/**
+	 * An error as WordPress hands it around.
+	 */
+	class WP_Error {
+
+		/**
+		 * @param array<string, mixed> $data Data of the error, such as the HTTP status.
+		 */
+		public function __construct( private string $code = '', private string $message = '', private array $data = array() ) {}
+
+		public function get_error_code(): string {
+			return $this->code;
+		}
+
+		public function get_error_message(): string {
+			return $this->message;
+		}
+
+		/**
+		 * @return array<string, mixed>
+		 */
+		public function get_error_data(): array {
+			return $this->data;
+		}
 	}
 }
 

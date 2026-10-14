@@ -12,6 +12,7 @@ namespace PrstSearch\Frontend;
 use PrstSearch\Search\AnswerService;
 use PrstSearch\Search\SearchResults;
 use PrstSearch\Search\SearchService;
+use PrstSearch\Security\SearchGuard;
 use PrstSearch\Settings\Settings;
 
 /**
@@ -31,7 +32,8 @@ final class SearchUi {
 		private readonly ResultRenderer $renderer,
 		private readonly TemplateLoader $templates,
 		private readonly FrontendAssets $assets,
-		private readonly Settings $settings
+		private readonly Settings $settings,
+		private readonly SearchGuard $guard
 	) {}
 
 	/**
@@ -42,16 +44,19 @@ final class SearchUi {
 	public function form( array $options = array() ): string {
 		$this->assets->enqueue();
 
-		return $this->templates->render(
-			'search-form',
-			array(
-				'id'           => wp_unique_id( 'prstsearch-input-' ),
-				'action'       => home_url( '/' ),
-				'query'        => get_search_query( false ),
-				'label'        => self::text( $options, 'label', __( 'Search', 'smart-search' ) ),
-				'placeholder'  => self::text( $options, 'placeholder', '' ),
-				'button_label' => self::text( $options, 'button_label', __( 'Search', 'smart-search' ) ),
-				'suggestions'  => $this->settings->bool( 'suggestions' ),
+		// The trap goes into this form as into any other, see SearchGuard.
+		return (string) $this->guard->with_trap(
+			$this->templates->render(
+				'search-form',
+				array(
+					'id'           => wp_unique_id( 'prstsearch-input-' ),
+					'action'       => home_url( '/' ),
+					'query'        => get_search_query( false ),
+					'label'        => self::text( $options, 'label', __( 'Search', 'smart-search' ) ),
+					'placeholder'  => self::text( $options, 'placeholder', '' ),
+					'button_label' => self::text( $options, 'button_label', __( 'Search', 'smart-search' ) ),
+					'suggestions'  => $this->settings->bool( 'suggestions' ),
+				)
 			)
 		);
 	}

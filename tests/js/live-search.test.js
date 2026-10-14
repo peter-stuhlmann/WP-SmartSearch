@@ -582,6 +582,47 @@ describe( 'enhanceLiveSearch', () => {
 		expect( search.output.hasAttribute( 'aria-busy' ) ).toBe( false );
 	} );
 
+	it( 'says why a search was refused when the visitor searched too often', async () => {
+		global.fetch = jest.fn( () =>
+			Promise.resolve( {
+				ok: false,
+				status: 429,
+				json: () =>
+					Promise.resolve( {
+						code: 'prstsearch_too_many_searches',
+						message: 'Please wait a moment.',
+					} ),
+			} )
+		);
+
+		const search = renderSearch();
+
+		submit( search, 'shipping' );
+		await settle();
+
+		expect( search.output.textContent ).toBe( 'Please wait a moment.' );
+	} );
+
+	it( 'sends the trap field along only when something filled it in', async () => {
+		const requests = holdRequests();
+		const search = renderSearch();
+		const trap = document.createElement( 'input' );
+
+		trap.name = 'prstsearch_hp';
+		search.form.append( trap );
+
+		submit( search, 'shipping' );
+		expect( requests[ 0 ].url.searchParams.has( 'prstsearch_hp' ) ).toBe(
+			false
+		);
+
+		trap.value = 'https://spam.example';
+		submit( search, 'shipping' );
+		expect( requests[ 1 ].url.searchParams.get( 'prstsearch_hp' ) ).toBe(
+			'https://spam.example'
+		);
+	} );
+
 	it( 'shows an error that screen readers announce', async () => {
 		const requests = holdRequests();
 		const search = renderSearch();

@@ -9,7 +9,7 @@ msgstr ""
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"POT-Creation-Date: 2026-10-13T04:47:00+02:00\n"
+"POT-Creation-Date: 2026-10-14T14:50:48+02:00\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: smart-search\n"
@@ -47,8 +47,8 @@ msgstr ""
 
 #: src/Admin/AdminPage.php:213
 #: src/Admin/PostIndicators.php:133
-#: src/Frontend/SearchUi.php:51
-#: src/Frontend/SearchUi.php:53
+#: src/Frontend/SearchUi.php:55
+#: src/Frontend/SearchUi.php:57
 #: views/admin/tab-search.php:170
 #: assets/src/blocks/search/edit.js:19
 #: assets/src/editor/index.js:39
@@ -70,34 +70,38 @@ msgid "Statistics"
 msgstr ""
 
 #: src/Admin/AdminPage.php:224
+msgid "Security"
+msgstr ""
+
+#: src/Admin/AdminPage.php:225
 msgid "Tools"
 msgstr ""
 
-#: src/Admin/AdminPage.php:252
+#: src/Admin/AdminPage.php:253
 msgid "Settings saved."
 msgstr ""
 
-#: src/Admin/AdminPage.php:253
+#: src/Admin/AdminPage.php:254
 msgid "Settings saved. The stored API key was removed because the provider or its address changed. Please enter the key for the new service."
 msgstr ""
 
-#: src/Admin/AdminPage.php:254
+#: src/Admin/AdminPage.php:255
 msgid "Settings imported."
 msgstr ""
 
-#: src/Admin/AdminPage.php:255
+#: src/Admin/AdminPage.php:256
 msgid "Settings imported. Some recommended results were left out because their page does not exist on this website."
 msgstr ""
 
-#: src/Admin/AdminPage.php:256
+#: src/Admin/AdminPage.php:257
 msgid "The file could not be read. Please choose a file exported by Smart Search."
 msgstr ""
 
-#: src/Admin/AdminPage.php:257
+#: src/Admin/AdminPage.php:258
 msgid "Statistics deleted."
 msgstr ""
 
-#: src/Admin/AdminPage.php:258
+#: src/Admin/AdminPage.php:259
 msgid "The content is included in the search again."
 msgstr ""
 
@@ -409,6 +413,70 @@ msgstr ""
 msgid "Not configured"
 msgstr ""
 
+#: src/Admin/ViewModel.php:287
+msgid "The API key is defined in wp-config.php"
+msgstr ""
+
+#: src/Admin/ViewModel.php:288
+msgid "It is not stored in the database, so a copy of the database does not contain it."
+msgstr ""
+
+#: src/Admin/ViewModel.php:292
+msgid "The API key is stored encrypted"
+msgstr ""
+
+#: src/Admin/ViewModel.php:293
+msgid "Encrypted with XSalsa20-Poly1305 under a key derived from the salts of WordPress. A copy of the database alone does not reveal it. Who can also read wp-config.php can decrypt it – that is unavoidable for a key the server has to send. Defining it as PRSTSEARCH_API_KEY in wp-config.php keeps it out of the database entirely."
+msgstr ""
+
+#: src/Admin/ViewModel.php:297
+msgid "No API key is stored"
+msgstr ""
+
+#: src/Admin/ViewModel.php:298
+msgid "The keyword search needs none. A key entered for the AI modes is stored encrypted."
+msgstr ""
+
+#: src/Admin/ViewModel.php:306
+msgid "The salts of WordPress are in wp-config.php"
+msgstr ""
+
+#: src/Admin/ViewModel.php:307
+msgid "The key that encrypts the API key is derived from them and is not in the database."
+msgstr ""
+
+#: src/Admin/ViewModel.php:311
+msgid "The salts of WordPress are kept in the database"
+msgstr ""
+
+#: src/Admin/ViewModel.php:312
+msgid "AUTH_KEY and AUTH_SALT are missing from wp-config.php, so WordPress generated them and stores them in the database – next to the encrypted API key. A copy of the database is then enough to decrypt it. Add the two lines to wp-config.php; the API key has to be entered again afterwards."
+msgstr ""
+
+#: src/Admin/ViewModel.php:323
+msgid "The provider is reached over HTTPS"
+msgstr ""
+
+#: src/Admin/ViewModel.php:324
+msgid "API key, search queries and content travel encrypted. Redirects are not followed, so the key cannot be passed on to another server."
+msgstr ""
+
+#: src/Admin/ViewModel.php:329
+msgid "The provider runs on this server"
+msgstr ""
+
+#: src/Admin/ViewModel.php:330
+msgid "The connection does not leave the server, so it needs no encryption."
+msgstr ""
+
+#: src/Admin/ViewModel.php:335
+msgid "The provider is reached without encryption"
+msgstr ""
+
+#: src/Admin/ViewModel.php:336
+msgid "The address starts with http://. API key, search queries and content travel readable through the network. Use an https:// address if the provider offers one."
+msgstr ""
+
 #. translators: %d: number of suggestions.
 #: src/Frontend/FrontendAssets.php:131
 #, php-format
@@ -596,6 +664,18 @@ msgstr ""
 #: templates/answer-placeholder.php:28
 #: views/admin/tab-search.php:30
 msgid "AI answer"
+msgstr ""
+
+#: src/Security/SearchGuard.php:109
+msgid "Too many searches"
+msgstr ""
+
+#: src/Security/SearchGuard.php:168
+msgid "You have searched very often in a short time. Please wait a moment and try again."
+msgstr ""
+
+#: src/Security/SearchGuard.php:192
+msgid "Website"
 msgstr ""
 
 #: src/Support/PostTitle.php:29
@@ -834,6 +914,7 @@ msgstr ""
 #: views/admin/tab-provider.php:192
 #: views/admin/tab-search.php:120
 #: views/admin/tab-search.php:156
+#: views/admin/tab-security.php:92
 #: views/admin/tab-stats.php:265
 #: views/admin/tab-tools.php:174
 msgid "Save changes"
@@ -1290,8 +1371,89 @@ msgstr ""
 msgid "For example: shipping costs abroad"
 msgstr ""
 
+#: views/admin/tab-security.php:19
+msgid "In order"
+msgstr ""
+
+#: views/admin/tab-security.php:20
+msgid "Note"
+msgstr ""
+
+#: views/admin/tab-security.php:21
+msgid "Recommendation"
+msgstr ""
+
+#: views/admin/tab-security.php:30
+msgid "Limit searches"
+msgstr ""
+
+#: views/admin/tab-security.php:31
+msgid "A search costs the server more than an ordinary page, and in the AI modes it costs money. These limits stop scripts that search in a loop. They apply to every search on the website, also through the search field of your theme. Whoever may manage the plugin is never limited."
+msgstr ""
+
+#: views/admin/tab-security.php:37
+msgid "Searches per visitor"
+msgstr ""
+
+#: views/admin/tab-security.php:38
+msgid "How many searches one visitor may start in the period below. Paging through the results does not count. 0 means no limit."
+msgstr ""
+
+#: views/admin/tab-security.php:50
 #: views/admin/tab-stats.php:24
 msgid "Period"
+msgstr ""
+
+#: views/admin/tab-security.php:51
+msgid "The period the searches per visitor are counted in. After it, the count starts again."
+msgstr ""
+
+#: views/admin/tab-security.php:53
+msgid "per minute"
+msgstr ""
+
+#: views/admin/tab-security.php:54
+msgid "per hour"
+msgstr ""
+
+#: views/admin/tab-security.php:55
+msgid "per day"
+msgstr ""
+
+#: views/admin/tab-security.php:61
+msgid "Searches of the whole website per minute"
+msgstr ""
+
+#: views/admin/tab-security.php:62
+msgid "An upper limit for all visitors together, against many scripts at once. Set it well above what your website sees on its busiest days. 0 means no limit."
+msgstr ""
+
+#: views/admin/tab-security.php:74
+msgid "Whoever exceeds a limit gets the message “You have searched very often in a short time. Please wait a moment and try again.” Visitors are told apart without storing anything that identifies them: the IP address is only used to form one of about a million group numbers, which changes with every period."
+msgstr ""
+
+#: views/admin/tab-security.php:78
+msgid "Keep bots out"
+msgstr ""
+
+#: views/admin/tab-security.php:79
+msgid "A trap for programs that fill in forms automatically."
+msgstr ""
+
+#: views/admin/tab-security.php:85
+msgid "Hidden trap field in search forms"
+msgstr ""
+
+#: views/admin/tab-security.php:86
+msgid "Adds a field no person sees to every search form – the one of your theme, the search block of WordPress and the one of this plugin. A bot that fills it in gets an empty result and is not recorded in the statistics. It does not help against scripts that call the search address directly; the limits above are for those."
+msgstr ""
+
+#: views/admin/tab-security.php:98
+msgid "Key and connection"
+msgstr ""
+
+#: views/admin/tab-security.php:99
+msgid "Where the API key of your AI provider is kept and how it travels. Checked each time this page opens."
 msgstr ""
 
 #: views/admin/tab-stats.php:45

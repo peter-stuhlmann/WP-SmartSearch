@@ -234,6 +234,9 @@ final class SearchRoutesTest extends RenderingTestCase {
 	}
 
 	public function test_a_visitor_searching_faster_than_a_person_can_does_not_fill_the_statistics(): void {
+		// The limit on searches would stop this visitor first, see SearchGuardTest.
+		$this->configure( array( 'search_limit' => 0 ) );
+
 		foreach ( range( 1, 40 ) as $number ) {
 			$this->search( array( 'q' => 'shipping ' . $number ) );
 		}

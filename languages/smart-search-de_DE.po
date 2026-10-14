@@ -8,7 +8,7 @@ msgstr ""
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
 "POT-Creation-Date: 2026-10-12T20:56:10+02:00\n"
-"PO-Revision-Date: 2026-10-13T02:47:01+00:00\n"
+"PO-Revision-Date: 2026-10-14T12:50:50+00:00\n"
 "Language: de_DE\n"
 "X-Generator: WP-CLI 2.12.0\n"
 "X-Domain: smart-search\n"
@@ -47,8 +47,8 @@ msgstr "Inhalte"
 
 #: src/Admin/AdminPage.php:213
 #: src/Admin/PostIndicators.php:133
-#: src/Frontend/SearchUi.php:51
-#: src/Frontend/SearchUi.php:53
+#: src/Frontend/SearchUi.php:55
+#: src/Frontend/SearchUi.php:57
 #: views/admin/tab-search.php:170
 #: assets/src/blocks/search/edit.js:19
 #: assets/src/editor/index.js:39
@@ -70,34 +70,38 @@ msgid "Statistics"
 msgstr "Statistik"
 
 #: src/Admin/AdminPage.php:224
+msgid "Security"
+msgstr "Sicherheit"
+
+#: src/Admin/AdminPage.php:225
 msgid "Tools"
 msgstr "Werkzeuge"
 
-#: src/Admin/AdminPage.php:252
+#: src/Admin/AdminPage.php:253
 msgid "Settings saved."
 msgstr "Einstellungen gespeichert."
 
-#: src/Admin/AdminPage.php:253
+#: src/Admin/AdminPage.php:254
 msgid "Settings saved. The stored API key was removed because the provider or its address changed. Please enter the key for the new service."
 msgstr "Einstellungen gespeichert. Der gespeicherte API-Schlüssel wurde entfernt, weil sich der Anbieter oder seine Adresse geändert hat. Bitte gib den Schlüssel für den neuen Dienst ein."
 
-#: src/Admin/AdminPage.php:254
+#: src/Admin/AdminPage.php:255
 msgid "Settings imported."
 msgstr "Einstellungen importiert."
 
-#: src/Admin/AdminPage.php:255
+#: src/Admin/AdminPage.php:256
 msgid "Settings imported. Some recommended results were left out because their page does not exist on this website."
 msgstr "Einstellungen importiert. Einige empfohlene Treffer wurden ausgelassen, weil ihre Seite auf dieser Website nicht existiert."
 
-#: src/Admin/AdminPage.php:256
+#: src/Admin/AdminPage.php:257
 msgid "The file could not be read. Please choose a file exported by Smart Search."
 msgstr "Die Datei konnte nicht gelesen werden. Bitte wähle eine Datei, die mit Smart Search exportiert wurde."
 
-#: src/Admin/AdminPage.php:257
+#: src/Admin/AdminPage.php:258
 msgid "Statistics deleted."
 msgstr "Statistik gelöscht."
 
-#: src/Admin/AdminPage.php:258
+#: src/Admin/AdminPage.php:259
 msgid "The content is included in the search again."
 msgstr "Der Inhalt wird wieder durchsucht."
 
@@ -409,6 +413,70 @@ msgstr "Adresse deiner Wahl"
 msgid "Not configured"
 msgstr "Nicht eingerichtet"
 
+#: src/Admin/ViewModel.php:287
+msgid "The API key is defined in wp-config.php"
+msgstr "Der API-Schlüssel steht in der wp-config.php"
+
+#: src/Admin/ViewModel.php:288
+msgid "It is not stored in the database, so a copy of the database does not contain it."
+msgstr "Er ist nicht in der Datenbank gespeichert, eine Kopie der Datenbank enthält ihn also nicht."
+
+#: src/Admin/ViewModel.php:292
+msgid "The API key is stored encrypted"
+msgstr "Der API-Schlüssel ist verschlüsselt gespeichert"
+
+#: src/Admin/ViewModel.php:293
+msgid "Encrypted with XSalsa20-Poly1305 under a key derived from the salts of WordPress. A copy of the database alone does not reveal it. Who can also read wp-config.php can decrypt it – that is unavoidable for a key the server has to send. Defining it as PRSTSEARCH_API_KEY in wp-config.php keeps it out of the database entirely."
+msgstr "Verschlüsselt mit XSalsa20-Poly1305 unter einem Schlüssel, der aus den Sicherheitsschlüsseln von WordPress abgeleitet ist. Eine Kopie der Datenbank allein verrät ihn nicht. Wer zusätzlich die wp-config.php lesen kann, kann ihn entschlüsseln – das lässt sich bei einem Schlüssel, den der Server mitschicken muss, nicht vermeiden. Als PRSTSEARCH_API_KEY in der wp-config.php festgelegt, bleibt er ganz aus der Datenbank heraus."
+
+#: src/Admin/ViewModel.php:297
+msgid "No API key is stored"
+msgstr "Es ist kein API-Schlüssel gespeichert"
+
+#: src/Admin/ViewModel.php:298
+msgid "The keyword search needs none. A key entered for the AI modes is stored encrypted."
+msgstr "Die Keyword-Suche braucht keinen. Ein Schlüssel für die KI-Modi wird verschlüsselt gespeichert."
+
+#: src/Admin/ViewModel.php:306
+msgid "The salts of WordPress are in wp-config.php"
+msgstr "Die Sicherheitsschlüssel von WordPress stehen in der wp-config.php"
+
+#: src/Admin/ViewModel.php:307
+msgid "The key that encrypts the API key is derived from them and is not in the database."
+msgstr "Der Schlüssel, mit dem der API-Schlüssel verschlüsselt ist, wird daraus abgeleitet und steht nicht in der Datenbank."
+
+#: src/Admin/ViewModel.php:311
+msgid "The salts of WordPress are kept in the database"
+msgstr "Die Sicherheitsschlüssel von WordPress liegen in der Datenbank"
+
+#: src/Admin/ViewModel.php:312
+msgid "AUTH_KEY and AUTH_SALT are missing from wp-config.php, so WordPress generated them and stores them in the database – next to the encrypted API key. A copy of the database is then enough to decrypt it. Add the two lines to wp-config.php; the API key has to be entered again afterwards."
+msgstr "AUTH_KEY und AUTH_SALT fehlen in der wp-config.php. WordPress hat sie deshalb selbst erzeugt und speichert sie in der Datenbank – neben dem verschlüsselten API-Schlüssel. Eine Kopie der Datenbank genügt dann, um ihn zu entschlüsseln. Ergänze die beiden Zeilen in der wp-config.php; den API-Schlüssel musst du danach neu eingeben."
+
+#: src/Admin/ViewModel.php:323
+msgid "The provider is reached over HTTPS"
+msgstr "Der Anbieter wird über HTTPS erreicht"
+
+#: src/Admin/ViewModel.php:324
+msgid "API key, search queries and content travel encrypted. Redirects are not followed, so the key cannot be passed on to another server."
+msgstr "API-Schlüssel, Suchanfragen und Inhalte werden verschlüsselt übertragen. Weiterleitungen folgt das Plugin nicht, der Schlüssel kann also nicht an einen anderen Server weitergereicht werden."
+
+#: src/Admin/ViewModel.php:329
+msgid "The provider runs on this server"
+msgstr "Der Anbieter läuft auf diesem Server"
+
+#: src/Admin/ViewModel.php:330
+msgid "The connection does not leave the server, so it needs no encryption."
+msgstr "Die Verbindung verlässt den Server nicht und braucht deshalb keine Verschlüsselung."
+
+#: src/Admin/ViewModel.php:335
+msgid "The provider is reached without encryption"
+msgstr "Der Anbieter wird unverschlüsselt erreicht"
+
+#: src/Admin/ViewModel.php:336
+msgid "The address starts with http://. API key, search queries and content travel readable through the network. Use an https:// address if the provider offers one."
+msgstr "Die Adresse beginnt mit http://. API-Schlüssel, Suchanfragen und Inhalte gehen lesbar durchs Netz. Verwende eine https://-Adresse, wenn der Anbieter eine anbietet."
+
 #. translators: %d: number of suggestions.
 #: src/Frontend/FrontendAssets.php:131
 #, php-format
@@ -597,6 +665,18 @@ msgstr "Semantisch"
 #: views/admin/tab-search.php:30
 msgid "AI answer"
 msgstr "KI-Antwort"
+
+#: src/Security/SearchGuard.php:109
+msgid "Too many searches"
+msgstr "Zu viele Suchen"
+
+#: src/Security/SearchGuard.php:168
+msgid "You have searched very often in a short time. Please wait a moment and try again."
+msgstr "Du hast in kurzer Zeit sehr oft gesucht. Bitte warte einen Moment und versuche es dann noch einmal."
+
+#: src/Security/SearchGuard.php:192
+msgid "Website"
+msgstr "Website"
 
 #: src/Support/PostTitle.php:29
 msgid "(no title)"
@@ -834,6 +914,7 @@ msgstr "Für Page-Builder, die ihre Inhalte erst auf der fertigen Seite ausgeben
 #: views/admin/tab-provider.php:192
 #: views/admin/tab-search.php:120
 #: views/admin/tab-search.php:156
+#: views/admin/tab-security.php:92
 #: views/admin/tab-stats.php:265
 #: views/admin/tab-tools.php:174
 msgid "Save changes"
@@ -1290,9 +1371,90 @@ msgstr "Test-Suchanfrage"
 msgid "For example: shipping costs abroad"
 msgstr "Zum Beispiel: Versandkosten ins Ausland"
 
+#: views/admin/tab-security.php:19
+msgid "In order"
+msgstr "In Ordnung"
+
+#: views/admin/tab-security.php:20
+msgid "Note"
+msgstr "Hinweis"
+
+#: views/admin/tab-security.php:21
+msgid "Recommendation"
+msgstr "Empfehlung"
+
+#: views/admin/tab-security.php:30
+msgid "Limit searches"
+msgstr "Suchen begrenzen"
+
+#: views/admin/tab-security.php:31
+msgid "A search costs the server more than an ordinary page, and in the AI modes it costs money. These limits stop scripts that search in a loop. They apply to every search on the website, also through the search field of your theme. Whoever may manage the plugin is never limited."
+msgstr "Eine Suche kostet den Server mehr als eine gewöhnliche Seite, und in den KI-Modi kostet sie Geld. Diese Grenzen stoppen Skripte, die in einer Schleife suchen. Sie gelten für jede Suche auf der Website, auch über das Suchfeld deines Themes. Wer das Plugin verwalten darf, wird nie begrenzt."
+
+#: views/admin/tab-security.php:37
+msgid "Searches per visitor"
+msgstr "Suchen pro Besucher"
+
+#: views/admin/tab-security.php:38
+msgid "How many searches one visitor may start in the period below. Paging through the results does not count. 0 means no limit."
+msgstr "Wie viele Suchen ein Besucher im darunter gewählten Zeitraum starten darf. Das Blättern durch die Treffer zählt nicht. 0 bedeutet keine Grenze."
+
+#: views/admin/tab-security.php:50
 #: views/admin/tab-stats.php:24
 msgid "Period"
 msgstr "Zeitraum"
+
+#: views/admin/tab-security.php:51
+msgid "The period the searches per visitor are counted in. After it, the count starts again."
+msgstr "Der Zeitraum, in dem die Suchen eines Besuchers gezählt werden. Danach beginnt die Zählung von vorn."
+
+#: views/admin/tab-security.php:53
+msgid "per minute"
+msgstr "pro Minute"
+
+#: views/admin/tab-security.php:54
+msgid "per hour"
+msgstr "pro Stunde"
+
+#: views/admin/tab-security.php:55
+msgid "per day"
+msgstr "pro Tag"
+
+#: views/admin/tab-security.php:61
+msgid "Searches of the whole website per minute"
+msgstr "Suchen der ganzen Website pro Minute"
+
+#: views/admin/tab-security.php:62
+msgid "An upper limit for all visitors together, against many scripts at once. Set it well above what your website sees on its busiest days. 0 means no limit."
+msgstr "Eine Obergrenze für alle Besucher zusammen, gegen viele Skripte auf einmal. Setze sie deutlich über das, was deine Website an ihren stärksten Tagen erlebt. 0 bedeutet keine Grenze."
+
+#: views/admin/tab-security.php:74
+msgid "Whoever exceeds a limit gets the message “You have searched very often in a short time. Please wait a moment and try again.” Visitors are told apart without storing anything that identifies them: the IP address is only used to form one of about a million group numbers, which changes with every period."
+msgstr "Wer eine Grenze überschreitet, bekommt die Meldung „Du hast in kurzer Zeit sehr oft gesucht. Bitte warte einen Moment und versuche es dann noch einmal.“ Besucher werden unterschieden, ohne dass etwas gespeichert wird, das sie erkennbar macht: Aus der IP-Adresse wird nur eine von rund einer Million Gruppennummern gebildet, die mit jedem Zeitraum wechselt."
+
+#: views/admin/tab-security.php:78
+msgid "Keep bots out"
+msgstr "Bots abwehren"
+
+#: views/admin/tab-security.php:79
+msgid "A trap for programs that fill in forms automatically."
+msgstr "Eine Falle für Programme, die Formulare automatisch ausfüllen."
+
+#: views/admin/tab-security.php:85
+msgid "Hidden trap field in search forms"
+msgstr "Verstecktes Fallen-Feld in Suchformularen"
+
+#: views/admin/tab-security.php:86
+msgid "Adds a field no person sees to every search form – the one of your theme, the search block of WordPress and the one of this plugin. A bot that fills it in gets an empty result and is not recorded in the statistics. It does not help against scripts that call the search address directly; the limits above are for those."
+msgstr "Fügt jedem Suchformular ein Feld hinzu, das kein Mensch sieht – dem deines Themes, dem Such-Block von WordPress und dem dieses Plugins. Ein Bot, der es ausfüllt, bekommt ein leeres Ergebnis und erscheint nicht in der Statistik. Gegen Skripte, die die Suchadresse direkt aufrufen, hilft es nicht; dafür sind die Grenzen oben da."
+
+#: views/admin/tab-security.php:98
+msgid "Key and connection"
+msgstr "Schlüssel und Verbindung"
+
+#: views/admin/tab-security.php:99
+msgid "Where the API key of your AI provider is kept and how it travels. Checked each time this page opens."
+msgstr "Wo der API-Schlüssel deines KI-Anbieters liegt und wie er übertragen wird. Wird bei jedem Öffnen dieser Seite geprüft."
 
 #: views/admin/tab-stats.php:45
 msgid "From"

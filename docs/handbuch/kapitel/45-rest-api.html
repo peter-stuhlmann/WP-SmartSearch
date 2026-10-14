@@ -197,6 +197,8 @@ quelle.onerror = () =&gt; quelle.close();   <span class="c">// dann /answer als 
 
 <ul>
 	<li>Die Suchanfrage wird nach 200 Zeichen abgeschnitten.</li>
+	<li>Neue Suchen über <code>/search</code> zählen zur Grenze aus dem Tab <em>Sicherheit</em>. Darüber antwortet die Route mit Status 429 und dem Code <code>prstsearch_too_many_searches</code>. Weitere Seiten und der zweite Schritt mit <code>refine</code> zählen nicht.</li>
+	<li>Ist das Fallen-Feld eingeschaltet und der Parameter <code>prstsearch_hp</code> nicht leer, liefert <code>/search</code> ein leeres Ergebnis.</li>
 	<li>KI-Anfragen und Einträge in die Statistik sind pro Minute begrenzt, siehe Kapitel <a href="#kosten">„Kosten, Budget und Begrenzungen“</a>. Die Suche selbst bleibt dabei immer erreichbar.</li>
 	<li>Wer die API von einer anderen Domain aus aufruft, braucht die üblichen CORS-Kopfzeilen von WordPress.</li>
 </ul>

@@ -274,6 +274,73 @@ final class ViewModel {
 	}
 
 	/**
+	 * Returns what the tab "Security" reports about the API key and the connection to the provider.
+	 *
+	 * @return array<int, array{state: string, title: string, text: string}> State "ok", "info" or "warning".
+	 */
+	public function security_findings(): array {
+		$findings = array();
+
+		$findings[] = match ( $this->secrets->source() ) {
+			'config'   => array(
+				'state' => 'ok',
+				'title' => __( 'The API key is defined in wp-config.php', 'smart-search' ),
+				'text'  => __( 'It is not stored in the database, so a copy of the database does not contain it.', 'smart-search' ),
+			),
+			'database' => array(
+				'state' => 'ok',
+				'title' => __( 'The API key is stored encrypted', 'smart-search' ),
+				'text'  => __( 'Encrypted with XSalsa20-Poly1305 under a key derived from the salts of WordPress. A copy of the database alone does not reveal it. Who can also read wp-config.php can decrypt it – that is unavoidable for a key the server has to send. Defining it as PRSTSEARCH_API_KEY in wp-config.php keeps it out of the database entirely.', 'smart-search' ),
+			),
+			default    => array(
+				'state' => 'info',
+				'title' => __( 'No API key is stored', 'smart-search' ),
+				'text'  => __( 'The keyword search needs none. A key entered for the AI modes is stored encrypted.', 'smart-search' ),
+			),
+		};
+
+		if ( 'database' === $this->secrets->source() ) {
+			$findings[] = SecretStore::salts_are_in_config()
+				? array(
+					'state' => 'ok',
+					'title' => __( 'The salts of WordPress are in wp-config.php', 'smart-search' ),
+					'text'  => __( 'The key that encrypts the API key is derived from them and is not in the database.', 'smart-search' ),
+				)
+				: array(
+					'state' => 'warning',
+					'title' => __( 'The salts of WordPress are kept in the database', 'smart-search' ),
+					'text'  => __( 'AUTH_KEY and AUTH_SALT are missing from wp-config.php, so WordPress generated them and stores them in the database – next to the encrypted API key. A copy of the database is then enough to decrypt it. Add the two lines to wp-config.php; the API key has to be entered again afterwards.', 'smart-search' ),
+				);
+		}
+
+		$address = $this->config->base_url();
+		$scheme  = (string) wp_parse_url( $address, PHP_URL_SCHEME );
+		$host    = (string) wp_parse_url( $address, PHP_URL_HOST );
+
+		if ( '' !== $address && 'https' === $scheme ) {
+			$findings[] = array(
+				'state' => 'ok',
+				'title' => __( 'The provider is reached over HTTPS', 'smart-search' ),
+				'text'  => __( 'API key, search queries and content travel encrypted. Redirects are not followed, so the key cannot be passed on to another server.', 'smart-search' ),
+			);
+		} elseif ( '' !== $address && in_array( $host, array( 'localhost', '127.0.0.1', '::1', '[::1]' ), true ) ) {
+			$findings[] = array(
+				'state' => 'info',
+				'title' => __( 'The provider runs on this server', 'smart-search' ),
+				'text'  => __( 'The connection does not leave the server, so it needs no encryption.', 'smart-search' ),
+			);
+		} elseif ( '' !== $address ) {
+			$findings[] = array(
+				'state' => 'warning',
+				'title' => __( 'The provider is reached without encryption', 'smart-search' ),
+				'text'  => __( 'The address starts with http://. API key, search queries and content travel readable through the network. Use an https:// address if the provider offers one.', 'smart-search' ),
+			);
+		}
+
+		return $findings;
+	}
+
+	/**
 	 * Builds list rows for posts.
 	 *
 	 * @param int[] $post_ids Post IDs.
