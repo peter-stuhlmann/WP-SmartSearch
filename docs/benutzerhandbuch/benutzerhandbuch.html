@@ -1,0 +1,764 @@
+<!doctype html>
+<html lang="de">
+<head>
+<meta charset="utf-8">
+<title>Smart Search – Benutzerhandbuch</title>
+<meta name="author" content="Peter R. Stuhlmann">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<section class="titel">
+	<span class="titel__marke">WordPress-Plugin · Version 1.0.0</span>
+	<h1>Smart Search<span>einfach erklärt</span></h1>
+	<p class="titel__unter">Alle 58 Funktionen der besseren Suche für deine Website – in einfachen Worten, mit Beispielen und dem Hinweis, wo du sie einstellst.</p>
+
+	<div class="bildchen">
+		<div class="bildchen__feld"><span class="bildchen__lupe"></span>Was kostet eine Rundreise nach Portugal?</div>
+		<div class="bildchen__antwort"><b>KI-Antwort</b>Unsere Rundreisen nach Portugal dauern 8 bis 14 Tage und kosten ab 1.389 Euro pro Person im Doppelzimmer [1].</div>
+		<div class="bildchen__treffer">
+			<div>Rundreise Portugal: die große Runde – Lissabon und Algarve <small>Sehr passend</small></div>
+			<div>Rundreise Portugal: die große Runde – Porto und Torre de Belém <small>Sehr passend</small></div>
+		</div>
+	</div>
+
+	<div class="titel__fuss"><span>Peter R. Stuhlmann</span><span>Stand: Oktober 2026</span></div>
+</section>
+
+<section class="seite">
+	<h2 class="gross">Worum es geht</h2>
+	<p class="lead">Die eingebaute Suche von WordPress sucht nur nach genau den Buchstaben, die jemand eintippt. Wer „Rezepte“ sucht, findet „Rezept“ nicht, ein Tippfehler führt ins Leere, und oben steht der neueste Beitrag statt des besten. Smart Search macht daraus eine Suche, die Besucher versteht.</p>
+
+	<p>Dafür legt das Plugin ein eigenes <strong>Suchverzeichnis</strong> deiner Website an – wie das Stichwortverzeichnis am Ende eines Buches – und hält es von selbst aktuell. Du musst nichts pflegen: Sobald du etwas speicherst, kennt die Suche den neuen Stand.</p>
+
+	<h3 style="margin: 7mm 0 1mm; font-size: 14pt;">Drei Stufen – du wählst</h3>
+	<div class="drei">
+		<div class="stufe">
+			<span class="stufe__zahl">1</span>
+			<h3>Keyword</h3>
+			<p>Findet die gesuchten Wörter in jeder Form, versteht Tippfehler und sortiert die besten Treffer nach oben.</p>
+			<span class="stufe__preis">kostenlos · kein Konto</span>
+		</div>
+		<div class="stufe">
+			<span class="stufe__zahl" style="background: var(--violett);">2</span>
+			<h3>Semantisch</h3>
+			<p>Findet zusätzlich Seiten mit derselben Bedeutung – „Geflügel“ findet „Hähnchen“.</p>
+			<span class="stufe__preis">KI-Anbieter · sehr günstig</span>
+		</div>
+		<div class="stufe">
+			<span class="stufe__zahl" style="background: var(--tuerkis);">3</span>
+			<h3>KI-Antwort</h3>
+			<p>Schreibt über den Treffern eine kurze Antwort aus deinen Inhalten und nennt die Quellen.</p>
+			<span class="stufe__preis">KI-Anbieter · Cent-Beträge</span>
+		</div>
+	</div>
+
+	<div class="hinweis">
+		<b>So liest du dieses Handbuch</b>
+		<p>Jede Funktion hat eine Nummer und beginnt mit einem farbigen Satz „kurz gesagt“. Darunter steht, wie sie funktioniert, ein Beispiel und unten in grauen Kärtchen, <strong>wo</strong> du sie einstellst (⚙), wie sie <strong>voreingestellt</strong> ist (●) und in welchem <strong>Suchmodus</strong> sie gilt (◆). Alle Einstellungen findest du in WordPress unter <em>Einstellungen → Smart Search</em>.</p>
+	</div>
+
+	<div class="hinweis" style="border-color: var(--gruen);">
+		<b>Du kannst nichts kaputt machen</b>
+		<p>Nach dem Aktivieren läuft alles mit sinnvollen Voreinstellungen. Die KI-Funktionen sind aus, bis du sie selbst einschaltest. Fällt die KI einmal aus, sucht das Plugin einfach ohne sie weiter.</p>
+	</div>
+</section>
+
+<section class="seite">
+	<h2 class="gross">Alle Funktionen auf einen Blick</h2>
+	<div class="uebersicht__gruppe" style="--farbe: var(--blau); --hell: var(--blau-hell);">
+	<div class="uebersicht__kopf"><span class="uebersicht__punkt"></span>Suchen und finden</div>
+	<ul class="uebersicht__liste">
+		<li><b>1</b><a href="#f1"><strong>Eigenes Suchverzeichnis</strong><span>Die Suche schlägt in einem eigenen, immer aktuellen Verzeichnis deiner Website nach.</span></a></li>
+		<li><b>2</b><a href="#f2"><strong>Jede Wortform</strong><span>„Rezepte“ findet „Rezept“, „Strände“ findet „Strand“.</span></a></li>
+		<li><b>3</b><a href="#f3"><strong>Zusammengesetzte Wörter</strong><span>„Kosten“ findet „Versandkosten“, „Versand“ auch.</span></a></li>
+		<li><b>4</b><a href="#f4"><strong>Tippfehler-Korrektur</strong><span>„Itallien“ wird als „Italien“ erkannt.</span></a></li>
+		<li><b>5</b><a href="#f5"><strong>Umlaute egal</strong><span>„Osterreich“ findet „Österreich“, „Strasse“ findet „Straße“.</span></a></li>
+		<li><b>6</b><a href="#f6"><strong>Die beste Seite zuerst</strong><span>Oben steht, was am besten passt – nicht einfach das Neueste.</span></a></li>
+		<li><b>7</b><a href="#f7"><strong>Relevanz auf einen Blick</strong><span>Jeder Treffer trägt eine Stufe: „Sehr passend“, „Passend“ oder „Schwach“.</span></a></li>
+		<li><b>8</b><a href="#f8"><strong>Genaue Wortfolge</strong><span>Was in Anführungszeichen steht, muss genau so auf der Seite stehen.</span></a></li>
+		<li><b>9</b><a href="#f9"><strong>Wörter ausschließen</strong><span>Ein Minus vor einem Wort blendet Seiten mit diesem Wort aus.</span></a></li>
+		<li><b>10</b><a href="#f10"><strong>Text im Wortinneren</strong><span>Als letzter Ausweg findet „hof“ auch „Bahnhofstraße“.</span></a></li>
+		<li><b>11</b><a href="#f11"><strong>Füllwörter überspringen</strong><span>„Reise für Familien“ sucht nach „Reise“ und „Familien“.</span></a></li>
+		<li><b>12</b><a href="#f12"><strong>Empfohlene Treffer</strong><span>Du legst fest: Wer „Öffnungszeiten“ sucht, sieht zuerst die Seite „Kontakt“.</span></a></li>
+		<li><b>13</b><a href="#f13"><strong>Treffer pro Seite und pro Suche</strong><span>Wie viele Treffer auf einmal erscheinen und wie viele es höchstens gibt.</span></a></li>
+	</ul>
+</div>
+<div class="uebersicht__gruppe" style="--farbe: var(--violett); --hell: var(--violett-hell);">
+	<div class="uebersicht__kopf"><span class="uebersicht__punkt"></span>Suche nach Bedeutung und KI</div>
+	<ul class="uebersicht__liste">
+		<li><b>14</b><a href="#f14"><strong>Suche nach Bedeutung</strong><span>„Geflügel“ findet die Seite, auf der nur „Hähnchen“ steht.</span></a></li>
+		<li><b>15</b><a href="#f15"><strong>KI-Antwort mit Quellen</strong><span>Über den Treffern steht eine kurze Antwort – nur aus deinen Inhalten, mit Quellenangabe.</span></a></li>
+		<li><b>16</b><a href="#f16"><strong>Antwort zum Mitlesen</strong><span>Die KI-Antwort erscheint Wort für Wort, während sie geschrieben wird.</span></a></li>
+		<li><b>17</b><a href="#f17"><strong>Zweitmeinung der KI</strong><span>Ist sich die Suche unsicher, wählt die KI aus den nächstliegenden Seiten die passenden aus.</span></a></li>
+		<li><b>18</b><a href="#f18"><strong>Freie Wahl des KI-Anbieters</strong><span>OpenAI, Google Gemini, Mistral – oder ein eigener Dienst wie Ollama.</span></a></li>
+		<li><b>19</b><a href="#f19"><strong>Monatliches Kostenlimit</strong><span>Ist das Budget erreicht, sucht das Plugin bis Monatsende ohne KI weiter.</span></a></li>
+		<li><b>20</b><a href="#f20"><strong>Zwischenspeicher für KI-Ergebnisse</strong><span>Dieselbe Frage kostet nur einmal.</span></a></li>
+		<li><b>21</b><a href="#f21"><strong>Eigene Anweisungen an die KI</strong><span>Ein Satz wie „Antworte knapp und sachlich.“ stimmt den Ton ab.</span></a></li>
+		<li><b>22</b><a href="#f22"><strong>Immer eine Suche, auch ohne KI</strong><span>Fällt die KI aus, sucht das Plugin einfach ohne sie weiter.</span></a></li>
+	</ul>
+</div>
+<div class="uebersicht__gruppe" style="--farbe: var(--tuerkis); --hell: var(--tuerkis-hell);">
+	<div class="uebersicht__kopf"><span class="uebersicht__punkt"></span>Was durchsucht wird</div>
+	<ul class="uebersicht__liste">
+		<li><b>23</b><a href="#f23"><strong>Inhaltstypen wählen</strong><span>Beiträge, Seiten, Produkte, Termine – du hakst an, was gefunden werden soll.</span></a></li>
+		<li><b>24</b><a href="#f24"><strong>Mehr als nur Titel und Text</strong><span>Auch Kategorien, Schlagwörter, Kommentare, Textauszüge und eigene Felder.</span></a></li>
+		<li><b>25</b><a href="#f25"><strong>Hilfe für Page-Builder</strong><span>Liest die fertige Seite, wenn ein Page-Builder seinen Text versteckt.</span></a></li>
+		<li><b>26</b><a href="#f26"><strong>Einzelne Seiten ausschließen</strong><span>Ein Schalter im Editor, und die Seite erscheint in keiner Suche.</span></a></li>
+		<li><b>27</b><a href="#f27"><strong>Zustand jeder Seite</strong><span>Ein farbiger Punkt zeigt, ob eine Seite gefunden wird.</span></a></li>
+		<li><b>28</b><a href="#f28"><strong>Nur Öffentliches wird gefunden</strong><span>Entwürfe, private und passwortgeschützte Seiten bleiben draußen.</span></a></li>
+	</ul>
+</div>
+<div class="uebersicht__gruppe" style="--farbe: var(--orange); --hell: var(--orange-hell);">
+	<div class="uebersicht__kopf"><span class="uebersicht__punkt"></span>Aussehen und Einbindung</div>
+	<ul class="uebersicht__liste">
+		<li><b>29</b><a href="#f29"><strong>Unsichtbar im Theme</strong><span>Dein Suchfeld bleibt, wie es ist – nur die Treffer werden besser.</span></a></li>
+		<li><b>30</b><a href="#f30"><strong>Der Such-Block</strong><span>Suchfeld und Treffer auf einer Seite, ohne Neuladen – mit Vorschlägen beim Tippen.</span></a></li>
+		<li><b>31</b><a href="#f31"><strong>Vorschläge beim Tippen</strong><span>Schon nach wenigen Buchstaben erscheinen passende Seitentitel.</span></a></li>
+		<li><b>32</b><a href="#f32"><strong>Shortcodes</strong><span>Die Suche überall einbauen, wo kein Block-Editor ist.</span></a></li>
+		<li><b>33</b><a href="#f33"><strong>Filter nach Inhaltstyp</strong><span>Knöpfe über den Treffern: nur Seiten, nur Beiträge, nur Produkte.</span></a></li>
+		<li><b>34</b><a href="#f34"><strong>Direkt zur Fundstelle</strong><span>Ein Klick auf den Treffer springt zur passenden Stelle und markiert sie.</span></a></li>
+		<li><b>35</b><a href="#f35"><strong>Passt sich deinem Design an</strong><span>Schrift und Farben kommen von deinem Theme – auch im Dunkelmodus.</span></a></li>
+		<li><b>36</b><a href="#f36"><strong>Du oder Sie</strong><span>Die Texte der Suche duzen oder siezen deine Besucher – wie du willst.</span></a></li>
+		<li><b>37</b><a href="#f37"><strong>Für alle bedienbar</strong><span>Mit Tastatur, Screenreader und auch ganz ohne JavaScript.</span></a></li>
+		<li><b>38</b><a href="#f38"><strong>Mehrsprachige Websites</strong><span>Mit Polylang oder WPML bekommt jede Sprachfassung ihre eigenen Treffer.</span></a></li>
+	</ul>
+</div>
+<div class="uebersicht__gruppe" style="--farbe: var(--gruen); --hell: var(--gruen-hell);">
+	<div class="uebersicht__kopf"><span class="uebersicht__punkt"></span>Statistik</div>
+	<ul class="uebersicht__liste">
+		<li><b>39</b><a href="#f39"><strong>Suchen im Überblick</strong><span>Wie oft gesucht wurde, Tag für Tag, mit den häufigsten Suchbegriffen.</span></a></li>
+		<li><b>40</b><a href="#f40"><strong>Suchen ohne Treffer</strong><span>Die wichtigste Liste: Was Besucher gesucht und nicht gefunden haben.</span></a></li>
+		<li><b>41</b><a href="#f41"><strong>KI-Kosten im Blick</strong><span>Was die KI gekostet hat – pro Tag und pro Suche.</span></a></li>
+		<li><b>42</b><a href="#f42"><strong>Klicks und Antwortzeit</strong><span>Welcher Treffer geöffnet wurde und wie schnell die Suche war.</span></a></li>
+		<li><b>43</b><a href="#f43"><strong>Alle Suchen als Tabelle und CSV</strong><span>Jede einzelne Suche zum Durchblättern, Filtern und Herunterladen.</span></a></li>
+		<li><b>44</b><a href="#f44"><strong>Automatisch aufgeräumt</strong><span>Alte Einträge werden nach einer festen Zahl von Tagen gelöscht.</span></a></li>
+	</ul>
+</div>
+<div class="uebersicht__gruppe" style="--farbe: var(--rot); --hell: var(--rot-hell);">
+	<div class="uebersicht__kopf"><span class="uebersicht__punkt"></span>Sicherheit und Datenschutz</div>
+	<ul class="uebersicht__liste">
+		<li><b>45</b><a href="#f45"><strong>Suchen begrenzen</strong><span>Höchstens 20 Suchen pro Minute und Besucher – gegen Skripte, die in einer Schleife suchen.</span></a></li>
+		<li><b>46</b><a href="#f46"><strong>Weitersuchen trotz Grenze</strong><span>Über der Grenze gibt es die einfache Suche – Besucher können immer suchen.</span></a></li>
+		<li><b>47</b><a href="#f47"><strong>Falle für Bots</strong><span>Ein unsichtbares Feld im Suchformular entlarvt Programme, die Formulare ausfüllen.</span></a></li>
+		<li><b>48</b><a href="#f48"><strong>Sicher aufbewahrter KI-Schlüssel</strong><span>Der Schlüssel deines KI-Anbieters liegt verschlüsselt in der Datenbank.</span></a></li>
+		<li><b>49</b><a href="#f49"><strong>Keine IP-Adressen</strong><span>Die Statistik weiß, wonach gesucht wurde – nicht, von wem.</span></a></li>
+		<li><b>50</b><a href="#f50"><strong>Textvorschlag für die Datenschutzerklärung</strong><span>Das Plugin liefert einen fertigen Absatz für deine Datenschutzerklärung.</span></a></li>
+		<li><b>51</b><a href="#f51"><strong>Rollen und Rechte</strong><span>Redakteure dürfen die Statistik sehen – oder auch die Einstellungen ändern.</span></a></li>
+	</ul>
+</div>
+<div class="uebersicht__gruppe" style="--farbe: var(--grau); --hell: var(--grau-hell);">
+	<div class="uebersicht__kopf"><span class="uebersicht__punkt"></span>Werkzeuge und Verwaltung</div>
+	<ul class="uebersicht__liste">
+		<li><b>52</b><a href="#f52"><strong>Suche ausprobieren</strong><span>Eine Testsuche in den Einstellungen – mit Begründung zu jedem Treffer.</span></a></li>
+		<li><b>53</b><a href="#f53"><strong>Einstellungen übertragen</strong><span>Eine bewährte Konfiguration als Datei auf eine andere Website mitnehmen.</span></a></li>
+		<li><b>54</b><a href="#f54"><strong>Verzeichnis neu aufbauen</strong><span>Nach einem Umzug oder Theme-Wechsel alles frisch einlesen.</span></a></li>
+		<li><b>55</b><a href="#f55"><strong>Probleme auf einen Blick</strong><span>Seiten, die nicht gelesen werden konnten, stehen gesammelt mit Grund da.</span></a></li>
+		<li><b>56</b><a href="#f56"><strong>Arbeitet im Hintergrund</strong><span>Einlesen und KI-Berechnungen laufen nebenbei, ohne dass jemand wartet.</span></a></li>
+		<li><b>57</b><a href="#f57"><strong>Sauber entfernen</strong><span>Beim Löschen auf Wunsch alle Daten mit – beim Deaktivieren bleibt alles.</span></a></li>
+		<li><b>58</b><a href="#f58"><strong>Schnell, auch bei vielen Seiten</strong><span>Getestet mit 3.000 Beiträgen: die meisten Suchen in Bruchteilen einer Sekunde.</span></a></li>
+	</ul>
+</div>
+</section>
+
+<!-- ============================================================ -->
+
+<section class="gruppe" style="--farbe: var(--blau); --hell: var(--blau-hell);">
+	<div class="gruppe__start">
+		<span class="gruppe__nummer">Kapitel 1</span>
+		<h2>Suchen und finden</h2>
+		<p>Was die Suche alles versteht – auch ganz ohne KI. Diese Funktionen laufen auf deinem Server, kosten nichts und sind sofort nach dem Aktivieren da.</p>
+	</div>
+	
+
+<article class="funktion" id="f1">
+	<div class="funktion__kopf"><span class="funktion__zahl">1</span><h3>Eigenes Suchverzeichnis</h3></div>
+	<p class="kurz">Die Suche schlägt in einem eigenen, immer aktuellen Verzeichnis deiner Website nach.</p>
+	<p>Statt bei jeder Suche alle Seiten durchzulesen, legt das Plugin ein Verzeichnis an, den <strong>Index</strong>. Darin steht der Text jeder Seite, so wie Besucher sie sehen – egal, ob du mit dem Block-Editor, dem klassischen Editor oder einem Page-Builder arbeitest.</p>
+<p>Speicherst du eine Seite, wird ihr Eintrag sofort erneuert. Löschst du sie oder ziehst sie zurück, verschwindet sie aus der Suche. Lange Seiten werden in Abschnitte geteilt, damit ein Treffer genau die passende Stelle zeigen kann.</p>
+<div class="bild"><img src="../handbuch/bilder/kopfbereich.png" alt="Kopfbereich der Einstellungsseite mit dem Stand des Suchverzeichnisses"></div>
+<p class="bildtext">Oben auf der Einstellungsseite siehst du, wie viele Inhalte im Verzeichnis sind und wann es zuletzt aktualisiert wurde.</p>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f2">
+	<div class="funktion__kopf"><span class="funktion__zahl">2</span><h3>Jede Wortform</h3></div>
+	<p class="kurz">„Rezepte“ findet „Rezept“, „Strände“ findet „Strand“.</p>
+	<p>Das Plugin kürzt jedes Wort auf seinen Kern. Aus „Rezepte“, „Rezepten“ und „Rezepts“ wird „rezept“ – im Verzeichnis und in der Suche gleich. So treffen sich alle Formen eines Wortes: Einzahl und Mehrzahl, verschiedene Fälle, deutsche und englische Endungen.</p>
+<div class="beispiel">„Rundreisen“ findet „Rundreise“, „Häuser“ findet „Haus“, „shipping“ findet „ship“.</div>
+<div class="tipp">Auch die kurzen Wörter „Ei/Eier“ und „Öl/Öle“ sowie „Ergebnis/Ergebnisse“ und „Bus/Busse“ gehören zusammen.</div>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f3">
+	<div class="funktion__kopf"><span class="funktion__zahl">3</span><h3>Zusammengesetzte Wörter</h3></div>
+	<p class="kurz">„Kosten“ findet „Versandkosten“, „Versand“ auch.</p>
+	<p>Im Deutschen werden Wörter gern zusammengesetzt. Die Suche findet ein Wort deshalb auch als <strong>Anfang</strong> und als <strong>Ende</strong> eines längeren Wortes. Steht das Suchwort für sich allein auf der Seite, zählt das mehr als ein Fund in einer Zusammensetzung.</p>
+<p>Bei sehr kurzen Wörtern passt das Plugin besonders auf: „Tür“ findet „Haustür“, aber nicht „Natur“, und „Essen“ findet „Abendessen“, aber nicht „Adressen“.</p>
+<div class="beispiel">„Wagen“ findet „Mietwagen“ und „Speisewagen“.</div>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f4">
+	<div class="funktion__kopf"><span class="funktion__zahl">4</span><h3>Tippfehler-Korrektur</h3></div>
+	<p class="kurz">„Itallien“ wird als „Italien“ erkannt.</p>
+	<p>Findet eine Suche nichts Passendes, prüft das Plugin, ob sich jemand vertippt hat. Es vergleicht die Eingabe mit den Wörtern, die auf deiner Website tatsächlich vorkommen, und sucht mit dem ähnlichsten Wort noch einmal. Über den Treffern steht dann, wonach stattdessen gesucht wurde.</p>
+<div class="beispiel">„Portugall“ → Treffer für „Portugal“, „Rundriese“ → Treffer für „Rundreise“.</div>
+<div class="tipp">Korrigiert wird nur in Wörter, die es auf deiner Website gibt – nie in irgendein Wort aus dem Wörterbuch.</div>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f5">
+	<div class="funktion__kopf"><span class="funktion__zahl">5</span><h3>Umlaute egal</h3></div>
+	<p class="kurz">„Osterreich“ findet „Österreich“, „Strasse“ findet „Straße“.</p>
+	<p>Wer keine deutsche Tastatur hat oder schnell tippt, lässt Umlaute weg. Die Suche behandelt ä, ö, ü wie a, o, u und ß wie ss. Groß- und Kleinschreibung spielt ebenfalls keine Rolle.</p>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f6">
+	<div class="funktion__kopf"><span class="funktion__zahl">6</span><h3>Die beste Seite zuerst</h3></div>
+	<p class="kurz">Oben steht, was am besten passt – nicht einfach das Neueste.</p>
+	<p>Die Reihenfolge folgt dem, was ein Mensch „besser passend“ nennen würde:</p>
+<ol class="liste">
+	<li>Seiten mit <strong>mehr</strong> der gesuchten Wörter stehen oben.</li>
+	<li>Stehen die Wörter <strong>nah beieinander</strong>, zählt das mehr: „unsere Rundreise durch Italien“ schlägt eine Seite, auf der die beiden Wörter Absätze auseinanderliegen.</li>
+	<li>Ein Treffer im <strong>Titel</strong> zählt mehr als einer im Text.</li>
+	<li>Bei Gleichstand gewinnt die <strong>neuere</strong> Seite.</li>
+</ol>
+<p>Dabei wird jede Seite als Ganzes bewertet: Steht „Hähnchen“ oben und „Rezept“ ganz unten, ist sie trotzdem ein Treffer für „Hähnchen Rezept“.</p>
+<div class="wo"><span class="ort">Suche → Titel stärker gewichten</span><span class="std">an</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f7">
+	<div class="funktion__kopf"><span class="funktion__zahl">7</span><h3>Relevanz auf einen Blick</h3></div>
+	<p class="kurz">Jeder Treffer trägt eine Stufe: „Sehr passend“, „Passend“ oder „Schwach“.</p>
+	<p>Damit Besucher sofort sehen, wie gut ein Treffer passt, zeigt der Such-Block neben jedem Treffer eine von drei Stufen. Auf Wunsch blendet das Plugin die unterste Stufe ganz aus – so liefert auch eine Unsinns-Suche keine zufälligen Treffer.</p>
+<div class="achtung">Mit „Schwache Treffer ausblenden“ verschwinden bei mehreren Suchwörtern auch Seiten, die nur einen Teil der Wörter enthalten.</div>
+<div class="wo"><span class="ort">Darstellung → Relevanz anzeigen</span><span class="ort">Suche → Schwache Treffer ausblenden</span><span class="std">anzeigen an · ausblenden aus</span></div>
+</article>
+
+<article class="funktion" id="f8">
+	<div class="funktion__kopf"><span class="funktion__zahl">8</span><h3>Genaue Wortfolge</h3></div>
+	<p class="kurz">Was in Anführungszeichen steht, muss genau so auf der Seite stehen.</p>
+	<p>Manchmal sucht man nicht nach einzelnen Wörtern, sondern nach einem festen Begriff. Dann setzt man ihn in Anführungszeichen. Alle üblichen Anführungszeichen funktionieren, auch die deutschen „…“.</p>
+<div class="beispiel"><code>"Frühstück inklusive"</code> findet nur Seiten mit genau dieser Wortfolge.</div>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f9">
+	<div class="funktion__kopf"><span class="funktion__zahl">9</span><h3>Wörter ausschließen</h3></div>
+	<p class="kurz">Ein Minus vor einem Wort blendet Seiten mit diesem Wort aus.</p>
+	<p>Mit einem Minus direkt vor einem Wort – oder vor einer Wortfolge in Anführungszeichen – werden alle Seiten ausgeschlossen, auf denen es vorkommt. Ein Bindestrich mitten im Wort bleibt ein Bindestrich: „E-Mail“ ist ein Wort.</p>
+<div class="beispiel"><code>Vietnam -Rundreise</code> zeigt alle Vietnam-Reisen außer den Rundreisen.</div>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f10">
+	<div class="funktion__kopf"><span class="funktion__zahl">10</span><h3>Text im Wortinneren</h3></div>
+	<p class="kurz">Als letzter Ausweg findet „hof“ auch „Bahnhofstraße“.</p>
+	<p>Findet die Suche ein Wort weder für sich noch als Anfang oder Ende eines anderen Wortes, sucht sie es überall – auch mitten in Wörtern oder Artikelnummern. Das passiert nur, wenn es sonst gar keinen Treffer gibt, und nur für Wörter ab drei Buchstaben.</p>
+<div class="beispiel">„234“ findet die Artikelnummer „AB-12345“.</div>
+<div class="tipp">Dafür muss das ganze Verzeichnis gelesen werden. Auf sehr großen Websites kannst du es ausschalten, wenn ergebnislose Suchen langsam werden.</div>
+<div class="wo"><span class="ort">Suche → Text innerhalb von Wörtern finden</span><span class="std">an</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f11">
+	<div class="funktion__kopf"><span class="funktion__zahl">11</span><h3>Füllwörter überspringen</h3></div>
+	<p class="kurz">„Reise für Familien“ sucht nach „Reise“ und „Familien“.</p>
+	<p>Wörter wie „der“, „und“, „für“, „wie“ oder „was“ helfen bei der Suche nicht. Das Plugin überspringt sie – auf Deutsch und Englisch. So funktionieren auch ganze Fragen: „Was kostet der Versand?“ sucht nach „kostet“ und „Versand“.</p>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f12">
+	<div class="funktion__kopf"><span class="funktion__zahl">12</span><h3>Empfohlene Treffer</h3></div>
+	<p class="kurz">Du legst fest: Wer „Öffnungszeiten“ sucht, sieht zuerst die Seite „Kontakt“.</p>
+	<p>Manchmal steht die Antwort auf einer Seite, auf der das Suchwort gar nicht vorkommt. Für solche Fälle legst du eine Empfehlung an: Suchbegriffe links, Seite rechts. Die Seite steht für diese Suchen dann ganz oben und ist als „Empfohlen“ markiert.</p>
+<div class="beispiel">„Öffnungszeiten, geöffnet, wann offen“ → Seite „Kontakt“.</div>
+<div class="tipp">Ein Begriff gilt in jeder Wortform und auch in längeren Suchen. In der Statistik führt bei jeder Suche ohne Treffer ein Link „Seite empfehlen“ direkt hierher.</div>
+<div class="wo"><span class="ort">Suche → Empfohlene Treffer</span><span class="modus">alle Modi</span></div>
+</article>
+
+<article class="funktion" id="f13">
+	<div class="funktion__kopf"><span class="funktion__zahl">13</span><h3>Treffer pro Seite und pro Suche</h3></div>
+	<p class="kurz">Wie viele Treffer auf einmal erscheinen und wie viele es höchstens gibt.</p>
+	<p>„Treffer pro Seite“ legt fest, wie viele Treffer Besucher auf einmal sehen (Standard 10). „Treffer pro Suche“ legt fest, wie viele es insgesamt höchstens gibt (Standard 200, bis 2.000). Mehr Treffer bedeuten mehr Arbeit für den Server – 200 reichen fast immer, denn kaum jemand blättert weit.</p>
+<div class="wo"><span class="ort">Suche → Treffer pro Seite / pro Suche</span><span class="std">10 · 200</span></div>
+</article>
+
+
+</section>
+
+<!-- ============================================================ -->
+
+<section class="gruppe" style="--farbe: var(--violett); --hell: var(--violett-hell);">
+	<div class="gruppe__start">
+		<span class="gruppe__nummer">Kapitel 2</span>
+		<h2>Suche nach Bedeutung und KI</h2>
+		<p>Mit einem KI-Anbieter versteht die Suche, was gemeint ist – nicht nur, was getippt wurde. Diese Funktionen sind freiwillig und kosten wenige Cent.</p>
+	</div>
+	
+
+<article class="funktion" id="f14">
+	<div class="funktion__kopf"><span class="funktion__zahl">14</span><h3>Suche nach Bedeutung</h3></div>
+	<p class="kurz">„Geflügel“ findet die Seite, auf der nur „Hähnchen“ steht.</p>
+	<p>Im Modus „Semantisch“ verwandelt eine KI jeden Textabschnitt deiner Website in eine Art Koordinate auf einer Landkarte der Bedeutungen. Texte, die Ähnliches meinen, liegen nah beieinander – egal, welche Wörter sie benutzen. Die Suche setzt die Frage des Besuchers auf dieselbe Karte und findet, was in der Nähe liegt.</p>
+<p>Die Treffer nach Bedeutung werden mit den Treffern nach Wörtern zusammengeführt. Eine Seite, die beides erfüllt, landet ganz oben.</p>
+<div class="beispiel">„Was könnte ich heute essen?“ findet deine Rezepte, obwohl keines der Wörter darin steht.</div>
+<div class="wo"><span class="ort">Suche → Suchmodus „Semantisch“</span><span class="std">aus (Keyword)</span><span class="modus">Semantisch, KI-Antwort</span></div>
+</article>
+
+<article class="funktion" id="f15">
+	<div class="funktion__kopf"><span class="funktion__zahl">15</span><h3>KI-Antwort mit Quellen</h3></div>
+	<p class="kurz">Über den Treffern steht eine kurze Antwort – nur aus deinen Inhalten, mit Quellenangabe.</p>
+	<p>Im Modus „KI-Antwort“ liest ein Sprachmodell die fünf am besten passenden Abschnitte und beantwortet daraus die Frage in höchstens fünf Sätzen. Hinter jeder Aussage steht eine Nummer wie [1], die zur Quelle führt; darunter sind alle Quellen aufgelistet.</p>
+<p>Das Modell darf nur aus deinen Inhalten antworten. Steht die Antwort dort nicht, sagt es das, statt zu raten. Gibt es keinen passenden Treffer, wird gar keine Antwort geschrieben – und es entstehen keine Kosten.</p>
+<div class="tipp">Unter jeder Antwort steht ein kurzer Hinweis, dass sie von einer KI stammt und wichtige Angaben anhand der Quellen geprüft werden sollten.</div>
+<div class="wo"><span class="ort">Suche → Suchmodus „KI-Antwort“</span><span class="ort">Darstellung → Quellen auflisten</span><span class="modus">KI-Antwort</span></div>
+</article>
+
+<article class="funktion" id="f16">
+	<div class="funktion__kopf"><span class="funktion__zahl">16</span><h3>Antwort zum Mitlesen</h3></div>
+	<p class="kurz">Die KI-Antwort erscheint Wort für Wort, während sie geschrieben wird.</p>
+	<p>Statt auf die fertige Antwort zu warten, sehen Besucher sie entstehen – wie bei bekannten KI-Chats. Schneller ist sie dadurch nicht, aber es fühlt sich schneller an. Hält der Server den Text zurück, erscheint die Antwort einfach in einem Stück.</p>
+<div class="wo"><span class="ort">Darstellung → KI-Antwort schon beim Schreiben anzeigen</span><span class="std">aus</span><span class="modus">KI-Antwort</span></div>
+</article>
+
+<article class="funktion" id="f17">
+	<div class="funktion__kopf"><span class="funktion__zahl">17</span><h3>Zweitmeinung der KI</h3></div>
+	<p class="kurz">Ist sich die Suche unsicher, wählt die KI aus den nächstliegenden Seiten die passenden aus.</p>
+	<p>Findet weder die Suche nach Wörtern noch die nach Bedeutung etwas Überzeugendes, legt das Plugin dem Sprachmodell die zehn nächstliegenden Seiten vor und fragt, welche wirklich passen. Diese erscheinen dann als „Passend“.</p>
+<p>Besucher warten nicht darauf: Im Such-Block erscheinen die ersten Treffer sofort, die Ergänzung folgt eine Sekunde später.</p>
+<div class="wo"><span class="ort">Suche → Bei Unsicherheit das Sprachmodell fragen</span><span class="std">an</span><span class="modus">Semantisch, KI-Antwort</span></div>
+</article>
+
+<article class="funktion" id="f18">
+	<div class="funktion__kopf"><span class="funktion__zahl">18</span><h3>Freie Wahl des KI-Anbieters</h3></div>
+	<p class="kurz">OpenAI, Google Gemini, Mistral – oder ein eigener Dienst wie Ollama.</p>
+	<p>Du entscheidest, wer die KI-Arbeit übernimmt. Für die drei großen Anbieter sind Modelle und Preise schon hinterlegt. Mit „Eigener Endpoint“ kannst du jeden Dienst anbinden, der dieselbe Schnittstelle spricht – auch einen, der auf deinem eigenen Server läuft. Dann verlässt keine Suchanfrage dein Haus.</p>
+<p>Der Knopf „Verbindung testen“ prüft mit einer winzigen Anfrage, ob alles funktioniert. Die Auswahlliste zeigt nur Modelle, die dein Konto wirklich nutzen darf.</p>
+<div class="wo"><span class="ort">KI-Anbieter → Anbieter, Modelle</span><span class="std">OpenAI</span></div>
+</article>
+
+<article class="funktion" id="f19">
+	<div class="funktion__kopf"><span class="funktion__zahl">19</span><h3>Monatliches Kostenlimit</h3></div>
+	<p class="kurz">Ist das Budget erreicht, sucht das Plugin bis Monatsende ohne KI weiter.</p>
+	<p>Du legst einen Betrag pro Monat fest. Das Plugin rechnet mit, was die KI kostet, und schaltet sie ab, sobald das Budget erreicht ist. Besucher bekommen weiterhin Treffer – nur ohne KI. Mit dem neuen Monat geht es von vorn los.</p>
+<div class="beispiel">Bei 500 Seiten und 1.000 KI-Antworten im Monat liegen die Kosten mit den voreingestellten Modellen bei rund 20 Cent.</div>
+<div class="achtung">Das Limit braucht Preise. Bei einem eigenen Dienst trägst du sie selbst ein – sonst rechnet das Plugin mit null.</div>
+<div class="wo"><span class="ort">KI-Anbieter → Monatliches Kostenlimit</span><span class="std">kein Limit</span></div>
+</article>
+
+<article class="funktion" id="f20">
+	<div class="funktion__kopf"><span class="funktion__zahl">20</span><h3>Zwischenspeicher für KI-Ergebnisse</h3></div>
+	<p class="kurz">Dieselbe Frage kostet nur einmal.</p>
+	<p>Wird dieselbe Frage noch einmal gestellt, nimmt das Plugin die gespeicherte Antwort: KI-Antworten einen Tag lang, Suchanfragen eine Stunde lang. Ändern sich deine Inhalte, verfällt das Gespeicherte sofort – niemand bekommt eine veraltete Antwort.</p>
+<div class="tipp">Text, der sich nicht geändert hat, wird nie zweimal an die KI geschickt – auch nicht beim Neuaufbau des Verzeichnisses.</div>
+<div class="wo"><span class="ort">KI-Anbieter → Suchanfragen zwischenspeichern</span><span class="std">an</span></div>
+</article>
+
+<article class="funktion" id="f21">
+	<div class="funktion__kopf"><span class="funktion__zahl">21</span><h3>Eigene Anweisungen an die KI</h3></div>
+	<p class="kurz">Ein Satz wie „Antworte knapp und sachlich.“ stimmt den Ton ab.</p>
+	<p>In einem Textfeld kannst du der KI zusätzliche Wünsche mitgeben, etwa zum Ton oder zur Länge. Die Grundregeln gelten trotzdem immer: nur aus deinen Inhalten antworten, nicht raten, Quellen nennen.</p>
+<div class="wo"><span class="ort">KI-Anbieter → Zusätzliche Anweisungen</span><span class="std">leer</span></div>
+</article>
+
+<article class="funktion" id="f22">
+	<div class="funktion__kopf"><span class="funktion__zahl">22</span><h3>Immer eine Suche, auch ohne KI</h3></div>
+	<p class="kurz">Fällt die KI aus, sucht das Plugin einfach ohne sie weiter.</p>
+	<p>Ist der Anbieter nicht erreichbar, das Budget aufgebraucht oder kommen zu viele Anfragen auf einmal, schaltet das Plugin still auf die Keyword-Suche zurück. Besucher merken davon nur, dass die KI-Antwort fehlt.</p>
+<div class="wo"><span class="std">immer aktiv</span><span class="modus">Semantisch, KI-Antwort</span></div>
+</article>
+
+
+</section>
+
+<!-- ============================================================ -->
+
+<section class="gruppe" style="--farbe: var(--tuerkis); --hell: var(--tuerkis-hell);">
+	<div class="gruppe__start">
+		<span class="gruppe__nummer">Kapitel 3</span>
+		<h2>Was durchsucht wird</h2>
+		<p>Du bestimmst, welche Inhalte deiner Website gefunden werden – und welche nicht.</p>
+	</div>
+	
+
+<article class="funktion" id="f23">
+	<div class="funktion__kopf"><span class="funktion__zahl">23</span><h3>Inhaltstypen wählen</h3></div>
+	<p class="kurz">Beiträge, Seiten, Produkte, Termine – du hakst an, was gefunden werden soll.</p>
+	<p>Jede Sorte von Inhalten erscheint als Karte mit einem Häkchen und der Zahl der veröffentlichten und der aufgenommenen Inhalte. Nimmst du ein Häkchen weg, verschwinden diese Inhalte sofort aus der Suche.</p>
+<p>Installierst du später ein Plugin, das eine neue Sorte mitbringt – etwa Produkte –, wird sie automatisch mit durchsucht, wenn du das so eingestellt hast.</p>
+<div class="wo"><span class="ort">Inhalte → Inhaltstypen</span><span class="std">Beiträge und Seiten · neue automatisch an</span></div>
+</article>
+
+<article class="funktion" id="f24">
+	<div class="funktion__kopf"><span class="funktion__zahl">24</span><h3>Mehr als nur Titel und Text</h3></div>
+	<p class="kurz">Auch Kategorien, Schlagwörter, Kommentare, Textauszüge und eigene Felder.</p>
+	<p>Titel und Inhalt werden immer durchsucht. Zusätzlich kannst du einschalten:</p>
+<ul class="liste">
+	<li><strong>Kategorien und Schlagwörter</strong> – ein Beitrag in „Reisen“ wird bei „Reisen“ gefunden.</li>
+	<li><strong>Kommentare</strong> – freigegebene Kommentare zählen zum Beitrag.</li>
+	<li><strong>Textauszug</strong> – der von Hand geschriebene Kurztext.</li>
+	<li><strong>Eigene Felder</strong> – etwa Untertitel aus Advanced Custom Fields.</li>
+</ul>
+<div class="achtung">Erscheinen Kommentare bei dir ohne Prüfung, schalte sie aus: Auch die KI-Antwort kann aus ihnen zitieren.</div>
+<div class="wo"><span class="ort">Inhalte → Zusätzliche Felder</span><span class="std">Kategorien und Kommentare an</span></div>
+</article>
+
+<article class="funktion" id="f25">
+	<div class="funktion__kopf"><span class="funktion__zahl">25</span><h3>Hilfe für Page-Builder</h3></div>
+	<p class="kurz">Liest die fertige Seite, wenn ein Page-Builder seinen Text versteckt.</p>
+	<p>Manche Page-Builder setzen ihre Inhalte erst beim Anzeigen zusammen. Findet das Plugin auf dem normalen Weg kaum Text, ruft es auf Wunsch die öffentliche Seite ab und liest sie so, wie ein Besucher sie sähe.</p>
+<div class="wo"><span class="ort">Inhalte → Öffentliche Seite lesen, wenn der Inhalt leer ist</span><span class="std">aus</span></div>
+</article>
+
+<article class="funktion" id="f26">
+	<div class="funktion__kopf"><span class="funktion__zahl">26</span><h3>Einzelne Seiten ausschließen</h3></div>
+	<p class="kurz">Ein Schalter im Editor, und die Seite erscheint in keiner Suche.</p>
+	<p>Im Editor jeder Seite gibt es rechts den Bereich „Suche“ mit dem Schalter „Von der Suche ausschließen“. Er gilt sofort, ohne Speichern. Die Seite bleibt ganz normal erreichbar, taucht aber weder in Treffern noch in Vorschlägen noch in KI-Antworten auf.</p>
+<div class="beispiel">„Danke für deine Bestellung“, Impressum, Kampagnen-Landingpages.</div>
+<div class="tipp">Alle ausgeschlossenen Seiten stehen gesammelt im Tab „Inhalte“ und lassen sich dort wieder aufnehmen.</div>
+<div class="wo"><span class="ort">Editor → Bereich „Suche“</span></div>
+</article>
+
+<article class="funktion" id="f27">
+	<div class="funktion__kopf"><span class="funktion__zahl">27</span><h3>Zustand jeder Seite</h3></div>
+	<p class="kurz">Ein farbiger Punkt zeigt, ob eine Seite gefunden wird.</p>
+	<p>Im Editor, in der Liste der Beiträge und – für angemeldete Bearbeiter – oben in der Admin-Leiste zeigt ein Punkt den Zustand:</p>
+<ul class="liste">
+	<li><strong style="color: var(--gruen);">Indexiert</strong> – wird mit dem aktuellen Stand gefunden.</li>
+	<li><strong style="color: #b88400;">Veraltet</strong> – wird gerade im Hintergrund aktualisiert.</li>
+	<li><strong style="color: var(--rot);">Fehler</strong> – konnte nicht gelesen werden; der Grund steht im Tab „Werkzeuge“.</li>
+	<li><strong style="color: var(--grau);">Ausgeschlossen</strong> – erscheint nicht in der Suche, mit Begründung.</li>
+</ul>
+<div class="wo"><span class="ort">Editor · Beitragsliste · Admin-Leiste</span></div>
+</article>
+
+<article class="funktion" id="f28">
+	<div class="funktion__kopf"><span class="funktion__zahl">28</span><h3>Nur Öffentliches wird gefunden</h3></div>
+	<p class="kurz">Entwürfe, private und passwortgeschützte Seiten bleiben draußen.</p>
+	<p>Das Plugin nimmt grundsätzlich nur veröffentlichte Inhalte auf und liest jede Seite so, wie ein <strong>nicht angemeldeter</strong> Besucher sie sieht. Was nur Mitglieder oder zahlende Kunden sehen, kann über die Suche nicht nach außen dringen.</p>
+<div class="wo"><span class="std">immer aktiv</span></div>
+</article>
+
+
+</section>
+
+<!-- ============================================================ -->
+
+<section class="gruppe" style="--farbe: var(--orange); --hell: var(--orange-hell);">
+	<div class="gruppe__start">
+		<span class="gruppe__nummer">Kapitel 4</span>
+		<h2>Aussehen und Einbindung</h2>
+		<p>Wie die Suche auf deiner Website erscheint – unsichtbar im Hintergrund deines Themes oder als eigener Such-Block mit Vorschlägen und Live-Treffern.</p>
+	</div>
+	
+
+<article class="funktion" id="f29">
+	<div class="funktion__kopf"><span class="funktion__zahl">29</span><h3>Unsichtbar im Theme</h3></div>
+	<p class="kurz">Dein Suchfeld bleibt, wie es ist – nur die Treffer werden besser.</p>
+	<p>Standardmäßig ersetzt Smart Search nur die Technik. Das Suchfeld und die Ergebnisseite deines Themes bleiben unverändert; WordPress bekommt die Treffer bloß vom Plugin statt von der eigenen Suche. Am Aussehen deiner Website ändert sich nichts.</p>
+<div class="wo"><span class="ort">Darstellung → Einbindung „Nur Technik ersetzen“</span><span class="ort">Suche → Standardsuche ersetzen</span><span class="std">an</span></div>
+</article>
+
+<article class="funktion" id="f30">
+	<div class="funktion__kopf"><span class="funktion__zahl">30</span><h3>Der Such-Block</h3></div>
+	<p class="kurz">Suchfeld und Treffer auf einer Seite, ohne Neuladen – mit Vorschlägen beim Tippen.</p>
+	<p>Im Block-Editor fügst du den Block „Smart Search“ ein, wo die Suche erscheinen soll. Er zeigt die Treffer direkt unter dem Feld, ohne die Seite neu zu laden, darüber die KI-Antwort und darunter „Weitere Treffer anzeigen“. Beschriftung, Platzhalter und Knopftext stellst du im Block ein.</p>
+<div class="bild bild--schmal"><img src="../handbuch/bilder/frontend-treffer.png" alt="Such-Block mit Treffern" style="height: 95mm; object-fit: cover; object-position: top;"></div>
+<p class="bildtext">Der Such-Block mit Treffern, Relevanz und markierten Suchwörtern.</p>
+<div class="wo"><span class="ort">Block-Editor → Block „Smart Search“</span></div>
+</article>
+
+<article class="funktion" id="f31">
+	<div class="funktion__kopf"><span class="funktion__zahl">31</span><h3>Vorschläge beim Tippen</h3></div>
+	<p class="kurz">Schon nach wenigen Buchstaben erscheinen passende Seitentitel.</p>
+	<p>Im Such-Block klappt beim Tippen eine Liste mit bis zu sechs passenden Seiten auf. Mit den Pfeiltasten wählt man aus, mit Enter öffnet man die Seite, mit Esc schließt man die Liste.</p>
+<div class="bild bild--schmal"><img src="../handbuch/bilder/frontend-vorschlaege.png" alt="Vorschläge unter dem Suchfeld"></div>
+<div class="wo"><span class="ort">Suche → Vorschläge beim Tippen</span><span class="std">an</span></div>
+</article>
+
+<article class="funktion" id="f32">
+	<div class="funktion__kopf"><span class="funktion__zahl">32</span><h3>Shortcodes</h3></div>
+	<p class="kurz">Die Suche überall einbauen, wo kein Block-Editor ist.</p>
+	<p>Im klassischen Editor, in Widgets oder in Page-Buildern tippst du einfach ein Kürzel:</p>
+<ul class="liste">
+	<li><code>[prstsearch]</code> – Suchfeld mit Treffern und KI-Antwort</li>
+	<li><code>[prstsearch_form]</code> – nur das Suchfeld</li>
+	<li><code>[prstsearch_results]</code> – nur die Treffer</li>
+	<li><code>[prstsearch_answer]</code> – nur die KI-Antwort</li>
+</ul>
+<div class="beispiel"><code>[prstsearch placeholder="Wohin soll's gehen?" answer="no"]</code></div>
+</article>
+
+<article class="funktion" id="f33">
+	<div class="funktion__kopf"><span class="funktion__zahl">33</span><h3>Filter nach Inhaltstyp</h3></div>
+	<p class="kurz">Knöpfe über den Treffern: nur Seiten, nur Beiträge, nur Produkte.</p>
+	<p>Stammen die Treffer aus mehreren Sorten von Inhalten, erscheint darüber eine Reihe von Knöpfen mit der jeweiligen Anzahl. Ein Klick zeigt nur noch diese Sorte.</p>
+<div class="wo"><span class="ort">Darstellung → Filter nach Inhaltstyp anbieten</span><span class="std">an</span></div>
+</article>
+
+<article class="funktion" id="f34">
+	<div class="funktion__kopf"><span class="funktion__zahl">34</span><h3>Direkt zur Fundstelle</h3></div>
+	<p class="kurz">Ein Klick auf den Treffer springt zur passenden Stelle und markiert sie.</p>
+	<p>Der Link eines Treffers öffnet nicht nur die Seite, sondern scrollt zum Absatz, in dem das Gesuchte steht, und hebt ihn hervor. Browser, die das nicht können, öffnen die Seite wie gewohnt oben.</p>
+<div class="wo"><span class="ort">Darstellung → Treffer an der gefundenen Textstelle öffnen</span><span class="std">an</span></div>
+</article>
+
+<article class="funktion" id="f35">
+	<div class="funktion__kopf"><span class="funktion__zahl">35</span><h3>Passt sich deinem Design an</h3></div>
+	<p class="kurz">Schrift und Farben kommen von deinem Theme – auch im Dunkelmodus.</p>
+	<p>Such-Block, Treffer und KI-Antwort übernehmen Schrift und Textfarbe deines Themes und nehmen die Akzentfarbe aus seiner Farbpalette. Alles andere wird aus der Textfarbe abgeleitet; deshalb passt es auf hellen wie auf dunklen Hintergründen. Wer mag, ändert Farben und Rundungen mit wenigen Zeilen CSS.</p>
+<div class="wo"><span class="std">immer aktiv</span></div>
+</article>
+
+<article class="funktion" id="f36">
+	<div class="funktion__kopf"><span class="funktion__zahl">36</span><h3>Du oder Sie</h3></div>
+	<p class="kurz">Die Texte der Suche duzen oder siezen deine Besucher – wie du willst.</p>
+	<p>Fehlermeldungen, Hinweise und der Text unter der KI-Antwort gibt es in beiden Formen: „Bitte versuche es erneut“ oder „Bitte versuchen Sie es erneut“. Auf „Automatisch“ richtet sich das Plugin nach der Sprache deiner Website – bei „Deutsch (Sie)“ wird gesiezt. Auch die KI-Antwort hält sich daran.</p>
+<div class="wo"><span class="ort">Darstellung → Ansprache der Besucher</span><span class="std">Automatisch</span></div>
+</article>
+
+<article class="funktion" id="f37">
+	<div class="funktion__kopf"><span class="funktion__zahl">37</span><h3>Für alle bedienbar</h3></div>
+	<p class="kurz">Mit Tastatur, Screenreader und auch ganz ohne JavaScript.</p>
+	<p>Jedes Bedienelement hat einen sichtbaren Fokusrahmen, Screenreader hören die Zahl der Treffer und den Stand der Suche, und die Vorschläge lassen sich vollständig mit der Tastatur bedienen. Ist JavaScript abgeschaltet, funktioniert das Suchfeld als ganz normales Formular.</p>
+<div class="wo"><span class="std">immer aktiv</span></div>
+</article>
+
+<article class="funktion" id="f38">
+	<div class="funktion__kopf"><span class="funktion__zahl">38</span><h3>Mehrsprachige Websites</h3></div>
+	<p class="kurz">Mit Polylang oder WPML bekommt jede Sprachfassung ihre eigenen Treffer.</p>
+	<p>Besucher der deutschen Fassung finden deutsche Seiten, Besucher der englischen Fassung englische – ohne Einstellung. Das gilt auch für Vorschläge und KI-Antworten. Die KI antwortet in der Sprache der Frage.</p>
+<div class="wo"><span class="std">automatisch</span></div>
+</article>
+
+
+</section>
+
+<!-- ============================================================ -->
+
+<section class="gruppe" style="--farbe: var(--gruen); --hell: var(--gruen-hell);">
+	<div class="gruppe__start">
+		<span class="gruppe__nummer">Kapitel 5</span>
+		<h2>Statistik</h2>
+		<p>Was deine Besucher suchen – und was sie nicht finden. Ohne IP-Adressen, ohne Benutzerkonten.</p>
+	</div>
+	
+
+<article class="funktion" id="f39">
+	<div class="funktion__kopf"><span class="funktion__zahl">39</span><h3>Suchen im Überblick</h3></div>
+	<p class="kurz">Wie oft gesucht wurde, Tag für Tag, mit den häufigsten Suchbegriffen.</p>
+	<p>Der Tab „Statistik“ zeigt für einen frei wählbaren Zeitraum die Zahl der Suchen, ein Diagramm pro Tag und die häufigsten Suchbegriffe. Daran erkennst du, was deinen Besuchern wichtig ist.</p>
+<div class="wo"><span class="ort">Statistik</span><span class="std">Aufzeichnung an</span></div>
+</article>
+
+<article class="funktion" id="f40">
+	<div class="funktion__kopf"><span class="funktion__zahl">40</span><h3>Suchen ohne Treffer</h3></div>
+	<p class="kurz">Die wichtigste Liste: Was Besucher gesucht und nicht gefunden haben.</p>
+	<p>Jede Zeile ist jemand, der leer ausgegangen ist. Oft benutzen Besucher einfach ein anderes Wort als du – dann hilft ein Klick auf „Seite empfehlen“. Manchmal fehlt der Inhalt wirklich – dann weißt du, was du schreiben solltest.</p>
+<div class="beispiel">Gesucht „Preise“, deine Seite heißt „Konditionen“ → Empfehlung anlegen.</div>
+<div class="wo"><span class="ort">Statistik → Suchen ohne Treffer</span></div>
+</article>
+
+<article class="funktion" id="f41">
+	<div class="funktion__kopf"><span class="funktion__zahl">41</span><h3>KI-Kosten im Blick</h3></div>
+	<p class="kurz">Was die KI gekostet hat – pro Tag und pro Suche.</p>
+	<p>Kacheln und ein Diagramm zeigen die geschätzten Kosten, getrennt nach dem, was die KI gelesen, und dem, was sie geschrieben hat. Die Seitenleiste der Einstellungen zeigt zusätzlich den Stand des Monatsbudgets.</p>
+<div class="wo"><span class="ort">Statistik → Aufzeichnung „KI-Verbrauch“</span><span class="std">an</span></div>
+</article>
+
+<article class="funktion" id="f42">
+	<div class="funktion__kopf"><span class="funktion__zahl">42</span><h3>Klicks und Antwortzeit</h3></div>
+	<p class="kurz">Welcher Treffer geöffnet wurde und wie schnell die Suche war.</p>
+	<p>Auf Wunsch zeichnet das Plugin auf, welcher Treffer nach einer Suche angeklickt wurde und wie lange die Suche gedauert hat. So siehst du, ob die Suche die richtigen Seiten findet und ob sie mit deiner Website schnell bleibt.</p>
+<div class="wo"><span class="ort">Statistik → Klicks · Antwortzeit</span><span class="std">aus</span></div>
+</article>
+
+<article class="funktion" id="f43">
+	<div class="funktion__kopf"><span class="funktion__zahl">43</span><h3>Alle Suchen als Tabelle und CSV</h3></div>
+	<p class="kurz">Jede einzelne Suche zum Durchblättern, Filtern und Herunterladen.</p>
+	<p>Die Tabelle „Alle Suchen“ lässt sich nach Suchbegriff und Modus filtern. Mit „CSV exportieren“ lädst du die Suchen des gewählten Zeitraums herunter und öffnest sie in Excel oder LibreOffice.</p>
+<div class="wo"><span class="ort">Statistik → Alle Suchen · CSV exportieren</span></div>
+</article>
+
+<article class="funktion" id="f44">
+	<div class="funktion__kopf"><span class="funktion__zahl">44</span><h3>Automatisch aufgeräumt</h3></div>
+	<p class="kurz">Alte Einträge werden nach einer festen Zahl von Tagen gelöscht.</p>
+	<p>Du legst fest, wie lange Suchen gespeichert bleiben (Standard 90 Tage). Ältere Einträge löscht das Plugin einmal täglich von selbst. Mit „Statistik löschen“ leerst du sie jederzeit ganz.</p>
+<div class="wo"><span class="ort">Statistik → Aufbewahrung in Tagen</span><span class="std">90</span></div>
+</article>
+
+
+</section>
+
+<!-- ============================================================ -->
+
+<section class="gruppe" style="--farbe: var(--rot); --hell: var(--rot-hell);">
+	<div class="gruppe__start">
+		<span class="gruppe__nummer">Kapitel 6</span>
+		<h2>Sicherheit und Datenschutz</h2>
+		<p>Schutz vor Missbrauch, sichere Aufbewahrung deines KI-Schlüssels und eine Statistik, die niemanden erkennbar macht.</p>
+	</div>
+	
+
+<article class="funktion" id="f45">
+	<div class="funktion__kopf"><span class="funktion__zahl">45</span><h3>Suchen begrenzen</h3></div>
+	<p class="kurz">Höchstens 20 Suchen pro Minute und Besucher – gegen Skripte, die in einer Schleife suchen.</p>
+	<p>Ein Mensch sucht ein paar Mal pro Minute, ein Skript hunderte Male. Du legst fest, wie viele Suchen ein Besucher pro Minute, Stunde oder Tag starten darf, und auf Wunsch eine Obergrenze für die ganze Website. Wer das Plugin verwaltet, wird nie begrenzt.</p>
+<p>Auch Anfragen, die gleichzeitig eintreffen, werden alle gezählt.</p>
+<div class="wo"><span class="ort">Sicherheit → Suchen begrenzen</span><span class="std">20 pro Minute</span></div>
+</article>
+
+<article class="funktion" id="f46">
+	<div class="funktion__kopf"><span class="funktion__zahl">46</span><h3>Weitersuchen trotz Grenze</h3></div>
+	<p class="kurz">Über der Grenze gibt es die einfache Suche – Besucher können immer suchen.</p>
+	<p>Ist die Grenze erreicht, läuft die Suche als einfache Keyword-Suche weiter: ohne KI, ohne Zusatzschritte, ohne Eintrag in der Statistik. Was teuer ist, hört auf; die Treffer bleiben. Alternativ kannst du die Suche bis zum Ende des Zeitraums sperren – mit einer Meldung, die du selbst formulierst.</p>
+<div class="wo"><span class="ort">Sicherheit → Wenn die Grenze erreicht ist</span><span class="std">einfache Suche</span></div>
+</article>
+
+<article class="funktion" id="f47">
+	<div class="funktion__kopf"><span class="funktion__zahl">47</span><h3>Falle für Bots</h3></div>
+	<p class="kurz">Ein unsichtbares Feld im Suchformular entlarvt Programme, die Formulare ausfüllen.</p>
+	<p>Auf Wunsch bekommt jedes Suchformular – das deines Themes, der Such-Block von WordPress und der des Plugins – ein Feld, das kein Mensch sieht. Ein Bot füllt es aus, bekommt ein leeres Ergebnis und erfährt nicht einmal, dass er erkannt wurde.</p>
+<div class="wo"><span class="ort">Sicherheit → Verstecktes Fallen-Feld</span><span class="std">aus</span></div>
+</article>
+
+<article class="funktion" id="f48">
+	<div class="funktion__kopf"><span class="funktion__zahl">48</span><h3>Sicher aufbewahrter KI-Schlüssel</h3></div>
+	<p class="kurz">Der Schlüssel deines KI-Anbieters liegt verschlüsselt in der Datenbank.</p>
+	<p>Wer nur an die Datenbank kommt, etwa über eine Sicherungskopie, kann den Schlüssel nicht lesen. Angezeigt werden nur die letzten vier Zeichen, in keinem Export ist er enthalten, und beim Löschen des Plugins wird er immer entfernt. Noch sicherer: den Schlüssel in der Datei wp-config.php festlegen.</p>
+<p>Der Tab „Sicherheit“ prüft bei jedem Öffnen, wo der Schlüssel liegt und ob die Verbindung zum Anbieter verschlüsselt ist – und sagt in Worten, ob alles in Ordnung ist.</p>
+<div class="wo"><span class="ort">Sicherheit → Schlüssel und Verbindung</span></div>
+</article>
+
+<article class="funktion" id="f49">
+	<div class="funktion__kopf"><span class="funktion__zahl">49</span><h3>Keine IP-Adressen</h3></div>
+	<p class="kurz">Die Statistik weiß, wonach gesucht wurde – nicht, von wem.</p>
+	<p>Gespeichert werden Suchbegriff, Zeitpunkt, Modus und Trefferzahl. Nie gespeichert werden IP-Adressen, Benutzerkonten oder Cookies. Auch für die Begrenzung der Suchen bleibt niemand erkennbar: Aus der Adresse wird nur eine wechselnde Gruppennummer, die viele Besucher teilen.</p>
+<div class="wo"><span class="std">immer so</span></div>
+</article>
+
+<article class="funktion" id="f50">
+	<div class="funktion__kopf"><span class="funktion__zahl">50</span><h3>Textvorschlag für die Datenschutzerklärung</h3></div>
+	<p class="kurz">Das Plugin liefert einen fertigen Absatz für deine Datenschutzerklärung.</p>
+	<p>Unter <em>Einstellungen → Datenschutz</em> findest du im Leitfaden einen Vorschlag, der beschreibt, was die Suche speichert und was in den KI-Modi an den Anbieter geht – in der Ansprache, die du eingestellt hast. Ergänze den Namen deines KI-Anbieters, und der Absatz passt.</p>
+<div class="wo"><span class="ort">Einstellungen → Datenschutz → Leitfaden</span></div>
+</article>
+
+<article class="funktion" id="f51">
+	<div class="funktion__kopf"><span class="funktion__zahl">51</span><h3>Rollen und Rechte</h3></div>
+	<p class="kurz">Redakteure dürfen die Statistik sehen – oder auch die Einstellungen ändern.</p>
+	<p>Du legst fest, welche Rollen die Statistik sehen und welche die Einstellungen ändern dürfen. Den KI-Anbieter, den Schlüssel, den Import und die Rechte selbst dürfen trotzdem nur Administratoren ändern.</p>
+<div class="wo"><span class="ort">Werkzeuge → Zugriff und Daten</span><span class="std">Statistik: Admin, Redakteur</span></div>
+</article>
+
+
+</section>
+
+<!-- ============================================================ -->
+
+<section class="gruppe" style="--farbe: var(--grau); --hell: var(--grau-hell);">
+	<div class="gruppe__start">
+		<span class="gruppe__nummer">Kapitel 7</span>
+		<h2>Werkzeuge und Verwaltung</h2>
+		<p>Ausprobieren, übertragen, reparieren: was du brauchst, wenn du die Suche testen, auf eine andere Website mitnehmen oder nach einem Umzug wieder herrichten willst.</p>
+	</div>
+	
+
+<article class="funktion" id="f52">
+	<div class="funktion__kopf"><span class="funktion__zahl">52</span><h3>Suche ausprobieren</h3></div>
+	<p class="kurz">Eine Testsuche in den Einstellungen – mit Begründung zu jedem Treffer.</p>
+	<p>Im Tab „Suche“ kannst du jede Suche ausprobieren. Unter jedem Treffer steht, warum er gefunden wurde: „Ein Suchwort steht im Titel“, „Passt zur Bedeutung“, „In den Einstellungen empfohlen“. Testsuchen erscheinen nicht in der Statistik.</p>
+<div class="wo"><span class="ort">Suche → Suche ausprobieren</span></div>
+</article>
+
+<article class="funktion" id="f53">
+	<div class="funktion__kopf"><span class="funktion__zahl">53</span><h3>Einstellungen übertragen</h3></div>
+	<p class="kurz">Eine bewährte Konfiguration als Datei auf eine andere Website mitnehmen.</p>
+	<p>„Exportieren“ lädt alle Einstellungen und empfohlenen Treffer als Datei herunter – ohne den KI-Schlüssel. „Importieren“ übernimmt sie auf einer anderen Website. Empfehlungen für Seiten, die es dort nicht gibt, werden ausgelassen, und das Plugin sagt dir das.</p>
+<div class="wo"><span class="ort">Werkzeuge → Einstellungen übertragen</span></div>
+</article>
+
+<article class="funktion" id="f54">
+	<div class="funktion__kopf"><span class="funktion__zahl">54</span><h3>Verzeichnis neu aufbauen</h3></div>
+	<p class="kurz">Nach einem Umzug oder Theme-Wechsel alles frisch einlesen.</p>
+	<p>Normalerweise pflegt sich das Suchverzeichnis selbst. Nach einem Umzug, dem Einspielen einer Sicherung oder einem Wechsel des Page-Builders liest „Index neu aufbauen“ alle Inhalte frisch ein – mit Fortschrittsbalken. Unveränderter Text wird dabei nicht erneut an die KI geschickt.</p>
+<div class="tipp">„Index leeren“ entfernt alles. Bis zum Neuaufbau sucht WordPress wieder auf die alte Art – die Suche fällt also nie aus.</div>
+<div class="wo"><span class="ort">Werkzeuge → Index</span></div>
+</article>
+
+<article class="funktion" id="f55">
+	<div class="funktion__kopf"><span class="funktion__zahl">55</span><h3>Probleme auf einen Blick</h3></div>
+	<p class="kurz">Seiten, die nicht gelesen werden konnten, stehen gesammelt mit Grund da.</p>
+	<p>Konnte eine Seite nicht aufgenommen werden – meist wegen eines Fehlers in einem Shortcode oder Block eines anderen Plugins –, steht sie im Tab „Werkzeuge“ mit dem Grund und einem Link zum Öffnen.</p>
+<div class="wo"><span class="ort">Werkzeuge → Probleme beim Indexieren</span></div>
+</article>
+
+<article class="funktion" id="f56">
+	<div class="funktion__kopf"><span class="funktion__zahl">56</span><h3>Arbeitet im Hintergrund</h3></div>
+	<p class="kurz">Einlesen und KI-Berechnungen laufen nebenbei, ohne dass jemand wartet.</p>
+	<p>Große Arbeiten – etwa das erste Einlesen tausender Seiten oder das Berechnen der Bedeutungs-Koordinaten – erledigt das Plugin in kleinen Portionen im Hintergrund. Weder Besucher noch du müssen darauf warten. Nach einem Update bringt es seine Daten ebenfalls still auf den neuen Stand.</p>
+<div class="wo"><span class="std">immer aktiv</span></div>
+</article>
+
+<article class="funktion" id="f57">
+	<div class="funktion__kopf"><span class="funktion__zahl">57</span><h3>Sauber entfernen</h3></div>
+	<p class="kurz">Beim Löschen auf Wunsch alle Daten mit – beim Deaktivieren bleibt alles.</p>
+	<p>Deaktivierst du das Plugin, bleibt alles erhalten, und WordPress sucht wieder selbst. Löschst du es und hast „Daten beim Löschen entfernen“ eingeschaltet, verschwinden Verzeichnis, Statistik und Einstellungen vollständig. Der KI-Schlüssel wird beim Löschen immer entfernt.</p>
+<div class="wo"><span class="ort">Werkzeuge → Daten beim Löschen des Plugins entfernen</span><span class="std">aus</span></div>
+</article>
+
+<article class="funktion" id="f58">
+	<div class="funktion__kopf"><span class="funktion__zahl">58</span><h3>Schnell, auch bei vielen Seiten</h3></div>
+	<p class="kurz">Getestet mit 3.000 Beiträgen: die meisten Suchen in Bruchteilen einer Sekunde.</p>
+	<p>Im Test mit 3.000 Reiseangeboten dauerten Suchen nach seltenen Wörtern 10 bis 20 Millisekunden, nach sehr häufigen Wörtern bis zu einer Viertelsekunde – unabhängig von der Zahl der Treffer mit nur 7 bis 11 Datenbankabfragen. Im Vergleich mit der WordPress-Suche waren die ersten zehn Treffer bei allen 41 Testsuchen richtig, bei WordPress bei zwei Dritteln.</p>
+<div class="tipp">Gemessen auf einem Testrechner mit künstlichen Inhalten. Auf deinem Server können die Zahlen anders ausfallen.</div>
+</article>
+
+
+</section>
+
+<!-- ============================================================ -->
+
+<section class="seite">
+	<h2 class="gross">Häufige Fragen</h2>
+
+	<div class="frage">
+		<h3>Brauche ich ein Konto bei einem KI-Anbieter?</h3>
+		<p>Nein. Die Keyword-Suche mit Wortformen, Tippfehler-Korrektur und guter Reihenfolge läuft ganz ohne. Ein KI-Anbieter ist nur für die Suche nach Bedeutung und die KI-Antwort nötig.</p>
+	</div>
+
+	<div class="frage">
+		<h3>Was kostet die KI?</h3>
+		<p>Meist Cent-Beträge im Monat. Am meisten kosten die KI-Antworten. Mit dem Monatslimit legst du eine feste Obergrenze fest, und die Statistik zeigt dir jeden Cent.</p>
+	</div>
+
+	<div class="frage">
+		<h3>Ändert sich das Aussehen meiner Website?</h3>
+		<p>Nein, solange du es nicht willst. Standardmäßig bleiben Suchfeld und Ergebnisseite deines Themes. Den Such-Block setzt du nur ein, wenn du Vorschläge und Live-Treffer möchtest.</p>
+	</div>
+
+	<div class="frage">
+		<h3>Eine Seite wird nicht gefunden. Was tun?</h3>
+		<p>Öffne sie im Editor und sieh im Bereich „Suche“ nach dem Zustand. Prüfe im Tab „Inhalte“, ob ihr Inhaltstyp angehakt ist, und probiere die Suche im Tab „Suche“ aus – dort steht, warum etwas gefunden wird oder nicht.</p>
+	</div>
+
+	<div class="frage">
+		<h3>Was passiert mit den Daten meiner Besucher?</h3>
+		<p>Gespeichert werden nur Suchbegriffe ohne IP-Adresse. In den KI-Modi gehen Suchbegriffe und Auszüge deiner öffentlichen Inhalte an den gewählten Anbieter – das gehört in deine Datenschutzerklärung, wofür das Plugin einen Textvorschlag liefert.</p>
+	</div>
+
+	<div class="frage">
+		<h3>Was, wenn ich das Plugin wieder deaktiviere?</h3>
+		<p>Dann sucht WordPress wieder selbst. Nichts geht verloren; beim erneuten Aktivieren ist alles wieder da.</p>
+	</div>
+
+	<div class="ende">
+		<h2>Viel Freude beim Finden!</h2>
+		<p>Alle Einstellungen findest du unter <strong>Einstellungen → Smart Search</strong>. Für technische Details gibt es das ausführliche Handbuch für Entwickler.</p>
+	</div>
+</section>
+
+</body>
+</html>

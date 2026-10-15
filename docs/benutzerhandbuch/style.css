@@ -1,0 +1,652 @@
+/* Gestaltung des Benutzerhandbuchs. Für den Druck nach PDF auf A4. */
+
+:root {
+	--tinte: #14161f;
+	--tinte-leise: #4b5163;
+	--tinte-blass: #7a8094;
+	--linie: #e3e5ec;
+	--papier: #ffffff;
+	--flaeche: #f5f6fa;
+	--nacht: #0f1222;
+	--indigo: #3858e9;
+	--indigo-hell: #eef1fe;
+
+	/* Eine Farbe je Kapitel; die Seiten eines Kapitels tragen sie. */
+	--blau: #3858e9;
+	--blau-hell: #eef1fe;
+	--violett: #7c4dde;
+	--violett-hell: #f3eefd;
+	--tuerkis: #0f8b8d;
+	--tuerkis-hell: #e7f6f6;
+	--orange: #d9620d;
+	--orange-hell: #fdf1e7;
+	--gruen: #1a8a3a;
+	--gruen-hell: #eaf7ee;
+	--rot: #c2283d;
+	--rot-hell: #fcecee;
+	--grau: #4b5163;
+	--grau-hell: #f0f1f5;
+}
+
+@page {
+	size: A4;
+	margin: 20mm 18mm 22mm;
+
+	@bottom-left {
+		content: "Smart Search · Benutzerhandbuch";
+		font: 8pt "Segoe UI", system-ui, sans-serif;
+		color: #9aa0b2;
+	}
+
+	@bottom-right {
+		content: counter(page);
+		font: 600 8.5pt "Segoe UI", system-ui, sans-serif;
+		color: #9aa0b2;
+	}
+}
+
+@page voll {
+	margin: 0;
+
+	@bottom-left {
+		content: none;
+	}
+
+	@bottom-right {
+		content: none;
+	}
+}
+
+* {
+	box-sizing: border-box;
+}
+
+html {
+	font: 10.6pt/1.6 "Segoe UI", system-ui, -apple-system, "Helvetica Neue", Arial, sans-serif;
+	color: var(--tinte);
+	-webkit-print-color-adjust: exact;
+	print-color-adjust: exact;
+}
+
+body {
+	margin: 0;
+}
+
+h1,
+h2,
+h3 {
+	margin: 0;
+	line-height: 1.2;
+	letter-spacing: -0.01em;
+	break-after: avoid;
+}
+
+p {
+	margin: 0 0 2.6mm;
+	orphans: 3;
+	widows: 3;
+}
+
+strong {
+	font-weight: 650;
+}
+
+a {
+	color: inherit;
+	text-decoration: none;
+}
+
+/* Titelseite */
+
+.titel {
+	page: voll;
+	position: relative;
+	display: flex;
+	flex-direction: column;
+	height: 297mm;
+	padding: 30mm 22mm 22mm;
+	overflow: hidden;
+	color: #fff;
+	background:
+		radial-gradient(circle at 85% 12%, rgb(124 77 222 / 55%) 0, transparent 42%),
+		radial-gradient(circle at 10% 90%, rgb(15 139 141 / 45%) 0, transparent 45%),
+		linear-gradient(160deg, #0f1222 0%, #1a2150 60%, #2b3fb8 120%);
+	break-after: page;
+}
+
+.titel__marke {
+	align-self: flex-start;
+	padding: 1.8mm 4.5mm;
+	font-size: 9pt;
+	font-weight: 600;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	background: rgb(255 255 255 / 12%);
+	border: 0.3mm solid rgb(255 255 255 / 25%);
+	border-radius: 999px;
+}
+
+.titel h1 {
+	margin-top: 22mm;
+	font-size: 50pt;
+	font-weight: 750;
+	line-height: 1;
+	letter-spacing: -0.03em;
+}
+
+.titel h1 span {
+	display: block;
+	color: #b7b0ff;
+}
+
+.titel__unter {
+	max-width: 130mm;
+	margin-top: 7mm;
+	font-size: 14pt;
+	line-height: 1.45;
+	color: rgb(255 255 255 / 82%);
+}
+
+/* Die gezeichnete Suche auf der Titelseite. */
+.bildchen {
+	margin-top: auto;
+	padding: 6mm;
+	background: rgb(255 255 255 / 8%);
+	border: 0.3mm solid rgb(255 255 255 / 16%);
+	border-radius: 5mm;
+	box-shadow: 0 6mm 18mm rgb(0 0 0 / 35%);
+}
+
+.bildchen__feld {
+	display: flex;
+	gap: 3mm;
+	align-items: center;
+	padding: 3.5mm 4.5mm;
+	font-size: 12pt;
+	color: var(--tinte);
+	background: #fff;
+	border-radius: 3mm;
+}
+
+.bildchen__lupe {
+	width: 5mm;
+	height: 5mm;
+	border: 0.7mm solid var(--indigo);
+	border-radius: 50%;
+}
+
+.bildchen__antwort {
+	margin-top: 4mm;
+	padding: 4mm 4.5mm;
+	font-size: 9.5pt;
+	line-height: 1.5;
+	color: #fff;
+	background: linear-gradient(135deg, rgb(124 77 222 / 55%), rgb(56 88 233 / 45%));
+	border-radius: 3mm;
+}
+
+.bildchen__antwort b {
+	display: block;
+	margin-bottom: 1mm;
+	font-size: 8pt;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	opacity: 0.85;
+}
+
+.bildchen__treffer {
+	display: grid;
+	gap: 2.5mm;
+	margin-top: 4mm;
+}
+
+.bildchen__treffer div {
+	padding: 3mm 4.5mm;
+	font-size: 9.5pt;
+	color: rgb(255 255 255 / 92%);
+	background: rgb(255 255 255 / 10%);
+	border-radius: 2.5mm;
+}
+
+.bildchen__treffer small {
+	margin-left: 2mm;
+	padding: 0.3mm 2mm;
+	font-size: 7.5pt;
+	color: #b6f5c7;
+	background: rgb(26 138 58 / 35%);
+	border-radius: 999px;
+}
+
+.titel__fuss {
+	display: flex;
+	justify-content: space-between;
+	margin-top: 10mm;
+	font-size: 9pt;
+	color: rgb(255 255 255 / 65%);
+}
+
+/* Einleitung */
+
+.seite {
+	break-before: page;
+}
+
+.gross {
+	margin-bottom: 6mm;
+	font-size: 26pt;
+	font-weight: 750;
+	letter-spacing: -0.02em;
+}
+
+.lead {
+	max-width: 150mm;
+	margin-bottom: 7mm;
+	font-size: 12.5pt;
+	line-height: 1.55;
+	color: var(--tinte-leise);
+}
+
+.drei {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 4mm;
+	margin: 6mm 0;
+}
+
+.stufe {
+	padding: 5mm;
+	background: var(--flaeche);
+	border-radius: 4mm;
+	break-inside: avoid;
+}
+
+.stufe__zahl {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 8mm;
+	height: 8mm;
+	margin-bottom: 3mm;
+	font-weight: 700;
+	color: #fff;
+	background: var(--indigo);
+	border-radius: 2.5mm;
+}
+
+.stufe h3 {
+	margin-bottom: 1.5mm;
+	font-size: 12pt;
+}
+
+.stufe p {
+	margin: 0;
+	font-size: 9.5pt;
+	color: var(--tinte-leise);
+}
+
+.stufe__preis {
+	display: inline-block;
+	margin-top: 3mm;
+	padding: 0.5mm 2.5mm;
+	font-size: 8pt;
+	font-weight: 600;
+	color: var(--indigo);
+	background: var(--indigo-hell);
+	border-radius: 999px;
+}
+
+.hinweis {
+	margin: 5mm 0;
+	padding: 4.5mm 5mm;
+	font-size: 10pt;
+	background: var(--flaeche);
+	border-left: 1.2mm solid var(--indigo);
+	border-radius: 0 3mm 3mm 0;
+	break-inside: avoid;
+}
+
+.hinweis b {
+	display: block;
+	margin-bottom: 1mm;
+}
+
+.hinweis p:last-child {
+	margin: 0;
+}
+
+/* Übersicht aller Funktionen */
+
+.uebersicht__gruppe {
+	margin-bottom: 5mm;
+	break-inside: avoid;
+}
+
+.uebersicht__kopf {
+	display: flex;
+	gap: 2.5mm;
+	align-items: center;
+	margin-bottom: 2mm;
+	font-size: 10.5pt;
+	font-weight: 700;
+	color: var(--farbe);
+}
+
+.uebersicht__punkt {
+	width: 3mm;
+	height: 3mm;
+	background: var(--farbe);
+	border-radius: 1mm;
+}
+
+.uebersicht__liste {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.6mm 4mm;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.uebersicht__liste li {
+	display: flex;
+	gap: 2.5mm;
+	padding: 2mm 3mm;
+	font-size: 9pt;
+	line-height: 1.35;
+	background: var(--hell);
+	border-radius: 2mm;
+	break-inside: avoid;
+}
+
+.uebersicht__liste b {
+	flex: none;
+	min-width: 5mm;
+	color: var(--farbe);
+}
+
+.uebersicht__liste span {
+	color: var(--tinte-leise);
+}
+
+.uebersicht__liste strong {
+	display: block;
+	color: var(--tinte);
+}
+
+/* Kapitel-Trennseiten */
+
+.gruppe__start {
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	height: 112mm;
+	margin: 0 0 8mm;
+	padding: 12mm;
+	color: #fff;
+	background:
+		radial-gradient(circle at 90% 10%, rgb(255 255 255 / 22%) 0, transparent 40%),
+		linear-gradient(135deg, var(--farbe), color-mix(in srgb, var(--farbe) 55%, #0f1222));
+	border-radius: 6mm;
+	break-inside: avoid;
+}
+
+.gruppe {
+	break-before: page;
+}
+
+.gruppe__nummer {
+	font-size: 9.5pt;
+	font-weight: 600;
+	letter-spacing: 0.12em;
+	text-transform: uppercase;
+	opacity: 0.85;
+}
+
+.gruppe__start h2 {
+	margin: 2mm 0 4mm;
+	font-size: 30pt;
+	font-weight: 750;
+	letter-spacing: -0.02em;
+}
+
+.gruppe__start p {
+	max-width: 135mm;
+	margin: 0;
+	font-size: 12pt;
+	line-height: 1.5;
+	opacity: 0.92;
+}
+
+/* Funktionen */
+
+.funktion {
+	margin-bottom: 8mm;
+	padding-bottom: 7mm;
+	border-bottom: 0.3mm solid var(--linie);
+}
+
+/* Eine Funktion darf über eine Seitengrenze laufen, ihre Bausteine nicht. */
+.funktion__kopf,
+.kurz {
+	break-inside: avoid;
+	break-after: avoid;
+}
+
+.funktion :is(.kurz, .beispiel, .tipp, .achtung, .wo, .bild, li) {
+	break-inside: avoid;
+}
+
+.funktion .wo {
+	break-before: avoid;
+}
+
+.funktion:last-child {
+	border-bottom: 0;
+}
+
+.funktion__kopf {
+	display: flex;
+	gap: 4mm;
+	align-items: center;
+	margin-bottom: 3mm;
+}
+
+.funktion__zahl {
+	display: flex;
+	flex: none;
+	align-items: center;
+	justify-content: center;
+	width: 10mm;
+	height: 10mm;
+	font-size: 11pt;
+	font-weight: 750;
+	color: var(--farbe);
+	background: var(--hell);
+	border-radius: 3mm;
+}
+
+.funktion h3 {
+	font-size: 15pt;
+	font-weight: 700;
+}
+
+.kurz {
+	margin-bottom: 3mm;
+	padding: 3mm 4mm;
+	font-size: 11pt;
+	font-weight: 600;
+	line-height: 1.45;
+	color: var(--farbe);
+	background: var(--hell);
+	border-radius: 2.5mm;
+}
+
+.beispiel {
+	display: flex;
+	gap: 3mm;
+	align-items: baseline;
+	margin: 3mm 0;
+	padding: 3mm 4mm;
+	font-size: 9.8pt;
+	background: var(--flaeche);
+	border-radius: 2.5mm;
+	break-inside: avoid;
+}
+
+.beispiel::before {
+	content: "Beispiel";
+	flex: none;
+	padding: 0.4mm 2.2mm;
+	font-size: 7.5pt;
+	font-weight: 700;
+	letter-spacing: 0.06em;
+	color: #fff;
+	text-transform: uppercase;
+	background: var(--farbe);
+	border-radius: 999px;
+}
+
+.tipp {
+	display: flex;
+	gap: 3mm;
+	margin: 3mm 0;
+	font-size: 9.8pt;
+	color: var(--tinte-leise);
+	break-inside: avoid;
+}
+
+.tipp::before {
+	content: "💡";
+	flex: none;
+}
+
+.achtung {
+	display: flex;
+	gap: 3mm;
+	margin: 3mm 0;
+	padding: 3mm 4mm;
+	font-size: 9.8pt;
+	background: #fff8e6;
+	border-radius: 2.5mm;
+	break-inside: avoid;
+}
+
+.achtung::before {
+	content: "⚠️";
+	flex: none;
+}
+
+.wo {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 2mm;
+	margin-top: 3.5mm;
+}
+
+.wo span {
+	padding: 0.8mm 3mm;
+	font-size: 8.3pt;
+	font-weight: 600;
+	color: var(--tinte-leise);
+	background: var(--flaeche);
+	border: 0.25mm solid var(--linie);
+	border-radius: 999px;
+}
+
+.wo span.ort::before {
+	content: "⚙ ";
+}
+
+.wo span.std::before {
+	content: "● ";
+	color: var(--farbe);
+}
+
+.wo span.modus::before {
+	content: "◆ ";
+	color: var(--farbe);
+}
+
+.liste {
+	margin: 2mm 0 3mm;
+	padding-left: 5mm;
+}
+
+.liste li {
+	margin-bottom: 1mm;
+}
+
+kbd,
+code {
+	padding: 0.2mm 1.4mm;
+	font-family: "Cascadia Mono", Consolas, monospace;
+	font-size: 8.8pt;
+	background: var(--flaeche);
+	border: 0.25mm solid var(--linie);
+	border-radius: 1mm;
+}
+
+.bild {
+	margin: 4mm 0;
+	overflow: hidden;
+	border: 0.3mm solid var(--linie);
+	border-radius: 3mm;
+	box-shadow: 0 2mm 6mm rgb(15 18 34 / 8%);
+	break-inside: avoid;
+}
+
+.bild img {
+	display: block;
+	width: 100%;
+	break-inside: avoid;
+}
+
+.bild--schmal {
+	width: 110mm;
+	margin-inline: auto;
+}
+
+.bildtext {
+	margin: -2mm 0 4mm;
+	font-size: 8.5pt;
+	color: var(--tinte-blass);
+}
+
+/* Fragen am Ende */
+
+.frage {
+	margin-bottom: 3.5mm;
+	padding: 3.5mm 5mm;
+	background: var(--flaeche);
+	border-radius: 3mm;
+	break-inside: avoid;
+}
+
+.frage h3 {
+	margin-bottom: 1.5mm;
+	font-size: 11.5pt;
+}
+
+.frage p:last-child {
+	margin: 0;
+}
+
+.ende {
+	margin-top: 6mm;
+	padding: 8mm;
+	text-align: center;
+	color: #fff;
+	background: linear-gradient(135deg, #1a2150, #3858e9);
+	border-radius: 6mm;
+	break-inside: avoid;
+}
+
+.ende h2 {
+	margin-bottom: 3mm;
+	font-size: 20pt;
+}
+
+.ende p {
+	margin: 0;
+	color: rgb(255 255 255 / 85%);
+}
